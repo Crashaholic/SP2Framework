@@ -74,6 +74,26 @@ void FPSCamera::UpdateMouse()
 
 	this->target = position + front;
 
+	if (Application::IsKeyPressed('A')) {
+		Vector3 temp(front.z, 0, -front.x);
+		target += temp;
+		position += temp;
+	}
+	if (Application::IsKeyPressed('D')) {
+		Vector3 temp(-front.z, 0, front.x);
+		target += temp;
+		position += temp;
+	}
+	if (Application::IsKeyPressed('W')) {
+		Vector3 temp(front.x, 0, front.z);
+		target += temp;
+		position += temp;
+	}
+	if (Application::IsKeyPressed('S')) {
+		Vector3 temp(-front.x, 0, -front.z);
+		target += temp;
+		position += temp;
+	}
 }
 
 void FPSCamera::Update(double dt)
