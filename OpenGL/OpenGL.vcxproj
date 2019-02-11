@@ -145,6 +145,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Source\Collision.cpp" />
+    <ClCompile Include="Source\OBB.cpp" />
     <ClCompile Include="Source\GUIText.cpp" />
     <ClCompile Include="Source\GUIFont.cpp" />
     <ClCompile Include="Source\GUIManager.cpp" />
@@ -152,12 +154,10 @@
     <ClCompile Include="Source\ShaderProgram.cpp" />
     <ClCompile Include="Source\shader.cpp" />
     <ClCompile Include="Source\Manager.cpp" />
-    <ClCompile Include="Source\CollisionManager.cpp" />
     <ClCompile Include="Source\Primitive.cpp" />
     <ClCompile Include="Source\Camera.cpp" />
     <ClCompile Include="Source\LightSource.cpp" />
     <ClCompile Include="Source\Primitives.cpp" />
-    <ClCompile Include="Source\Overlay.cpp" />
     <ClCompile Include="Source\FPSCamera.cpp" />
     <ClCompile Include="Source\SceneA2.cpp" />
     <ClCompile Include="Source\LoadTGA.cpp" />
@@ -169,18 +169,18 @@
     <ClCompile Include="Source\Transformation.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Source\Collision.h" />
+    <ClInclude Include="Source\OBB.h" />
     <ClInclude Include="Source\GUIText.h" />
     <ClInclude Include="Source\GUIFont.h" />
     <ClInclude Include="Source\GUIManager.h" />
     <ClInclude Include="Source\GUIChar.h" />
     <ClInclude Include="Source\ShaderProgram.h" />
     <ClInclude Include="Source\Manager.h" />
-    <ClInclude Include="Source\CollisionManager.h" />
     <ClInclude Include="Source\Primitive.h" />
     <ClInclude Include="Source\Camera.h" />
     <ClInclude Include="Source\LightSource.h" />
     <ClInclude Include="Source\Primitives.h" />
-    <ClInclude Include="Source\Overlay.h" />
     <ClInclude Include="Source\FPSCamera.h" />
     <ClInclude Include="Source\SceneA2.h" />
     <ClInclude Include="Source\LoadTGA.h" />

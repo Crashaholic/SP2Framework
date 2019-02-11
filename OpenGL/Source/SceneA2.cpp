@@ -6,7 +6,7 @@
 #include "Primitives.h"
 #include "shader.hpp"
 #include "ShaderProgram.h"
-
+#include "Collision.h"
 
 
 SceneA2::SceneA2()
@@ -60,7 +60,12 @@ void SceneA2::CreateMesh()
 	// Environment
 	manager->spawnObject(new Mesh("ground", Primitives::loadModel("Models//ground.obj"), LoadTGA("Image//rock.tga"), false));
 
+	Vector3 p = Utility::rotatePointByY(Vector3(0, 0, 1), 90);
+	std::cout << p.x << "," << p.y << ","  << p.z << std::endl;
 
+	//OBB a(Vector3(0, 0, 0), Vector3(1, 0, 0), Vector3(0, 1, 0), Vector3(0, 0, 1), Vector3(10, 1, 1));
+	//OBB b(Vector3(21, 0, 0), Vector3(1, 0, 0), Vector3(0, 1, 0), Vector3(0, 0, 1), Vector3(10, 1, 1));
+	//std::cout << Collision::checkCollision(a, b) << std::endl;
 }
 
 

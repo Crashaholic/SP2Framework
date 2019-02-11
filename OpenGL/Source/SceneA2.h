@@ -14,8 +14,6 @@
 #include "LightSource.h"
 #include "Manager.h"
 #include "GUIManager.h"
-#include "CollisionManager.h"
-#include "Overlay.h"
 
 class SceneA2 : public Scene
 {

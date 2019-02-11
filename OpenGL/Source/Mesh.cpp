@@ -4,7 +4,6 @@
 #include "LoadTGA.h"
 #include "Primitives.h"
 #include "Utility.h"
-#include "CollisionManager.h"
 #include "Manager.h"
 
 
