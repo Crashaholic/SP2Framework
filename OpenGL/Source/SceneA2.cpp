@@ -57,8 +57,18 @@ void SceneA2::CreateMesh()
 	manager->spawnObject(new Mesh("skyboxRight", quad, LoadTGA("Image//right.tga")));
 	manager->spawnObject(new Mesh("skyboxBack", quad, LoadTGA("Image//back.tga")));
 
+	Primitive* axes = Primitives::generateAxes();
+	manager->spawnObject(new Mesh("axes", axes, 0, false, Mesh::DRAW_LINES));
+	manager->spawnObject(new Mesh("playerAxes", axes, 0, false, Mesh::DRAW_LINES));
+
 	// Environment
 	manager->spawnObject(new Mesh("ground", Primitives::loadModel("Models//ground.obj"), LoadTGA("Image//rock.tga"), false));
+
+	manager->spawnObject(new Mesh("human", Primitives::loadModel("Models//player.obj"), LoadTGA("Models//human.tga")));
+	manager->spawnObject(new Mesh("car", Primitives::loadModel("Models//car.obj"), LoadTGA("Models//car.tga")));
+	//manager->getObject("human")->loadChildren({ "human_body",
+	//	"human_leftthigh", "human_leftcalve", "human_leftshoe", "human_lefthand",
+	//	"human_rightthigh", "human_rightcalve", "human_rightshoe", "human_righthand" });
 
 	Vector3 p = Utility::rotatePointByY(Vector3(0, 0, 1), 90);
 	std::cout << p.x << "," << p.y << ","  << p.z << std::endl;
@@ -104,6 +114,40 @@ void SceneA2::RenderScene()
 	RenderMesh(manager->getObject("ground"), true);
 	modelStack.PopMatrix();
 
+	modelStack.PushMatrix();
+	RenderMesh(manager->getObject("axes"), false);
+	modelStack.PopMatrix();
+
+	modelStack.PushMatrix();
+	modelStack.Translate(0.0f, 1.5f, 0.0f);
+	manager->getObject("axes")->Translate(modelStack, 0.0f, 1.5f, 0.0);
+	modelStack.Rotate(-manager->getCamera()->getYaw() + 90, 0, 1, 0);
+	manager->getObject("axes")->Rotate(modelStack, -manager->getCamera()->getYaw() + 90, 0, 1, 0);
+	RenderMesh(manager->getObject("axes"), false);
+	modelStack.PopMatrix();
+
+	modelStack.PushMatrix();
+	modelStack.Translate(0.0f, 5.0f, 5.0f);
+	manager->getObject("human")->Translate(modelStack, 0.0f, 5.0f, 5.0f);
+	modelStack.Rotate(-manager->getCamera()->getYaw() + 90, 0, 1, 0);
+	manager->getObject("human")->Rotate(modelStack, -manager->getCamera()->getYaw() + 90, 0, 1, 0);
+	RenderMesh(manager->getObject("human"), true);
+
+	
+
+	//std::vector<Mesh*>* bodyChildren = manager->getObject("human")->getChildren();
+	//for (int i = 0; i < (int)bodyChildren->size(); i++)
+	//{
+	//	modelStack.PushMatrix();
+	//	RenderMesh(bodyChildren->at(i), true);
+	//	modelStack.PopMatrix();
+	//}
+	modelStack.PopMatrix();
+
+	modelStack.PushMatrix();
+	modelStack.Translate(10.0f, 3.0f, 10.0f);
+	manager->getObject("car")->Translate(modelStack, 10.0f, 3.0f, 10.0f);
+	RenderMesh(manager->getObject("car"), true);
 
 }
 
@@ -261,6 +305,8 @@ void SceneA2::Update(double dt)
 	}
 
 	manager->getCamera()->Update(dt);
+	std::cout << "Collision: " << Collision::checkCollision(*manager->getObject("human")->getOBB(), *manager->getObject("ground")->getOBB()) << std::endl;
+
 
 	// Bounce Time & Elapsed Time
 	bounceTimeCounter -= (float) dt;

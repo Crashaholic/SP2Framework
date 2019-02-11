@@ -2,11 +2,10 @@
 
 
 
-OBB::OBB(Vector3 pos, Vector3 axisX, Vector3 axisY, Vector3 axisZ, Vector3 half) {
-	this->position = pos;
-	this->axisX = axisX;
-	this->axisY = axisY;
-	this->axisZ = axisZ;
+OBB::OBB(Vector3 half){ 
+	axisX = Vector3(1, 0, 0);
+	axisY = Vector3(0, 1, 0);
+	axisZ = Vector3(0, 0, 1);
 	this->halfSize = half;
 }
 
@@ -17,6 +16,19 @@ OBB::OBB()
 
 OBB::~OBB()
 {
+}
+
+void OBB::incrementSize(Vector3 incr) {
+	halfSize.x += incr.x;
+	halfSize.y += incr.y;
+	halfSize.z += incr.z;
+}
+
+void OBB::setPosAxis(Vector3 pos, Vector3 x, Vector3 y, Vector3 z) {
+	position = pos;
+	axisX = x;
+	axisY = y;
+	axisZ = z;
 }
 
 Vector3& OBB::getPos() {

@@ -45,6 +45,8 @@ Primitive* Primitives::loadModel(const char* path, bool generateCollider)
 
 	std::string line;
 
+	Vector3 min, max = Vector3(0, 0, 0);
+
 	while (std::getline(handle, line))
 	{
 		if (line[0] != 'v' && line[0] != 'f' && line[0] != 's') continue;
@@ -67,6 +69,24 @@ Primitive* Primitives::loadModel(const char* path, bool generateCollider)
 			float x = std::stof(args[1]);
 			float y = std::stof(args[2]);
 			float z = std::stof(args[3]);
+			if (positions.size() != 0) {
+				if (x < min.x)
+					min.x = x;
+				else if (x > max.x)
+					max.x = x;
+				else if (y < min.y)
+					min.y = y;
+				else if (y > max.y)
+					max.y = y;
+				else if (z < min.z)
+					min.z = z;
+				else if (z > max.z)
+					max.z = z;
+			}
+			else {
+				min.Set(x, y, z);
+				max.Set(x, y, z);
+			}
 			positions.push_back(Position(x, y, z));
 		}
 		
@@ -118,6 +138,7 @@ Primitive* Primitives::loadModel(const char* path, bool generateCollider)
 		}
 	}
 
+	
 
 	// Loop through all the indices
 	for (unsigned int i = 0; i < (unsigned int)vertIndices.size(); i++)
@@ -152,7 +173,7 @@ Primitive* Primitives::loadModel(const char* path, bool generateCollider)
 		}
 	}
 
-	return new Primitive(vertices, indices);
+	return new Primitive(vertices, indices, min, max);
 }
 
 bool findExistingVertex(std::map<Vertex, unsigned int>& data, Vertex& vertex, unsigned int& index)
@@ -201,7 +222,7 @@ Primitive* Primitives::generateAxes()
 
 	std::vector<unsigned int> indices = { 0,1,2,3,4,5 };
 
-	return new Primitive(vertices, indices);
+	return new Primitive(vertices, indices, Vector3(0,0,0), Vector3(0,0,0));
 }
 
 Primitive* Primitives::generateQuad(Color color)
@@ -232,7 +253,7 @@ Primitive* Primitives::generateQuad(Color color)
 
 	std::vector<unsigned int> indices = { 0,1,2,2,1,3 };
 
-	return new Primitive(vertices, indices);
+	return new Primitive(vertices, indices, Vector3(-0.5, -0.5, 0), Vector3(0.5, 0.5, 0));
 
 }
 

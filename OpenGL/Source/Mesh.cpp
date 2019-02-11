@@ -32,7 +32,8 @@ Mesh::Mesh(const char* meshName, Primitive* primitive, unsigned int texID, bool 
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, primitive->getIndices()->size() * sizeof(unsigned int), &primitive->getIndices()->at(0), GL_STATIC_DRAW);
 	indexSize = primitive->getIndices()->size();
 
-
+	obb = new OBB(Vector3(primitive->getWidth() * 0.5f, primitive->getHeight() * 0.5f, primitive->getDepth() * 0.5f));
+	defaultObb = new OBB(Vector3(primitive->getWidth() * 0.5f, primitive->getHeight() * 0.5f, primitive->getDepth() * 0.5f));
 
 }
 
@@ -57,6 +58,9 @@ Destructor - delete VBO/IBO here
 /******************************************************************************/
 Mesh::~Mesh()
 {
+	delete obb;
+	delete defaultObb;
+
 	if (textureID > 0)
 	{
 		glDeleteTextures(1, &textureID);
@@ -80,6 +84,7 @@ OpenGL render code
 /******************************************************************************/
 void Mesh::Render(MS& modelStack, MS& viewStack, MS& projectionStack, ShaderProgram* shader)
 {
+	
 
 	Mtx44 MVP, modelView, modelView_inverse_tranpose, model;
 	MVP = projectionStack.Top() * viewStack.Top() * modelStack.Top();
@@ -106,6 +111,7 @@ void Mesh::Render(MS& modelStack, MS& viewStack, MS& projectionStack, ShaderProg
 	InitTexture();
 
 
+
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
 
 	if (mode == DRAW_TRIANGLE_STRIP)
@@ -125,6 +131,7 @@ void Mesh::Render(MS& modelStack, MS& viewStack, MS& projectionStack, ShaderProg
 	glDisableVertexAttribArray(2);
 	glDisableVertexAttribArray(1);
 	glDisableVertexAttribArray(0);
+	obb->setPosAxis(defaultObb->getPos(), defaultObb->getX(), defaultObb->getY(), defaultObb->getZ());
 }
 
 std::vector<Mesh*>* Mesh::getChildren()
@@ -140,12 +147,48 @@ void Mesh::loadChildren(std::vector<std::string> names)
 	for (int i = 0; i < (int)names.size(); i++)
 	{
 		std::string modelPath = "Models//" + names[i] + ".obj";
-		children.push_back(new Mesh(names[i].c_str(), Primitives::loadModel(modelPath.c_str()), textureID));
-
+		Primitive* primitive = Primitives::loadModel(modelPath.c_str());
+		Mesh* mesh = new Mesh(names[i].c_str(), primitive, textureID);
+		children.push_back(mesh);
+		obb->incrementSize(mesh->obb->getHalf());
 	}
 
 }
 
+OBB* Mesh::getOBB() {
+	return obb;
+}
 
+void Mesh::Translate(MS& modelStack, float x, float y, float z) {
+	obb->setPosAxis(position + Vector3(x, y, z), obb->getX(), obb->getY(), obb->getZ());
+}
+
+void Mesh::Rotate(MS& modelStack, float angle, float x, float y, float z) {
+
+
+	if (x == 1) {
+		obb->setPosAxis(obb->getPos(), Utility::rotatePointByX(obb->getX(), angle),
+			Utility::rotatePointByX(obb->getY(), angle),
+			Utility::rotatePointByX(obb->getZ(), angle));
+	}
+	else if (y == 1) {
+		obb->setPosAxis(obb->getPos(), Utility::rotatePointByY(obb->getX(), angle),
+			Utility::rotatePointByY(obb->getY(), angle),
+			Utility::rotatePointByY(obb->getZ(), angle));
+	}
+	else if (z == 1) {
+		obb->setPosAxis(obb->getPos(), Utility::rotatePointByZ(obb->getX(), angle),
+			Utility::rotatePointByZ(obb->getY(), angle),
+			Utility::rotatePointByZ(obb->getZ(), angle));
+	}
+
+	if (name == "human") {
+		std::cout << "position: " << obb->getPos() << std::endl;
+		std::cout << "axis x: " << obb->getX() << std::endl;
+		std::cout << "axis y: " << obb->getY() << std::endl;
+		std::cout << "axis z: " << obb->getZ() << std::endl;
+		std::cout << "half: " << obb->getHalf() << std::endl;
+	}
+}
 
 

@@ -8,6 +8,7 @@
 #include "MatrixStack.h"
 #include "Transformation.h"
 #include "ShaderProgram.h"
+#include "Collision.h"
 
 /******************************************************************************/
 /*!
@@ -48,6 +49,7 @@ public:
 
 	Material material;
 	std::vector<Mesh*>* getChildren();
+	OBB* getOBB();
 	std::vector<Transformation*> transformations;
 
 	virtual void Render(MS& modelStack, MS& viewStack, MS& projectionStack, ShaderProgram* shader);
@@ -58,11 +60,14 @@ public:
 	void Transform(MS& modelStack);
 	void ResetCollider();
 
+
+
 private:
 	virtual void InitTexture();
 
 protected:
-	Vector3 forward;
+	OBB* obb;
+	OBB* defaultObb;
 	std::vector<Mesh*> children;
 
 };

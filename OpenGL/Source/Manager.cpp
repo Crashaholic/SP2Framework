@@ -10,7 +10,7 @@ Manager::Manager()
 	for(int i = 0; i < 2; i++)
 		lightSources.push_back(new LightSource());
 	camera = new FPSCamera();
-	camera->Init(Vector3(0, 5, 0));
+	camera->Init(Vector3(5, 5, 0));
 }
 
 
