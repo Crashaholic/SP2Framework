@@ -159,4 +159,7 @@
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="playerProgress.txt" />
+  </ItemGroup>
 </Project>

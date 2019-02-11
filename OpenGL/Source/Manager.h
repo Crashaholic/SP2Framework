@@ -6,6 +6,10 @@
 #include "Mesh.h"
 #include "FPSCamera.h"
 #include <map>
+#include <fstream>
+#include <string>
+
+#include <iostream>
 
 class Manager
 {
@@ -14,6 +18,8 @@ public:
 	static Manager* getInstance();
 
 	void spawnObject(Mesh* mesh);
+	void loadPlayerProgress();
+	void savePlayerProgress();
 
 	Mesh* getObject(std::string name);
 	ShaderProgram* getShader(std::string name);
@@ -23,12 +29,14 @@ public:
 	std::map<std::string, ShaderProgram*>* getShaders();
 	FPSCamera* getCamera();
 private:
+
 	Manager();
 	static Manager* instance;
 	std::map<std::string, Mesh*> objects;
 	std::map<std::string, ShaderProgram*> shaders;
 	std::vector<LightSource*> lightSources;
 	FPSCamera* camera;
+	bool startsWith(std::string input, std::string keyWord);
 };
 
 #endif

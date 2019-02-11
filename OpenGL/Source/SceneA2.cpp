@@ -22,6 +22,7 @@ SceneA2::~SceneA2()
 void SceneA2::Init()
 {
 	manager = Manager::getInstance();
+	manager->loadPlayerProgress();
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 	elapsedTimeCounter = bounceTimeCounter = lastTimed = 0.0f;
 	lastFramesPerSecond = framesPerSecond = 1;
