@@ -57,8 +57,7 @@ public:
 	void Translate(MS& modelStack, float x, float y, float z);
 	void Scale(MS& modelStack, float x, float y, float z);
 	void Rotate(MS& modelStack, float angle, float x, float y, float z);
-	void Transform(MS& modelStack);
-	void ResetCollider();
+	void ResetOBB();
 
 
 

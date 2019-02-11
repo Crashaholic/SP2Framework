@@ -109,7 +109,7 @@ void Mesh::Render(MS& modelStack, MS& viewStack, MS& projectionStack, ShaderProg
 
 
 	InitTexture();
-
+	obb->setPos(position);
 
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
@@ -131,7 +131,7 @@ void Mesh::Render(MS& modelStack, MS& viewStack, MS& projectionStack, ShaderProg
 	glDisableVertexAttribArray(2);
 	glDisableVertexAttribArray(1);
 	glDisableVertexAttribArray(0);
-	obb->setPosAxis(defaultObb->getPos(), defaultObb->getX(), defaultObb->getY(), defaultObb->getZ());
+
 }
 
 std::vector<Mesh*>* Mesh::getChildren()
@@ -160,35 +160,35 @@ OBB* Mesh::getOBB() {
 }
 
 void Mesh::Translate(MS& modelStack, float x, float y, float z) {
-	obb->setPosAxis(position + Vector3(x, y, z), obb->getX(), obb->getY(), obb->getZ());
+	position.Set(x, y, z);
+	obb->setPosAxis(position, obb->getX(), obb->getY(), obb->getZ());
+	modelStack.Translate(x, y, z);
 }
 
 void Mesh::Rotate(MS& modelStack, float angle, float x, float y, float z) {
 
 
 	if (x == 1) {
-		obb->setPosAxis(obb->getPos(), Utility::rotatePointByX(obb->getX(), angle),
+		obb->setPosAxis(position, Utility::rotatePointByX(obb->getX(), angle),
 			Utility::rotatePointByX(obb->getY(), angle),
 			Utility::rotatePointByX(obb->getZ(), angle));
 	}
 	else if (y == 1) {
-		obb->setPosAxis(obb->getPos(), Utility::rotatePointByY(obb->getX(), angle),
+		obb->setPosAxis(position, Utility::rotatePointByY(obb->getX(), angle),
 			Utility::rotatePointByY(obb->getY(), angle),
 			Utility::rotatePointByY(obb->getZ(), angle));
 	}
 	else if (z == 1) {
-		obb->setPosAxis(obb->getPos(), Utility::rotatePointByZ(obb->getX(), angle),
+		obb->setPosAxis(position, Utility::rotatePointByZ(obb->getX(), angle),
 			Utility::rotatePointByZ(obb->getY(), angle),
 			Utility::rotatePointByZ(obb->getZ(), angle));
 	}
 
-	if (name == "human") {
-		std::cout << "position: " << obb->getPos() << std::endl;
-		std::cout << "axis x: " << obb->getX() << std::endl;
-		std::cout << "axis y: " << obb->getY() << std::endl;
-		std::cout << "axis z: " << obb->getZ() << std::endl;
-		std::cout << "half: " << obb->getHalf() << std::endl;
-	}
+	modelStack.Rotate(angle, x, y, z);
+
 }
 
+void Mesh::ResetOBB() {
+	obb->setPosAxis(position, defaultObb->getX(), defaultObb->getY(), defaultObb->getZ());
 
+}

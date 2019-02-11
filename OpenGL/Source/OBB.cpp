@@ -31,6 +31,10 @@ void OBB::setPosAxis(Vector3 pos, Vector3 x, Vector3 y, Vector3 z) {
 	axisZ = z;
 }
 
+void OBB::setPos(Vector3 pos) {
+	this->position = pos;
+}
+
 Vector3& OBB::getPos() {
 	return position;
 }

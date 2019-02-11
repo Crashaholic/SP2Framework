@@ -63,19 +63,14 @@ void SceneA2::CreateMesh()
 
 	// Environment
 	manager->spawnObject(new Mesh("ground", Primitives::loadModel("Models//ground.obj"), LoadTGA("Image//rock.tga"), false));
-
-	manager->spawnObject(new Mesh("human", Primitives::loadModel("Models//player.obj"), LoadTGA("Models//human.tga")));
+	manager->spawnObject(new Mesh("cube1", Primitives::loadModel("Models//cube1.obj"), LoadTGA("Models//human.tga")));
+	manager->spawnObject(new Mesh("cube2", Primitives::loadModel("Models//cube2.obj"), LoadTGA("Models//human.tga")));
+	manager->spawnObject(new Mesh("human", Primitives::loadModel("Models//human.obj"), LoadTGA("Models//human.tga")));
 	manager->spawnObject(new Mesh("car", Primitives::loadModel("Models//car.obj"), LoadTGA("Models//car.tga")));
-	//manager->getObject("human")->loadChildren({ "human_body",
-	//	"human_leftthigh", "human_leftcalve", "human_leftshoe", "human_lefthand",
-	//	"human_rightthigh", "human_rightcalve", "human_rightshoe", "human_righthand" });
+	manager->getObject("human")->loadChildren({ "human_body",
+		"human_leftthigh", "human_leftcalve", "human_leftshoe", "human_lefthand",
+		"human_rightthigh", "human_rightcalve", "human_rightshoe", "human_righthand" });
 
-	Vector3 p = Utility::rotatePointByY(Vector3(0, 0, 1), 90);
-	std::cout << p.x << "," << p.y << ","  << p.z << std::endl;
-
-	//OBB a(Vector3(0, 0, 0), Vector3(1, 0, 0), Vector3(0, 1, 0), Vector3(0, 0, 1), Vector3(10, 1, 1));
-	//OBB b(Vector3(21, 0, 0), Vector3(1, 0, 0), Vector3(0, 1, 0), Vector3(0, 0, 1), Vector3(10, 1, 1));
-	//std::cout << Collision::checkCollision(a, b) << std::endl;
 }
 
 
@@ -110,7 +105,7 @@ void SceneA2::RenderScene()
 
 	// Environment
 	modelStack.PushMatrix();
-	modelStack.Rotate(180, 0, 1, 0);
+	manager->getObject("ground")->Rotate(modelStack, 180, 0, 1, 0);
 	RenderMesh(manager->getObject("ground"), true);
 	modelStack.PopMatrix();
 
@@ -119,35 +114,28 @@ void SceneA2::RenderScene()
 	modelStack.PopMatrix();
 
 	modelStack.PushMatrix();
-	modelStack.Translate(0.0f, 1.5f, 0.0f);
-	manager->getObject("axes")->Translate(modelStack, 0.0f, 1.5f, 0.0);
-	modelStack.Rotate(-manager->getCamera()->getYaw() + 90, 0, 1, 0);
-	manager->getObject("axes")->Rotate(modelStack, -manager->getCamera()->getYaw() + 90, 0, 1, 0);
-	RenderMesh(manager->getObject("axes"), false);
+	manager->getObject("playerAxes")->Translate(modelStack, 0.0f, 1.0f, 5.0f);
+	manager->getObject("playerAxes")->Rotate(modelStack, -manager->getCamera()->getYaw() + 90, 0, 1, 0);
+	RenderMesh(manager->getObject("playerAxes"), false);
 	modelStack.PopMatrix();
 
 	modelStack.PushMatrix();
-	modelStack.Translate(0.0f, 5.0f, 5.0f);
-	manager->getObject("human")->Translate(modelStack, 0.0f, 5.0f, 5.0f);
-	modelStack.Rotate(-manager->getCamera()->getYaw() + 90, 0, 1, 0);
+	manager->getObject("human")->ResetOBB();
+	manager->getObject("human")->Translate(modelStack, 0.0f, 2.215f, 5.0f);
 	manager->getObject("human")->Rotate(modelStack, -manager->getCamera()->getYaw() + 90, 0, 1, 0);
 	RenderMesh(manager->getObject("human"), true);
 
-	
-
-	//std::vector<Mesh*>* bodyChildren = manager->getObject("human")->getChildren();
-	//for (int i = 0; i < (int)bodyChildren->size(); i++)
-	//{
-	//	modelStack.PushMatrix();
-	//	RenderMesh(bodyChildren->at(i), true);
-	//	modelStack.PopMatrix();
-	//}
+	std::vector<Mesh*>* bodyChildren = manager->getObject("human")->getChildren();
+	for (int i = 0; i < (int)bodyChildren->size(); i++)
+	{
+		modelStack.PushMatrix();
+		RenderMesh(bodyChildren->at(i), true);
+		modelStack.PopMatrix();
+	}
 	modelStack.PopMatrix();
 
-	modelStack.PushMatrix();
-	modelStack.Translate(10.0f, 3.0f, 10.0f);
-	manager->getObject("car")->Translate(modelStack, 10.0f, 3.0f, 10.0f);
-	RenderMesh(manager->getObject("car"), true);
+
+
 
 }
 
@@ -300,12 +288,17 @@ void SceneA2::Update(double dt)
 		{
 			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		}
-
 	
 	}
 
 	manager->getCamera()->Update(dt);
-	std::cout << "Collision: " << Collision::checkCollision(*manager->getObject("human")->getOBB(), *manager->getObject("ground")->getOBB()) << std::endl;
+	//std::cout << "Cube 1 Position: " << manager->getObject("cube1")->getOBB()->getPos() << std::endl;
+	//std::cout << "Cube 1 Position2: " << manager->getObject("cube1")->position << std::endl;
+
+	//std::cout << "Cube 2 Position: " << manager->getObject("cube2")->getOBB()->getPos() << std::endl;
+	//std::cout << "Cube 2 Position2: " << manager->getObject("cube2")->position << std::endl;
+
+	std::cout << "Collision: " << Collision::checkCollision(*manager->getObject("ground")->getOBB(), *manager->getObject("cube1")->getOBB()) << std::endl;
 
 
 	// Bounce Time & Elapsed Time
