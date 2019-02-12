@@ -2,11 +2,12 @@
 #include "Application.h"
 #include "GL/glew.h"
 #include "Manager.h"
+#include "Collision.h"
 
 Player::Player(const char* meshName, Primitive* primitive, unsigned int texID, DRAW_MODE drawMode)
 	: Mesh(meshName, primitive, texID, true, drawMode) {
 
-	position.Set(0, 100.0f, 0);
+	position.Set(0, 5.0f, 0);
 	rotation.Set(0, 0, 0);
 	walkSpeed = 4.5f;
 	isInVehicle = false;
@@ -14,7 +15,8 @@ Player::Player(const char* meshName, Primitive* primitive, unsigned int texID, D
 
 	camera = new FreeLookCamera(position - Vector3(0.0f, 0.1f, 0.0f) + Vector3(-0.2f, 0.0f, 0.0f));
 
-
+	obb->setHalf(Vector3(0.5945f, 1.5505f, 0.378f));
+	defaultObb->setHalf(Vector3(0.5945f, 1.5505f, 0.378f));
 }
 
 Player::Player()
@@ -27,16 +29,6 @@ Player::~Player()
 {
 }
 
-void Player::Translate(MS& modelStack, float x, float y, float z) {
-
-	std::cout << "Player Position: " << position << std::endl;
-	std::cout << "Player OBB Position: " << obb->getPos() << std::endl;
-	//Vector3 pos = position + Vector3(0, 1.528f, 0);
-	//std::cout << "Player Rendered Position: " << pos << std::endl;
-	//modelStack.Translate(0, 1.528f, 0);
-	Mesh::Translate(modelStack, x, y, z);
-
-}
 
 void Player::Render(MS& modelStack, MS& viewStack, MS& projectionStack, ShaderProgram* shader)
 {
@@ -46,7 +38,6 @@ void Player::Render(MS& modelStack, MS& viewStack, MS& projectionStack, ShaderPr
 	//Rotate(modelStack, rotation.y, 0, 1, 0);
 	//Rotate(modelStack, rotation.z, 0, 0, 1);
 
-	
 	
 	// Render
 	Mesh::Render(modelStack, viewStack, projectionStack, shader);
@@ -66,27 +57,32 @@ void Player::Update(double dt) {
 		forward.z = sin(rad);
 		forward.Normalize();
 
+		Vector3 translation = Vector3(0, 0, 0);
+
 		// Move Player in the forward direction based on first person camera's rotation
 		if (Application::IsKeyPressed('W')) {
-			position += forward * walkSpeed * (float)dt;
+			translation = forward * walkSpeed * (float)dt;
 		}
 		if (Application::IsKeyPressed('A')) {
-			position -= camera->getRight() * walkSpeed * (float)dt;
+			translation =  -camera->getRight() * walkSpeed * (float)dt;
 		}
 		if (Application::IsKeyPressed('S')) {
-			position -= forward * walkSpeed * (float)dt;
+			translation = -forward * walkSpeed * (float)dt;
 		}
 		if (Application::IsKeyPressed('D')) {
-			position += camera->getRight() * walkSpeed * (float)dt;
+			translation = camera->getRight() * walkSpeed * (float)dt;
 		}
+
+		if (Collision::checkCollision(this, translation, { "ground" }).size() == 0)
+			position += translation;
 
 	}
 	else if (car != nullptr) {
 		// Update Position of the Player in the car according to the car's rotation
-		//float rad = Math::DegreeToRadian(car->rotation.y + 90 + car->currentSteer);
-		//car->Update(dt);
-		//position = car->position + Vector3(cos(rad), 0.0f, sin(rad)) * -0.5f + Vector3(0.0f, 3.0f, 0.0f);
-		//rotation.y = car->rotation.y - car->currentSteer;
+		float rad = Math::DegreeToRadian(car->rotation.y + 90 + car->currentSteer);
+		car->Update(dt);
+		position = car->position + Vector3(cos(rad), 0.0f, sin(rad)) * -0.5f + Vector3(0.0f, 1.2f, 0.0f);
+		rotation.y = car->rotation.y;
 	}
 	
 
@@ -96,7 +92,13 @@ void Player::Update(double dt) {
 		//rotation.y = -firstPerson->getYaw() + 90;
 	}
 	else if (cameraMode == THIRD_PERSON) {
-		Vector3 target = position + Vector3(0.0f, 1.5f, 0.0f) + Vector3(cos(rad), 0.0f, sin(rad)) * -5.0f;
+		Vector3 target = position + Vector3(cos(rad), 0.0f, sin(rad)) * -5.0f;
+		if (isInVehicle) {
+			target += Vector3(0.0f, 3.0f, 0.0f);
+		}
+		else {
+			target += Vector3(0.0f, 1.5f, 0.0f);
+		}
 		//camera->position = Utility::sLerp(camera->position, target, 0.1f);
 		camera->position = Utility::Lerp(camera->position, target, 18.0f * dt);
 	}
@@ -104,7 +106,9 @@ void Player::Update(double dt) {
 	//topDown.position = position + Vector3(0.0f, 30.0f, 1.0f);
 	//topDown.setTarget(position);
 	camera->Update(dt);
-	Mesh::Update(dt);
+
+	if(!isInVehicle)
+		Mesh::Update(dt);
 }
 
 

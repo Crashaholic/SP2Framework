@@ -18,17 +18,16 @@ OBB::~OBB()
 {
 }
 
-void OBB::incrementSize(Vector3 incr) {
-	halfSize.x += incr.x;
-	halfSize.y += incr.y;
-	halfSize.z += incr.z;
-}
 
 void OBB::setPosAxis(Vector3 pos, Vector3 x, Vector3 y, Vector3 z) {
 	position = pos;
 	axisX = x;
 	axisY = y;
 	axisZ = z;
+}
+
+void OBB::setHalf(Vector3 half) {
+	this->halfSize = half;
 }
 
 void OBB::setPos(Vector3 pos) {

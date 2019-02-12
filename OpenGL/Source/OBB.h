@@ -12,8 +12,8 @@ public:
 	~OBB();
 	
 	void setPosAxis(Vector3 pos, Vector3 x, Vector3 y, Vector3 z);
-	void incrementSize(Vector3 incr);
 	void setPos(Vector3 pos);
+	void setHalf(Vector3 half);
 
 	Vector3& getPos();
 	Vector3& getX();

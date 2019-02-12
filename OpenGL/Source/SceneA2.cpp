@@ -75,6 +75,7 @@ void SceneA2::CreateMesh()
 	car = dynamic_cast<Car*>(manager->getObject("car"));
 	car->loadChildren({ "car_steeringwheel" , "car_leftfrontwheel", "car_rightfrontwheel", "car_leftrearwheel", "car_rightrearwheel" });
 
+	player->setCar(car);
 	//manager->spawnObject(new Mesh("car", Primitives::loadModel("Models//car.obj"), LoadTGA("Models//car.tga")));
 
 }
@@ -154,44 +155,50 @@ void SceneA2::RenderScene()
 
 	glDisable(GL_CULL_FACE); // Disable Cull Face for Car
 	modelStack.PushMatrix();
-	RenderMesh(car, true);
+	manager->getObject("car")->ResetOBB();
+	manager->getObject("car")->Translate(modelStack, car->position.x, car->position.y, car->position.z);
+	manager->getObject("car")->Rotate(modelStack, car->rotation.x, 1, 0, 0);
+	manager->getObject("car")->Rotate(modelStack, car->rotation.y, 0, 1, 0);
+	manager->getObject("car")->Rotate(modelStack, car->rotation.z, 0, 0, 1);
+	RenderMesh(manager->getObject("car"), true);
 	std::vector<Mesh*>* carBody = car->getChildren();
 	for (int i = 0; i < (int)carBody->size(); i++)
 	{
 		modelStack.PushMatrix();
-		if (i == 0)
-		{
-			Mesh* steeringWheel = carBody->at(0);
-			steeringWheel->Translate(modelStack, 0, 1.75f, 0.7f);
-			steeringWheel->Rotate(modelStack, car->steeringWheelAngle * 2.4f, 0, 0, 1);
+		//if (i == 0)
+		//{
+		//	Mesh* steeringWheel = carBody->at(0);
+		//	steeringWheel->Translate(modelStack, 0, 1.75f, 0.7f);
+		//	steeringWheel->Rotate(modelStack, car->steeringWheelAngle * 2.4f, 0, 0, 1);
 
-		}
-		else if (i == 1)
-		{
-			carBody->at(i)->Translate(modelStack, 1.55f, 0.72f, 2.2f);
-			carBody->at(i)->Rotate(modelStack, -car->steeringWheelAngle, 0, 1, 0);
-			carBody->at(i)->Rotate(modelStack, car->wheelAngle, 1, 0, 0);
+		//}
+		//else if (i == 1)
+		//{
+		//	carBody->at(i)->Translate(modelStack, 1.55f, 0.72f, 2.2f);
+		//	carBody->at(i)->Rotate(modelStack, -car->steeringWheelAngle, 0, 1, 0);
+		//	carBody->at(i)->Rotate(modelStack, car->wheelAngle, 1, 0, 0);
 
-		}
-		else if (i == 2)
-		{
-			carBody->at(i)->Translate(modelStack, -1.55f, 0.72f, 2.2f);
-			carBody->at(i)->Rotate(modelStack, -car->steeringWheelAngle, 0, 1, 0);
-			carBody->at(i)->Rotate(modelStack, car->wheelAngle, 1, 0, 0);
-		}
-		else if (i == 3)
-		{
-			carBody->at(i)->Translate(modelStack, 1.55f, 0.73f, -2.85f);
-			carBody->at(i)->Rotate(modelStack, car->wheelAngle, 1, 0, 0);
-		}
-		else if (i == 4)
-		{
-			carBody->at(i)->Translate(modelStack, -1.55f, 0.73f, -2.85f);
-			carBody->at(i)->Rotate(modelStack, car->wheelAngle, 1, 0, 0);
-		}
+		//}
+		//else if (i == 2)
+		//{
+		//	carBody->at(i)->Translate(modelStack, -1.55f, 0.72f, 2.2f);
+		//	carBody->at(i)->Rotate(modelStack, -car->steeringWheelAngle, 0, 1, 0);
+		//	carBody->at(i)->Rotate(modelStack, car->wheelAngle, 1, 0, 0);
+		//}
+		//else if (i == 3)
+		//{
+		//	carBody->at(i)->Translate(modelStack, 1.55f, 0.73f, -2.85f);
+		//	carBody->at(i)->Rotate(modelStack, car->wheelAngle, 1, 0, 0);
+		//}
+		//else if (i == 4)
+		//{
+		//	carBody->at(i)->Translate(modelStack, -1.55f, 0.73f, -2.85f);
+		//	carBody->at(i)->Rotate(modelStack, car->wheelAngle, 1, 0, 0);
+		//}
 		RenderMesh(carBody->at(i), true);
 		modelStack.PopMatrix();
 	}
+
 
 	modelStack.PopMatrix();
 	glEnable(GL_CULL_FACE);
@@ -202,6 +209,14 @@ void SceneA2::RenderScene()
 void SceneA2::RenderUI() {
 	gui->renderUI();
 	gui->renderText("game", 0, 15, "FPS: " + std::to_string(lastFramesPerSecond), 0.4f, Color(0, 1, 0));
+
+	if (!player->isInVehicle && (player->getCar()->position - player->position).Length() <= 6.0f)
+		gui->renderText("game", 400, 300, "Press F to enter car", 0.4f, Color(0, 1, 0), TEXT_ALIGN_MIDDLE);
+
+	gui->renderText("game", 400, 100, std::to_string(player->getCar()->position.x) + "," +
+		std::to_string(player->getCar()->position.y) + "," + std::to_string(player->getCar()->position.z), 0.35f, Color(1, 0, 0), TEXT_ALIGN_BOTTOMLEFT);
+	gui->renderText("game", 400, 300, std::to_string(player->getOBB()->getPos().x) + "," +
+		std::to_string(player->getOBB()->getPos().y) + "," + std::to_string(player->getOBB()->getPos().z), 0.35f, Color(1, 0, 0), TEXT_ALIGN_BOTTOMLEFT);
 }
 
 
@@ -351,6 +366,17 @@ void SceneA2::Update(double dt)
 		// Switch Camera Mode
 		else if (Application::IsKeyPressed(VK_F5)) {
 			player->switchCameraMode();
+			bounceTimeCounter = 0.3f;
+		}
+		else if (Application::IsKeyPressed('F')) {
+			if (!player->isInVehicle && (player->getCar()->position - player->position).Length() <= 6.0f) {
+				player->isInVehicle = true;
+				player->setCameraMode(THIRD_PERSON);
+			}
+			else if (player->isInVehicle) {
+				player->isInVehicle = false;
+				player->setCameraMode(FIRST_PERSON);
+			}
 			bounceTimeCounter = 0.3f;
 		}
 	

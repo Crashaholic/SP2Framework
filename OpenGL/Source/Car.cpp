@@ -7,8 +7,9 @@ Car::Car(const char* meshName, Primitive* primitive, unsigned int texID, DRAW_MO
 	: Mesh(meshName, primitive, texID, true, drawMode) {
 
 
-	position.Set(10.0f, 0.0f, 0.0f);
-	rotation.Set(0, 0, 0);
+
+	position.Set(0.0f, 100.0f, 5.0f);
+	rotation.Set(0, 90, 0);
 	velocity.Set(0, 0, 0);
 	forward.Set(0, 0, 1);
 
@@ -17,7 +18,7 @@ Car::Car(const char* meshName, Primitive* primitive, unsigned int texID, DRAW_MO
 	currentSteer = 0.0f;
 	wheelAngle = 0.0f;
 	friction = 0.0f;
-
+	
 	kAcceleration = 4.0f;
 	kSteer = 20.0f;
 	kSteerLerp = 30.0f;
@@ -26,6 +27,9 @@ Car::Car(const char* meshName, Primitive* primitive, unsigned int texID, DRAW_MO
 
 	maxSpeed = 80.0f;
 	showLight = false;
+
+	obb->setHalf(Vector3(2.192, 1.2445, 4.289));
+	defaultObb->setHalf(Vector3(2.192, 1.2445, 4.289));
 }
 
 
@@ -101,7 +105,7 @@ void Car::Update(double dt)
 
 	//velocity += acceleration * (float)dt;
 
-
+	Mesh::Update(dt);
 
 
 
@@ -111,13 +115,9 @@ void Car::Render(MS& modelStack, MS& viewStack, MS& projectionStack, ShaderProgr
 {
 
 
-
-	// Apply Transformations
-	Translate(modelStack, position.x, position.y, position.z);
-	Rotate(modelStack, rotation.x, 1, 0, 0);
-	Rotate(modelStack, rotation.y, 0, 1, 0);
-	Rotate(modelStack, -currentSteer, 0, 1, 0);
-	Rotate(modelStack, rotation.z, 0, 0, 1);
+	// Draw Velocity
+	int vSpeed = (int)(velocity.Length() * 161);
+	GUIManager::getInstance()->renderText("game", 10, 590, "V: " + std::to_string(vSpeed) + " mph", 0.35f, Color(1, 0, 0), TEXT_ALIGN_BOTTOMLEFT);
 
 
 	// Render
@@ -126,9 +126,7 @@ void Car::Render(MS& modelStack, MS& viewStack, MS& projectionStack, ShaderProgr
 
 
 
-	// Draw Velocity
-	int vSpeed = (int)(velocity.Length() * 161);
-	GUIManager::getInstance()->renderText("game", 10, 590, "V: " + std::to_string(vSpeed) + " mph", 0.35f, Color(1, 0, 0), TEXT_ALIGN_BOTTOMLEFT);
+	
 }
 
 

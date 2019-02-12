@@ -6,6 +6,7 @@
 #include "Utility.h"
 #include "Manager.h"
 #include "Collision.h"
+#include "GUIManager.h"
 
 
 /******************************************************************************/
@@ -81,17 +82,24 @@ Mesh::~Mesh()
 void Mesh::Update(double dt) {
 
 	if (collisionEnabled) {
-		if (name == "ground") return;
-		velocity += Vector3(0, -0.098f, 0);
-		std::cout << name << ": " << obb->getPos() << std::endl;
-		velocity += Vector3(0, -obb->getHalf().y, 0);
-		Mesh* m = Collision::checkCollision(this, velocity);
-		if (m != nullptr)
-			std::cout << "[" << name << "] Collision with: " << m->name << std::endl;
+		if (name == "ground" || name.substr(0,4) == "car_") return;
+		std::vector<Mesh*> collided = Collision::checkCollision(this);
+		if (collided.size() != 0)
+			GUIManager::getInstance()->renderText("game", 400, 400, "Collisions: " + std::to_string(collided.size()), 0.35f, Color(1, 0, 1), TEXT_ALIGN_BOTTOMLEFT);
 		else
-			std::cout << "[" << name << "] Collision with: None" << std::endl;
+			GUIManager::getInstance()->renderText("game", 400, 400, "Collision: None", 0.35f, Color(1, 0, 1), TEXT_ALIGN_BOTTOMLEFT);
 
-		if (m == nullptr) {
+		velocity.Set(0.0f, -1.0f, 0.0f);
+		
+		bool ground = false;
+		for (int i = 0; i < collided.size(); i++) {
+			if (collided[i]->name == "ground") {
+				ground = true;
+				break;
+			}
+		}
+
+		if (!ground) {
 			position += velocity;
 		}
 		else {
@@ -175,7 +183,6 @@ void Mesh::loadChildren(std::vector<std::string> names)
 		Primitive* primitive = Primitives::loadModel(modelPath.c_str());
 		Mesh* mesh = new Mesh(names[i].c_str(), primitive, textureID);
 		children.push_back(mesh);
-		obb->incrementSize(mesh->obb->getHalf());
 	}
 
 }
