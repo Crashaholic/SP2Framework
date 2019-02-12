@@ -1,58 +1,89 @@
 #include "Shop.h"
-//#include "Player.h"
-shop::shop() {
-	teirNo[0] = 1;
-	teirNo[1] = 1;
-	teirNo[2] = 1;
-	teirNo[3] = 1;
+Shop::Shop(){
 }
-shop::~shop() {
-
+Shop::~Shop() {
 }
-double shop::Buy(int number) {//resets DeltaT so that 'sold' shows for a few seconds
-	switch (number) {
-	case 1:	if (/*player.getMoney() >=*/ (teirNo[0] * 20)) {
-		++teirNo[0];
-		itemNo = 1;
-		//player.setMoney(player.getMoney() - (teirNo[0] * 20));
+void Shop::enterShop() {
+	Head = Tail = new shopNode;
+}
+void Shop::Buy(int Number) {
+	if (Number > 0 && Number <= 4) {
+		//if (Player.getMoney() >= (Car.Tier[Number - 1] * objMoney[Number - 1])) {
+		Tail->setObjNo(Number - 1);
+		Tail->setNext();
+		Tail = Tail->getNext();
+		Tail->setBack(Tail->getBack);
+		//Player.setMoney(Player.getMoney() - (Car.Tier[Number - 1] * "Money"));
+		//++tier
+	//}
+			//else {
+		Number = 0;
+		//}
 	}
-			else {
-		itemNo = 0;
+	if (!Number) {
+		//RenderTextOnScreen(meshList[GEO_TEXT], "Not Enough", color(0, 1, 0), 2, 2, 2);
 	}
-	case 2:if (/*player.getMoney() >=*/ (teirNo[1] * 15)) {
-		++teirNo[1];
-		itemNo = 2;
-		//player.setMoney(player.getMoney() - (teirNo[1] * 15));
+	else {
+		//RenderTextOnScreen(meshList[GEO_TEXT], "Item Bought", color(0, 1, 0), 2, 2, 2);
 	}
-		   else {
-		itemNo = 0;
-	}
-	case 3:if (/*player.getMoney() >=*/ (teirNo[2] * 10)) {
-		++teirNo[2];
-		itemNo = 3;
-		//player.setMoney(player.getMoney() - (teirNo[2] * 10));
-	}
-		   else {
-		itemNo = 0;
-	}
-	case 4:if (/*player.getMoney() >=*/ (teirNo[3] * 30)) {
-		++teirNo[3];
-		itemNo = 4;
-		//player.setMoney(player.getMoney() - (teirNo[3] * 30));
-	}
-		   else {
-		itemNo = 0;
-	}
-	}
-	return 0;
 };
-void shop::Sold(double DeltaT) {
-	if (DeltaT < 10) {
-		if (!itemNo) {
-			//RenderTextOnScreen(meshList[GEO_TEXT], "Not Enough", color(0, 1, 0), 2, 2, 2);
+void Shop::Undo(int Obj) {
+	shopNode* Current = Head;
+	while (Current->getNext != nullptr) {//No case needed for only 1 obj since a new shopNode needs to be declared first for 'Buy(Number)' to even run
+		if (Current->getObjNo==Obj) {
+			//Player.setMoney(Player.getMoney() + ((Car.Tier[Obj]-1) * objMoney[Obj]));
+			//--tier
+			if (Current == Head) {//Don't need make a case for tail since tail is always empty
+				Head = Head->getNext();
+			}
+			else {
+				Current->getBack()->setNext(Current->getNext());
+				Current->getNext()->setBack(Current->getBack());
+			}
+			delete Current;
+			return;
 		}
-		else {
-			//RenderTextOnScreen(meshList[GEO_TEXT], "Item Bought", color(0, 1, 0), 2, 2, 2);
-		}
+		Current = Current->getNext();
 	}
+	//RenderTextOnScreen(meshList[GEO_TEXT], "No item of that type bought this time", color(0, 1, 0), 2, 2, 2);
+}
+void Shop::exitShop() {
+	while (Head->getNext() != nullptr) {
+		Head=Head->getNext();
+		delete Head->getBack();
+	}
+	delete Head;
+}
+
+
+shopNode::shopNode() {
+	Next = nullptr;
+	Back = nullptr;
+	objNo=0;
+}
+shopNode::~shopNode() {
+}
+void shopNode::setNext(shopNode* Current) {
+	Next = Current;
+}
+void shopNode::setNext() {
+	Next = new shopNode;
+}
+void shopNode::setBack(shopNode* Current) {
+	Back = Current;
+}
+void shopNode::setBack() {
+	Back = new shopNode;
+}
+void shopNode::setObjNo(int Number) {
+	objNo = Number;
+}
+shopNode* shopNode::getNext() {
+	return Next;
+}
+shopNode* shopNode::getBack(){
+	return Back;
+}
+int shopNode::getObjNo() {
+	return objNo;
 }

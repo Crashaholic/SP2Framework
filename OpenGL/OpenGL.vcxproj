@@ -145,6 +145,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Source\Car.cpp" />
     <ClCompile Include="Source\Collision.cpp" />
     <ClCompile Include="Source\OBB.cpp" />
     <ClCompile Include="Source\GUIText.cpp" />
@@ -170,6 +171,7 @@
     <ClCompile Include="Source\Transformation.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Source\Car.h" />
     <ClInclude Include="Source\Collision.h" />
     <ClInclude Include="Source\OBB.h" />
     <ClInclude Include="Source\GUIText.h" />
