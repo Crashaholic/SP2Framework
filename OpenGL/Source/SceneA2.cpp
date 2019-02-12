@@ -285,6 +285,7 @@ void SceneA2::Update(double dt)
 
 void SceneA2::Exit()
 {
+	manager->savePlayerProgress();
 	delete manager;
 	delete gui;
 

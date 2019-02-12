@@ -32,6 +32,10 @@ private:
 
 	Manager();
 	static Manager* instance;
+	bool carOneUnlock;
+	bool carTwoUnlock;
+	bool carThreeUnlock;
+	int money;
 	std::map<std::string, Mesh*> objects;
 	std::map<std::string, ShaderProgram*> shaders;
 	std::vector<LightSource*> lightSources;

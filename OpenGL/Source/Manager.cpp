@@ -11,6 +11,12 @@ Manager::Manager()
 		lightSources.push_back(new LightSource());
 	camera = new FPSCamera();
 	camera->Init(Vector3(0, 5, 0));
+
+	carOneUnlock = true;
+	carTwoUnlock = false;
+	carThreeUnlock = false;
+	money = 0;
+
 }
 
 
@@ -72,6 +78,7 @@ void Manager::loadPlayerProgress()
 {
 	std::fstream playerProgress; //input
 	std::string line;
+	int carID = 0;
 
 	playerProgress.open("playerProgress.txt", std::fstream::in);
 	if (playerProgress.is_open())
@@ -79,13 +86,19 @@ void Manager::loadPlayerProgress()
 		while (getline(playerProgress, line))
 		{
 			std::vector<std::string> args = Utility::splitLine(line, '=');
+
+			if (startsWith(line, "Money"))
+			{
+				/*std::cout << "ID has been secured";*/
+				money = std::stoi(args[1]);
+				std::cout << "Money: " << money << std::endl;
+			}
+
 			if (startsWith(line, "ID"))
 			{
 				/*std::cout << "ID has been secured";*/
-				if (startsWith(args[1], "1"))
-				{
-					/*std::cout << "Car 1 has been unlocked";*/
-				}
+				carID = std::stoi(args[1]);
+				std::cout << "Car ID " << carID << std::endl;
 			}
 
 			if (startsWith(line, "Upgrade"))
@@ -110,7 +123,7 @@ void Manager::loadPlayerProgress()
 				}
 				if (startsWith(upgradeArgs[1], "Tire"))
 				{
-					std::vector<std::string> upgradeArgsStats = Utility::splitLine(upgradeArgs[0], ':');
+					std::vector<std::string> upgradeArgsStats = Utility::splitLine(upgradeArgs[1], ':');
 					if (startsWith(upgradeArgsStats[1], "1"))
 					{
 						std::cout << "Tire has been upgraded by 1\n";
@@ -126,7 +139,7 @@ void Manager::loadPlayerProgress()
 				}
 				if (startsWith(upgradeArgs[2], "Engine"))
 				{
-					std::vector<std::string> upgradeArgsStats = Utility::splitLine(upgradeArgs[0], ':');
+					std::vector<std::string> upgradeArgsStats = Utility::splitLine(upgradeArgs[2], ':');
 					if (startsWith(upgradeArgsStats[1], "1"))
 					{
 						std::cout << "Engine has been upgraded by 1\n";
@@ -145,16 +158,36 @@ void Manager::loadPlayerProgress()
 	}
 
 	playerProgress.close();
-
-	/*playerProgress << "carID =  1";
-	playerProgress << "Upgrade = Nitro :" << ", ";
-	playerProgress.close();*/
-
 }
 
 void Manager::savePlayerProgress()
 {
+	std::fstream playerProgress; //input
+	std::string line;
+	std::string moneyString;
 
+	moneyString = std::to_string(money);
+
+	playerProgress.open("playerProgress.txt", std::fstream::out | std::fstream::trunc);
+
+	if (playerProgress.is_open())
+	{
+		playerProgress << "Money=" << moneyString << "\n";
+			if (carOneUnlock == true)
+			{
+				playerProgress << "ID=1\n";
+				playerProgress << "Upgrade=" <<"\n";
+			}
+			if (carTwoUnlock == true)
+			{
+				playerProgress << "ID=2\n";
+			}
+			if (carThreeUnlock == true)
+			{
+				playerProgress << "ID=3\n";
+			}
+	}
+	playerProgress.close();
 }
 
 bool Manager::startsWith(std::string input, std::string keyWord)
