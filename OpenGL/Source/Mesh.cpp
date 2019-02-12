@@ -5,6 +5,7 @@
 #include "Primitives.h"
 #include "Utility.h"
 #include "Manager.h"
+#include "Collision.h"
 
 
 /******************************************************************************/
@@ -34,7 +35,8 @@ Mesh::Mesh(const char* meshName, Primitive* primitive, unsigned int texID, bool 
 
 	obb = new OBB(Vector3(primitive->getWidth() * 0.5f, primitive->getHeight() * 0.5f, primitive->getDepth() * 0.5f));
 	defaultObb = new OBB(Vector3(primitive->getWidth() * 0.5f, primitive->getHeight() * 0.5f, primitive->getDepth() * 0.5f));
-
+	velocity.SetZero();
+	this->collisionEnabled = collisionEnabled;
 }
 
 Mesh::Mesh() {
@@ -74,6 +76,25 @@ Mesh::~Mesh()
 	glDeleteBuffers(mode, &vertexBuffer);
 	glDeleteBuffers(mode, &indexBuffer);
 
+}
+
+void Mesh::Update(double dt) {
+
+	if (collisionEnabled) {
+		if (name == "ground") return;
+		velocity += Vector3(0, -0.1f, 0);
+		std::cout << name << ": " << obb->getPos() << std::endl;
+		Mesh* m = Collision::checkCollision(this, obb->getPos());
+		if (m != nullptr)
+			std::cout << "[" << name << "] Collision with: " << m->name << std::endl;
+		else
+			std::cout << "[" << name << "] Collision with: None" << std::endl;
+
+		if (m == nullptr) {
+			position += velocity;
+		}
+	}
+	//position += velocity;
 }
 
 /******************************************************************************/

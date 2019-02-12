@@ -9,8 +9,6 @@ Manager::Manager()
 	shaders["overlay"] = new ShaderProgram("Shader//UI.vert", "Shader//UI.frag");
 	for(int i = 0; i < 2; i++)
 		lightSources.push_back(new LightSource());
-	camera = new FPSCamera();
-	camera->Init(Vector3(0, 5, 1));
 }
 
 
@@ -27,7 +25,6 @@ Manager::~Manager()
 	for (int i = 0; i < (int)lightSources.size(); i++)
 		delete lightSources[i];
 
-	delete camera;
 }
 
 
@@ -68,6 +65,3 @@ void Manager::spawnObject(Mesh* mesh)
 	objects[mesh->name] = mesh;
 }
 
-FPSCamera* Manager::getCamera() {
-	return camera;
-}

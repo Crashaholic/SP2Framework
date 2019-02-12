@@ -62,3 +62,21 @@ std::vector<std::string> Utility::splitLine(const std::string& s, char delimiter
 	return tokens;
 }
 
+
+Vector3 Utility::sLerp(Vector3 start, Vector3 end, float percent)
+{
+	float dot = start.Dot(end);
+
+	if (dot <= -1.0f) dot = -1.0f;
+	if (dot >= 1.0f) dot = 1.0f;
+
+	float theta = acos(dot)*percent;
+	Vector3 relativeVec = end - start * dot;
+	relativeVec.Normalize();
+
+	return ((start*cos(Math::DegreeToRadian(theta))) + (relativeVec*sin(Math::DegreeToRadian(theta))));
+}
+
+Vector3 Utility::Lerp(Vector3 start, Vector3 end, float percent) {
+	return (start + percent * (end - start));
+}

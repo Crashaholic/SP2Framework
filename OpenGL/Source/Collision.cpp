@@ -1,5 +1,5 @@
 #include "Collision.h"
-
+#include "Manager.h"
 
 
 Collision::Collision()
@@ -40,4 +40,20 @@ bool Collision::checkCollision(OBB& box, OBB& other) {
 		getSeparatingPlane(pos, box.getZ().Cross(other.getX()), box, other) ||
 		getSeparatingPlane(pos, box.getZ().Cross(other.getY()), box, other) ||
 		getSeparatingPlane(pos, box.getZ().Cross(other.getZ()), box, other));
+}
+
+Mesh* Collision::checkCollision(Mesh* mesh, Vector3& translation) {
+	Manager* manager = Manager::getInstance();
+	Vector3 target = mesh->getOBB()->getPos() + translation;
+	
+	std::map<std::string, Mesh*>* objects = manager->getObjects();
+	for (auto const& object : *objects) {
+		// Skip self and collision-disabled objects
+		if (object.second == mesh || !object.second->collisionEnabled) continue;
+
+		bool doesCollide = checkCollision(*mesh->getOBB(), *object.second->getOBB());
+		if (doesCollide)
+			return object.second;
+	}
+	return nullptr;
 }

@@ -2,6 +2,12 @@
 #include "Application.h"
 
 
+Camera::Camera(const Vector3& pos) {
+	Reset();
+	Init(pos);
+}
+
+
 Camera::Camera()
 {
 	Reset();

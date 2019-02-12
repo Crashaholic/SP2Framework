@@ -4,7 +4,7 @@
 #include "LightSource.h"
 #include "ShaderProgram.h"
 #include "Mesh.h"
-#include "FPSCamera.h"
+#include "FreeLookCamera.h"
 #include <map>
 
 class Manager
@@ -21,14 +21,12 @@ public:
 	std::vector<LightSource*>* getLightSources();
 	std::map<std::string, Mesh*>* getObjects();
 	std::map<std::string, ShaderProgram*>* getShaders();
-	FPSCamera* getCamera();
 private:
 	Manager();
 	static Manager* instance;
 	std::map<std::string, Mesh*> objects;
 	std::map<std::string, ShaderProgram*> shaders;
 	std::vector<LightSource*> lightSources;
-	FPSCamera* camera;
 };
 
 #endif

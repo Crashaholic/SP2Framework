@@ -17,6 +17,8 @@ public:
 	static Vector3 rotatePointByX(Vector3 pos, float angle);
 	static Vector3 rotatePointByY(Vector3 pos, float angle);
 	static Vector3 rotatePointByZ(Vector3 pos, float angle);
+	static Vector3 sLerp(Vector3 start, Vector3 end, float percent);
+	static Vector3 Lerp(Vector3 start, Vector3 end, float percent);
 	static std::vector<std::string> splitLine(const std::string& s, char delimiter);
 };
 

@@ -3,7 +3,7 @@
 
 
 #include "Scene.h"
-#include "FPSCamera.h"
+#include "FreeLookCamera.h"
 #include "Light.h"
 #include "MatrixStack.h"
 #include "Mtx44.h"
@@ -14,6 +14,7 @@
 #include "LightSource.h"
 #include "Manager.h"
 #include "GUIManager.h"
+#include "Player.h"
 
 class SceneA2 : public Scene
 {
@@ -48,6 +49,7 @@ private:
 	float elapsedTimeCounter = 0.0f;
 
 	Manager *manager;
+	Player* player;
 	GUIManager *gui;
 	ShaderProgram* lit;
 };

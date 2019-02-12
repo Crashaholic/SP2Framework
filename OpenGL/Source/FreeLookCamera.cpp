@@ -1,17 +1,22 @@
-#include "FPSCamera.h"
+#include "FreeLookCamera.h"
 #include "Application.h"
 
 
-FPSCamera::FPSCamera()
+FreeLookCamera::FreeLookCamera(const Vector3& pos) {
+	Reset();
+	Init(pos);
+}
+
+FreeLookCamera::FreeLookCamera()
 {
 	Reset();
 }
 
-FPSCamera::~FPSCamera()
+FreeLookCamera::~FreeLookCamera()
 {
 }
 
-void FPSCamera::Init(const Vector3& pos)
+void FreeLookCamera::Init(const Vector3& pos)
 {
 	firstMouse = true;
 	lastX = 400.0f;
@@ -27,17 +32,17 @@ void FPSCamera::Init(const Vector3& pos)
 	flying = true;
 	inCar = false;
 
-	UpdateMouse();
+	updateMouse();
 }
 
-void FPSCamera::Reset()
+void FreeLookCamera::Reset()
 {
 	position.Set(1, 100, 0);
 	target.Set(0, 0, 0);
 	up.Set(0, 1, 0);
 }
 
-void FPSCamera::UpdateMouse()
+void FreeLookCamera::updateMouse()
 {
 	if (firstMouse)
 	{
@@ -76,15 +81,14 @@ void FPSCamera::UpdateMouse()
 
 }
 
-void FPSCamera::Update(double dt)
+void FreeLookCamera::Update(double dt)
 {
 
 
-	UpdateMouse();
-
+	updateMouse();
 }
 
-Mtx44 FPSCamera::LookAt()
+Mtx44 FreeLookCamera::LookAt()
 {
 	Vector3 f = front.Normalize();
 	Vector3 s = f.Cross(up).Normalize();
@@ -99,19 +103,19 @@ Mtx44 FPSCamera::LookAt()
 
 
 
-void FPSCamera::Invert()
+void FreeLookCamera::Invert()
 {
 	pitch = -pitch;
 }
 
-Vector3 FPSCamera::getFront() {
+Vector3 FreeLookCamera::getFront() {
 	return front;
 }
 
-Vector3 FPSCamera::getRight() {
+Vector3 FreeLookCamera::getRight() {
 	return front.Cross(up).Normalize();
 }
 
-float FPSCamera::getYaw() {
+float FreeLookCamera::getYaw() {
 	return yaw;
 }

@@ -33,9 +33,6 @@
     <ClCompile Include="Source\SceneA2.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\FPSCamera.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Texture.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -81,6 +78,15 @@
     <ClCompile Include="Source\Collision.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Player.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Car.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\FreeLookCamera.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Application.h">
@@ -108,9 +114,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Source\SceneA2.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\FPSCamera.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Source\Texture.h">
@@ -156,6 +159,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Source\Collision.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Player.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Car.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\FreeLookCamera.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

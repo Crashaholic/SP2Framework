@@ -62,14 +62,16 @@ void SceneA2::CreateMesh()
 	manager->spawnObject(new Mesh("playerAxes", axes, 0, false, Mesh::DRAW_LINES));
 
 	// Environment
-	manager->spawnObject(new Mesh("ground", Primitives::loadModel("Models//ground.obj"), LoadTGA("Image//rock.tga"), false));
-	manager->spawnObject(new Mesh("cube1", Primitives::loadModel("Models//cube1.obj"), LoadTGA("Models//human.tga")));
-	manager->spawnObject(new Mesh("cube2", Primitives::loadModel("Models//cube2.obj"), LoadTGA("Models//human.tga")));
-	manager->spawnObject(new Mesh("human", Primitives::loadModel("Models//human.obj"), LoadTGA("Models//human.tga")));
-	manager->spawnObject(new Mesh("car", Primitives::loadModel("Models//car.obj"), LoadTGA("Models//car.tga")));
+	manager->spawnObject(new Mesh("ground", Primitives::loadModel("Models//ground.obj"), LoadTGA("Image//rock.tga"), true));
+	manager->spawnObject(new Player("human", Primitives::loadModel("Models//human.obj"), LoadTGA("Models//human.tga")));
+	//manager->spawnObject(new Mesh("cube1", Primitives::loadModel("Models//cube1.obj"), LoadTGA("Image//rock.tga"), true));
+	//manager->spawnObject(new Mesh("cube2", Primitives::loadModel("Models//cube2.obj"), LoadTGA("Image//rock.tga"), true));
+	player = dynamic_cast<Player*>(manager->getObject("human"));
 	manager->getObject("human")->loadChildren({ "human_body",
 		"human_leftthigh", "human_leftcalve", "human_leftshoe", "human_lefthand",
 		"human_rightthigh", "human_rightcalve", "human_rightshoe", "human_righthand" });
+
+	//manager->spawnObject(new Mesh("car", Primitives::loadModel("Models//car.obj"), LoadTGA("Models//car.tga")));
 
 }
 
@@ -80,7 +82,7 @@ void SceneA2::Render()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	modelStack.LoadIdentity();
 
-	viewStack.LoadMatrix(manager->getCamera()->LookAt());
+	viewStack.LoadMatrix(player->getCamera()->LookAt());
 
 	std::vector<LightSource*>* lightSources = manager->getLightSources();
 	for (int i = 0; i < (int)lightSources->size(); i++){
@@ -114,16 +116,23 @@ void SceneA2::RenderScene()
 	modelStack.PopMatrix();
 
 	modelStack.PushMatrix();
-	manager->getObject("playerAxes")->Translate(modelStack, 0.0f, 1.0f, 5.0f);
-	manager->getObject("playerAxes")->Rotate(modelStack, -manager->getCamera()->getYaw() + 90, 0, 1, 0);
+	manager->getObject("playerAxes")->Translate(modelStack, player->position.x, player->position.y, player->position.z);
+	modelStack.Translate(0.0f, -1.1f, 0.0f);
+	manager->getObject("playerAxes")->Rotate(modelStack, -player->getCamera()->getYaw() + 90, 0, 1, 0);
 	RenderMesh(manager->getObject("playerAxes"), false);
 	modelStack.PopMatrix();
 
 	modelStack.PushMatrix();
 	manager->getObject("human")->ResetOBB();
-	manager->getObject("human")->Translate(modelStack, 0.0f, 2.215f, 5.0f);
-	manager->getObject("human")->Rotate(modelStack, -manager->getCamera()->getYaw() + 90, 0, 1, 0);
+	manager->getObject("human")->Translate(modelStack, player->position.x, player->position.y, player->position.z);
+	modelStack.Translate(0.0f, -1.1f, 0.0f);
+	manager->getObject("human")->Rotate(modelStack, player->rotation.x, 1, 0, 0);
+	manager->getObject("human")->Rotate(modelStack, player->rotation.y, 0, 1, 0);
+	manager->getObject("human")->Rotate(modelStack, player->rotation.z, 0, 0, 1);
 	RenderMesh(manager->getObject("human"), true);
+
+	std::cout << "Player Position: " << player->position << std::endl;
+	std::cout << "Camera's Position: " << player->getCamera()->position << std::endl;
 
 	std::vector<Mesh*>* bodyChildren = manager->getObject("human")->getChildren();
 	for (int i = 0; i < (int)bodyChildren->size(); i++)
@@ -133,6 +142,14 @@ void SceneA2::RenderScene()
 		modelStack.PopMatrix();
 	}
 	modelStack.PopMatrix();
+
+	//modelStack.PushMatrix();
+	//RenderMesh(manager->getObject("cube1"), true);
+	//modelStack.PopMatrix();
+
+	//modelStack.PushMatrix();
+	//RenderMesh(manager->getObject("cube2"), true);
+	//modelStack.PopMatrix();
 
 
 
@@ -288,17 +305,18 @@ void SceneA2::Update(double dt)
 		{
 			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		}
+		// Switch Camera Mode
+		else if (Application::IsKeyPressed(VK_F5)) {
+			player->switchCameraMode();
+			bounceTimeCounter = 0.3f;
+		}
 	
 	}
 
-	manager->getCamera()->Update(dt);
-	//std::cout << "Cube 1 Position: " << manager->getObject("cube1")->getOBB()->getPos() << std::endl;
-	//std::cout << "Cube 1 Position2: " << manager->getObject("cube1")->position << std::endl;
-
-	//std::cout << "Cube 2 Position: " << manager->getObject("cube2")->getOBB()->getPos() << std::endl;
-	//std::cout << "Cube 2 Position2: " << manager->getObject("cube2")->position << std::endl;
-
-	std::cout << "Collision: " << Collision::checkCollision(*manager->getObject("ground")->getOBB(), *manager->getObject("cube1")->getOBB()) << std::endl;
+	std::map<std::string, Mesh*>* objects = manager->getObjects();
+	for (auto const& object : *objects) {
+		object.second->Update(dt);
+	}
 
 
 	// Bounce Time & Elapsed Time
