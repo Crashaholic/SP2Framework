@@ -55,7 +55,7 @@ public:
 
 	virtual void Render(MS& modelStack, MS& viewStack, MS& projectionStack, ShaderProgram* shader);
 
-	void Translate(MS& modelStack, float x, float y, float z);
+	virtual void Translate(MS& modelStack, float x, float y, float z);
 	void Scale(MS& modelStack, float x, float y, float z);
 	virtual void Rotate(MS& modelStack, float angle, float x, float y, float z);
 	void ResetOBB();

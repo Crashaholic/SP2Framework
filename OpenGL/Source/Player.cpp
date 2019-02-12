@@ -27,6 +27,16 @@ Player::~Player()
 {
 }
 
+void Player::Translate(MS& modelStack, float x, float y, float z) {
+
+	std::cout << "Player Position: " << position << std::endl;
+	std::cout << "Player OBB Position: " << obb->getPos() << std::endl;
+	//Vector3 pos = position + Vector3(0, 1.528f, 0);
+	//std::cout << "Player Rendered Position: " << pos << std::endl;
+	//modelStack.Translate(0, 1.528f, 0);
+	Mesh::Translate(modelStack, x, y, z);
+
+}
 
 void Player::Render(MS& modelStack, MS& viewStack, MS& projectionStack, ShaderProgram* shader)
 {
@@ -82,11 +92,11 @@ void Player::Update(double dt) {
 
 	// Set Camera's Position
 	if (cameraMode == FIRST_PERSON) {
-		camera->position = position + Vector3(cos(rad), 0.0f, sin(rad)) * 0.3f;
+		camera->position = position + Vector3(0.0f, 1.5f, 0.0f) + Vector3(cos(rad), 0.0f, sin(rad)) * 0.3f;
 		//rotation.y = -firstPerson->getYaw() + 90;
 	}
 	else if (cameraMode == THIRD_PERSON) {
-		Vector3 target = position + Vector3(0.0f, 1.0f, 0.0f) + Vector3(cos(rad), 0.0f, sin(rad)) * -5.0f;
+		Vector3 target = position + Vector3(0.0f, 1.5f, 0.0f) + Vector3(cos(rad), 0.0f, sin(rad)) * -5.0f;
 		//camera->position = Utility::sLerp(camera->position, target, 0.1f);
 		camera->position = Utility::Lerp(camera->position, target, 18.0f * dt);
 	}

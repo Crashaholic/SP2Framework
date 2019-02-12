@@ -50,6 +50,7 @@ private:
 
 	Manager *manager;
 	Player* player;
+	Car* car;
 	GUIManager *gui;
 	ShaderProgram* lit;
 };

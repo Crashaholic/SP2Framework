@@ -71,6 +71,10 @@ void SceneA2::CreateMesh()
 		"human_leftthigh", "human_leftcalve", "human_leftshoe", "human_lefthand",
 		"human_rightthigh", "human_rightcalve", "human_rightshoe", "human_righthand" });
 
+	manager->spawnObject(new Car("car", Primitives::loadModel("Models//car.obj"), LoadTGA("Models//car.tga")));
+	car = dynamic_cast<Car*>(manager->getObject("car"));
+	car->loadChildren({ "car_steeringwheel" , "car_leftfrontwheel", "car_rightfrontwheel", "car_leftrearwheel", "car_rightrearwheel" });
+
 	//manager->spawnObject(new Mesh("car", Primitives::loadModel("Models//car.obj"), LoadTGA("Models//car.tga")));
 
 }
@@ -117,7 +121,6 @@ void SceneA2::RenderScene()
 
 	modelStack.PushMatrix();
 	manager->getObject("playerAxes")->Translate(modelStack, player->position.x, player->position.y, player->position.z);
-	modelStack.Translate(0.0f, -1.1f, 0.0f);
 	manager->getObject("playerAxes")->Rotate(modelStack, -player->getCamera()->getYaw() + 90, 0, 1, 0);
 	RenderMesh(manager->getObject("playerAxes"), false);
 	modelStack.PopMatrix();
@@ -125,14 +128,12 @@ void SceneA2::RenderScene()
 	modelStack.PushMatrix();
 	manager->getObject("human")->ResetOBB();
 	manager->getObject("human")->Translate(modelStack, player->position.x, player->position.y, player->position.z);
-	modelStack.Translate(0.0f, -1.1f, 0.0f);
 	manager->getObject("human")->Rotate(modelStack, player->rotation.x, 1, 0, 0);
 	manager->getObject("human")->Rotate(modelStack, player->rotation.y, 0, 1, 0);
 	manager->getObject("human")->Rotate(modelStack, player->rotation.z, 0, 0, 1);
 	RenderMesh(manager->getObject("human"), true);
 
-	std::cout << "Player Position: " << player->position << std::endl;
-	std::cout << "Camera's Position: " << player->getCamera()->position << std::endl;
+
 
 	std::vector<Mesh*>* bodyChildren = manager->getObject("human")->getChildren();
 	for (int i = 0; i < (int)bodyChildren->size(); i++)
@@ -151,7 +152,49 @@ void SceneA2::RenderScene()
 	//RenderMesh(manager->getObject("cube2"), true);
 	//modelStack.PopMatrix();
 
+	glDisable(GL_CULL_FACE); // Disable Cull Face for Car
+	modelStack.PushMatrix();
+	RenderMesh(car, true);
+	std::vector<Mesh*>* carBody = car->getChildren();
+	for (int i = 0; i < (int)carBody->size(); i++)
+	{
+		modelStack.PushMatrix();
+		if (i == 0)
+		{
+			Mesh* steeringWheel = carBody->at(0);
+			steeringWheel->Translate(modelStack, 0, 1.75f, 0.7f);
+			steeringWheel->Rotate(modelStack, car->steeringWheelAngle * 2.4f, 0, 0, 1);
 
+		}
+		else if (i == 1)
+		{
+			carBody->at(i)->Translate(modelStack, 1.55f, 0.72f, 2.2f);
+			carBody->at(i)->Rotate(modelStack, -car->steeringWheelAngle, 0, 1, 0);
+			carBody->at(i)->Rotate(modelStack, car->wheelAngle, 1, 0, 0);
+
+		}
+		else if (i == 2)
+		{
+			carBody->at(i)->Translate(modelStack, -1.55f, 0.72f, 2.2f);
+			carBody->at(i)->Rotate(modelStack, -car->steeringWheelAngle, 0, 1, 0);
+			carBody->at(i)->Rotate(modelStack, car->wheelAngle, 1, 0, 0);
+		}
+		else if (i == 3)
+		{
+			carBody->at(i)->Translate(modelStack, 1.55f, 0.73f, -2.85f);
+			carBody->at(i)->Rotate(modelStack, car->wheelAngle, 1, 0, 0);
+		}
+		else if (i == 4)
+		{
+			carBody->at(i)->Translate(modelStack, -1.55f, 0.73f, -2.85f);
+			carBody->at(i)->Rotate(modelStack, car->wheelAngle, 1, 0, 0);
+		}
+		RenderMesh(carBody->at(i), true);
+		modelStack.PopMatrix();
+	}
+
+	modelStack.PopMatrix();
+	glEnable(GL_CULL_FACE);
 
 
 }

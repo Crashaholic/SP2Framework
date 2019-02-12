@@ -82,9 +82,10 @@ void Mesh::Update(double dt) {
 
 	if (collisionEnabled) {
 		if (name == "ground") return;
-		velocity += Vector3(0, -0.1f, 0);
+		velocity += Vector3(0, -0.098f, 0);
 		std::cout << name << ": " << obb->getPos() << std::endl;
-		Mesh* m = Collision::checkCollision(this, obb->getPos());
+		velocity += Vector3(0, -obb->getHalf().y, 0);
+		Mesh* m = Collision::checkCollision(this, velocity);
 		if (m != nullptr)
 			std::cout << "[" << name << "] Collision with: " << m->name << std::endl;
 		else
@@ -92,6 +93,9 @@ void Mesh::Update(double dt) {
 
 		if (m == nullptr) {
 			position += velocity;
+		}
+		else {
+			velocity.y = 0;
 		}
 	}
 	//position += velocity;
