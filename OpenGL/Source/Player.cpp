@@ -61,16 +61,16 @@ void Player::Update(double dt) {
 
 		// Move Player in the forward direction based on first person camera's rotation
 		if (Application::IsKeyPressed('W')) {
-			translation = forward * walkSpeed * (float)dt;
+			translation += forward * walkSpeed * (float)dt;
 		}
 		if (Application::IsKeyPressed('A')) {
-			translation =  -camera->getRight() * walkSpeed * (float)dt;
+			translation -=  camera->getRight() * walkSpeed * (float)dt;
 		}
 		if (Application::IsKeyPressed('S')) {
-			translation = -forward * walkSpeed * (float)dt;
+			translation -= forward * walkSpeed * (float)dt;
 		}
 		if (Application::IsKeyPressed('D')) {
-			translation = camera->getRight() * walkSpeed * (float)dt;
+			translation += camera->getRight() * walkSpeed * (float)dt;
 		}
 
 		if (Collision::checkCollision(this, translation, { "ground" }).size() == 0)

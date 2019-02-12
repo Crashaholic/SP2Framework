@@ -1,5 +1,5 @@
 #include "OBB.h"
-
+#include "Utility.h"
 
 
 OBB::OBB(Vector3 half){ 
@@ -18,6 +18,34 @@ OBB::~OBB()
 {
 }
 
+OBB OBB::Rotate(Vector3 rotation)
+{
+	OBB rotated = *this;
+	
+	// Rotate X
+	rotated.axisX = Utility::rotatePointByX(rotated.axisX, rotation.x);
+	rotated.axisY = Utility::rotatePointByX(rotated.axisY, rotation.x);
+	rotated.axisZ = Utility::rotatePointByX(rotated.axisZ, rotation.x);
+
+	// Rotate Y
+	rotated.axisX = Utility::rotatePointByY(rotated.axisX, rotation.y);
+	rotated.axisY = Utility::rotatePointByY(rotated.axisY, rotation.y);
+	rotated.axisZ = Utility::rotatePointByY(rotated.axisZ, rotation.y);
+
+	// Rotate Z
+	rotated.axisX = Utility::rotatePointByZ(rotated.axisX, rotation.z);
+	rotated.axisY = Utility::rotatePointByZ(rotated.axisY, rotation.z);
+	rotated.axisZ = Utility::rotatePointByZ(rotated.axisZ, rotation.z);
+
+	return rotated;
+}
+
+OBB OBB::Translate(Vector3 translation)
+{
+	OBB translated = *this;
+	translated.position += translation;
+	return translated;
+}
 
 void OBB::setPosAxis(Vector3 pos, Vector3 x, Vector3 y, Vector3 z) {
 	position = pos;

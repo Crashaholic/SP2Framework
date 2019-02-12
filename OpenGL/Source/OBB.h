@@ -15,6 +15,9 @@ public:
 	void setPos(Vector3 pos);
 	void setHalf(Vector3 half);
 
+	OBB Rotate(Vector3 rotation);
+	OBB Translate(Vector3 translation);
+
 	Vector3& getPos();
 	Vector3& getX();
 	Vector3& getY();

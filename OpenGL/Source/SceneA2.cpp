@@ -213,10 +213,6 @@ void SceneA2::RenderUI() {
 	if (!player->isInVehicle && (player->getCar()->position - player->position).Length() <= 6.0f)
 		gui->renderText("game", 400, 300, "Press F to enter car", 0.4f, Color(0, 1, 0), TEXT_ALIGN_MIDDLE);
 
-	gui->renderText("game", 400, 100, std::to_string(player->getCar()->position.x) + "," +
-		std::to_string(player->getCar()->position.y) + "," + std::to_string(player->getCar()->position.z), 0.35f, Color(1, 0, 0), TEXT_ALIGN_BOTTOMLEFT);
-	gui->renderText("game", 400, 300, std::to_string(player->getOBB()->getPos().x) + "," +
-		std::to_string(player->getOBB()->getPos().y) + "," + std::to_string(player->getOBB()->getPos().z), 0.35f, Color(1, 0, 0), TEXT_ALIGN_BOTTOMLEFT);
 }
 
 
