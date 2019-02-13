@@ -145,6 +145,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Source\GUITexture.cpp" />
+    <ClCompile Include="Source\IRender.cpp" />
     <ClCompile Include="Source\Collision.cpp" />
     <ClCompile Include="Source\OBB.cpp" />
     <ClCompile Include="Source\GUIText.cpp" />
@@ -169,6 +171,8 @@
     <ClCompile Include="Source\Transformation.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Source\GUITexture.h" />
+    <ClInclude Include="Source\IRender.h" />
     <ClInclude Include="Source\Collision.h" />
     <ClInclude Include="Source\OBB.h" />
     <ClInclude Include="Source\GUIText.h" />

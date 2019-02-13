@@ -15,6 +15,8 @@
 #include "Manager.h"
 #include "GUIManager.h"
 
+#include "GUITexture.h"
+
 class SceneA2 : public Scene
 {
 
@@ -28,8 +30,6 @@ public:
 	virtual void Exit();
 private:
 
-
-
 	void RenderMesh(Mesh* mesh, bool enableLight, unsigned int shader=0);
 	void RenderScene();
 	void RenderUI();
@@ -40,6 +40,7 @@ private:
 	MS modelStack, viewStack, projectionStack;
 
 	unsigned m_vertexArrayID;
+	unsigned testTexture;
 
 	float bounceTimeCounter = 0.0f;
 	float lastTimed = 0.0f;
@@ -47,6 +48,7 @@ private:
 	int lastFramesPerSecond = 0;
 	float elapsedTimeCounter = 0.0f;
 
+	GUITexture name;
 	Manager *manager;
 	GUIManager *gui;
 	ShaderProgram* lit;

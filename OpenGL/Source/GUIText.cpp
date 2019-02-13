@@ -52,6 +52,7 @@ void GUIText::render() {
 	// Update uniforms and bind texture
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, fontTexture);
+	shader->setUniform("fontSize", fontSize);
 	shader->setUniform("textColor", color.r, color.g, color.b);
 	shader->updateUniforms();
 

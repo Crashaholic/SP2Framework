@@ -10,9 +10,9 @@ GUIManager* GUIManager::instance = nullptr;
 
 GUIManager::GUIManager()
 {
-	fonts["game"] = new GUIFont("Fonts//game2.fnt", "Fonts//game2.tga");
-
-
+	fonts["bahnschrift"] = new GUIFont("Fonts//bahnschrift.fnt", "Fonts//bahnschrift.tga");
+	fonts["consolas"   ] = new GUIFont("Fonts//consolas.fnt"   , "Fonts//consolas.tga"   );
+	fonts["default"    ] = new GUIFont("Fonts//default.fnt"    , "Fonts//default.tga"    );
 	//InitFBO();
 
 	//textures.push_back(new Texture(Vector3(0.7f, 0.7f), 0, Vector3(0.25f, 0.25f), topdownTexture, -1));
@@ -22,8 +22,6 @@ GUIManager::GUIManager()
 
 GUIManager::~GUIManager()
 {
-
-
 	for (auto const& font : fonts)
 		if (font.second != nullptr)
 			delete font.second;
@@ -63,16 +61,12 @@ Texture* GUIManager::getTexture(int pos) {
 	return textures.at(pos);
 }
 
-
-
-
 GUIManager* GUIManager::getInstance()
 {
 	if (instance == nullptr)
 		instance = new GUIManager();
 	return instance;
 }
-
 
 void GUIManager::renderUI() {
 	
@@ -116,7 +110,7 @@ void GUIManager::renderUI() {
 	for (int i = 0; i < (int)guiText.size(); i++) {
 		guiText[i]->render();
 		delete guiText[i];
-	}		
+	}
 	guiText.clear();
 
 }

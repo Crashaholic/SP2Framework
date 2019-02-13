@@ -1,4 +1,3 @@
-
 #ifndef APPLICATION_H
 #define APPLICATION_H
 
@@ -15,6 +14,8 @@ public:
 	static bool IsKeyPressed(unsigned short key);
 	static double mouse_x;
 	static double mouse_y;
+	static int winWidth;
+	static int winHeight;
 private:
 	//Declare a window object
 	StopWatch m_timer;

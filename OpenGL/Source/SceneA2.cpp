@@ -34,8 +34,11 @@ void SceneA2::Init()
 	CreateMesh();
 
 	Mtx44 projection;
-	projection.SetToPerspective(45.0f, 4.0f / 3.0f, 0.1f, 10000.0f);
+	projection.SetToPerspective(45.0f, Application::winWidth / Application::winHeight, 0.1f, 10000.0f);
 	projectionStack.LoadMatrix(projection);
+
+	testTexture = LoadTGA("Image//rock.tga");
+	name.setTexture(testTexture);
 
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
@@ -85,8 +88,6 @@ void SceneA2::Render()
 	gui = GUIManager::getInstance();
 	RenderScene();
 	RenderUI();
-
-
 }
 
 
@@ -109,15 +110,17 @@ void SceneA2::RenderScene()
 
 void SceneA2::RenderUI() {
 	gui->renderUI();
-	gui->renderText("game", 0, 15, "FPS: " + std::to_string(lastFramesPerSecond), 0.4f, Color(0, 1, 0));
+	//gui->renderText("default", 0, 15, "FPS: " + std::to_string(lastFramesPerSecond), 0.4f, Color(0, 1, 0));
+	//gui->renderText("bahnschrift", 0, 40, "Hello World", 0.4f, Color(0, 1, 0));
+	gui->renderText("consolas", 0, 400, "Hello World", 10.0f, Color(0, 1, 0));
+
+	name.draw(0, 0, 0, 0, 0, 0);
 }
 
 
 
 void SceneA2::RenderMesh(Mesh* mesh, bool enableLight, unsigned int shader)
 {
-
-
 	Mtx44 MVP, modelView, modelView_inverse_tranpose;
 	MVP = projectionStack.Top() * viewStack.Top() * modelStack.Top();
 	modelView = viewStack.Top() * modelStack.Top();

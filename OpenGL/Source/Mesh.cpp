@@ -19,11 +19,9 @@ Mesh::Mesh(const char* meshName, Primitive* primitive, unsigned int texID, bool 
 	: name(meshName)
 	, mode(drawMode) , textureID(texID)
 {
-
 	// Generate Buffers
 	glGenBuffers(1, &vertexBuffer); 
 	glGenBuffers(1, &indexBuffer); 
-
 
 	// Bind & Buffer
 	glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
@@ -31,9 +29,6 @@ Mesh::Mesh(const char* meshName, Primitive* primitive, unsigned int texID, bool 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, primitive->getIndices()->size() * sizeof(unsigned int), &primitive->getIndices()->at(0), GL_STATIC_DRAW);
 	indexSize = primitive->getIndices()->size();
-
-
-
 }
 
 Mesh::Mesh() {
