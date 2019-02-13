@@ -119,3 +119,26 @@ std::vector<Mesh*> Collision::checkCollisionT(Mesh* mesh, Vector3& translation, 
 	return collided;
 }
 
+
+std::vector<Mesh*> Collision::checkCollisionR(Mesh* mesh, Vector3& rotation, std::vector<std::string> exceptions)
+{
+	Manager* manager = Manager::getInstance();
+	std::map<std::string, Mesh*>* objects = manager->getObjects();
+
+	std::vector<Mesh*> collided;
+
+	OBB rotated = mesh->getOBB()->Rotate(rotation);
+
+
+	for (auto const& object : *objects)
+	{
+		// Skip self and collision-disabled objects
+		if (object.second == mesh || !object.second->collisionEnabled ||
+			std::find(exceptions.begin(), exceptions.end(), object.second->name) != exceptions.end()) continue;
+
+		bool doesCollide = checkCollision(rotated, *object.second->getOBB());
+		if (doesCollide)
+			collided.push_back(object.second);
+	}
+	return collided;
+}

@@ -9,36 +9,41 @@ class Car : public Mesh
 {
 public:
 	Car(const char* meshName, Primitive* primitive, unsigned int texID = 0, DRAW_MODE drawMode = DRAW_TRIANGLES);
-	Car();
 	~Car();
 
 	void Update(double dt);
 	void Render(MS& modelStack, MS& viewStack, MS& projectionStack, ShaderProgram* shader);
 
-	float steeringWheelAngle;
-	float wheelAngle;
-	float steerAngle;
+	void setOccupied(bool isOccupied);
 	float currentSteer;
-	Vector3 velocity;
-	Vector3 target;
-	bool showLight;
+	float angularVelocity;
+
 private:
+	Car();
+	Vector3 calcResultant(float accInput, float steerInput, float dt);
+	void switchGears(float rpm);
+	float getTurnRatio(float gear);
+	float getFinalTurnRatio(float gear);
 
-	float sign(float n);
-	Vector3 lerp(Vector3 start, Vector3 end, float percent);
-	float clamp(float min, float max, float n);
-	float lerp(float start, float end, float percent);
-
+	float engineAcceleration;
+	float reverseAcceleration;
+	float maxReverseVelocity;
+	float brakingAcceleration;
 	Vector3 forward;
 
-	Vector3 friction;
-	float kFriction;
-	Vector3 acceleration;
-	float kAcceleration;
-	float kSteer;
-	float kSteerLerp;
-	float maxSpeed;
-	LightSource* spotlight;
+
+	bool isOccupied;
+
+	float steerAmount;
+
+	float kBraking;
+	float kMass;
+	float kDrag;
+	float kFriction;	
+
+	float steerAngle;
+
+	int currentGear;
 
 };
 

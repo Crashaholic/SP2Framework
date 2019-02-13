@@ -31,10 +31,10 @@ Vector3 Utility::rotatePointByX(Vector3 pos, float angle) {
 }
 
 Vector3 Utility::rotatePointByY(Vector3 pos, float angle) {
-	float radY = Math::DegreeToRadian(angle);
-	Mtx44 yRot = Mtx44(cos(radY), 0, -sin(radY), 0,
+	float radY = Math::DegreeToRadian(-angle);
+	Mtx44 yRot = Mtx44(cos(radY), 0, sin(radY), 0,
 		0, 1, 0, 0,
-		sin(radY), 0, cos(radY), 0,
+		-sin(radY), 0, cos(radY), 0,
 		0, 0, 0, 1);
 
 	return yRot * pos;
@@ -79,4 +79,34 @@ Vector3 Utility::sLerp(Vector3 start, Vector3 end, float percent)
 
 Vector3 Utility::Lerp(Vector3 start, Vector3 end, float percent) {
 	return (start + percent * (end - start));
+}
+
+float Utility::Lerp(float start, float end, float percent) {
+	return (start + percent * (end - start));
+}
+
+
+float Utility::Sign(float value)
+{
+	if (value > 0)
+		return 1;
+	else if (value < 0)
+		return -1;
+	else
+		return 0;
+}
+
+float Utility::Sign(Vector3 value) {
+	float magnitude = value.x * value.x * Sign(value.x) + value.y * value.y * Sign(value.y) + value.z * value.z + Sign(value.z);
+	return Sign(magnitude);
+}
+
+float Utility::Clamp(float min, float max, float value)
+{
+	if (value < min)
+		return min;
+	else if (value > max)
+		return max;
+	else
+		return value;
 }

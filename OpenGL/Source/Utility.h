@@ -19,7 +19,11 @@ public:
 	static Vector3 rotatePointByZ(Vector3 pos, float angle);
 	static Vector3 sLerp(Vector3 start, Vector3 end, float percent);
 	static Vector3 Lerp(Vector3 start, Vector3 end, float percent);
+	static float Lerp(float start, float end, float percent);
 	static std::vector<std::string> splitLine(const std::string& s, char delimiter);
+	static float Clamp(float min, float max, float value);
+	static float Sign(Vector3 value);
+	static float Sign(float value);
 };
 
 #endif

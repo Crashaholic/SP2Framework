@@ -159,6 +159,7 @@ void SceneA2::RenderScene()
 	manager->getObject("car")->Translate(modelStack, car->position.x, car->position.y, car->position.z);
 	manager->getObject("car")->Rotate(modelStack, car->rotation.x, 1, 0, 0);
 	manager->getObject("car")->Rotate(modelStack, car->rotation.y, 0, 1, 0);
+	manager->getObject("car")->Rotate(modelStack, -car->currentSteer, 0, 1, 0);
 	manager->getObject("car")->Rotate(modelStack, car->rotation.z, 0, 0, 1);
 	RenderMesh(manager->getObject("car"), true);
 	std::vector<Mesh*>* carBody = car->getChildren();
@@ -367,10 +368,12 @@ void SceneA2::Update(double dt)
 		else if (Application::IsKeyPressed('F')) {
 			if (!player->isInVehicle && (player->getCar()->position - player->position).Length() <= 6.0f) {
 				player->isInVehicle = true;
+				player->getCar()->setOccupied(true);
 				player->setCameraMode(THIRD_PERSON);
 			}
 			else if (player->isInVehicle) {
 				player->isInVehicle = false;
+				player->getCar()->setOccupied(false);
 				player->setCameraMode(FIRST_PERSON);
 			}
 			bounceTimeCounter = 0.3f;

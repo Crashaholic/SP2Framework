@@ -83,14 +83,14 @@ void Mesh::Update(double dt) {
 
 	if (collisionEnabled) {
 		if (name == "ground" || name.substr(0,4) == "car_") return;
-		std::vector<Mesh*> collided = Collision::checkCollision(this);
+		Vector3 grav = Vector3(0, -1.0f, 0);
+		std::vector<Mesh*> collided = Collision::checkCollisionT(this, grav, {});
 		if (collided.size() != 0)
 			GUIManager::getInstance()->renderText("game", 400, 400, "Collisions: " + std::to_string(collided.size()), 0.35f, Color(1, 0, 1), TEXT_ALIGN_BOTTOMLEFT);
 		else
 			GUIManager::getInstance()->renderText("game", 400, 400, "Collision: None", 0.35f, Color(1, 0, 1), TEXT_ALIGN_BOTTOMLEFT);
 
-		velocity.Set(0.0f, -1.0f, 0.0f);
-		
+
 		bool ground = false;
 		for (int i = 0; i < collided.size(); i++) {
 			if (collided[i]->name == "ground") {
@@ -100,11 +100,12 @@ void Mesh::Update(double dt) {
 		}
 
 		if (!ground) {
-			position += velocity;
+			velocity += grav * dt;
 		}
 		else {
 			velocity.y = 0;
 		}
+		position += velocity;
 	}
 	//position += velocity;
 }

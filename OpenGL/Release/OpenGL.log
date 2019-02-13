@@ -1,36 +1,10 @@
 ﻿  Car.cpp
-c:\users\elson\desktop\sp2\sp2framework\opengl\source\car.cpp(31): warning C4305: 'argument': truncation from 'double' to 'float'
-c:\users\elson\desktop\sp2\sp2framework\opengl\source\car.cpp(32): warning C4305: 'argument': truncation from 'double' to 'float'
-  Player.cpp
-c:\users\elson\desktop\sp2\sp2framework\opengl\source\player.cpp(52): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
-c:\users\elson\desktop\sp2\sp2framework\opengl\source\player.cpp(103): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
-  Collision.cpp
-  OBB.cpp
-  GUIText.cpp
-  GUIFont.cpp
-  GUIManager.cpp
-  GUIChar.cpp
-  ShaderProgram.cpp
-  shader.cpp
-  Manager.cpp
-  Primitive.cpp
-  Camera.cpp
-  LightSource.cpp
-  Primitives.cpp
-  FreeLookCamera.cpp
-  SceneA2.cpp
-  LoadTGA.cpp
-  Mesh.cpp
-c:\users\elson\desktop\sp2\sp2framework\opengl\source\mesh.cpp(95): warning C4018: '<': signed/unsigned mismatch
-  Application.cpp
-c:\program files (x86)\windows kits\10\include\10.0.17134.0\shared\minwindef.h(130): warning C4005: 'APIENTRY': macro redefinition
-  c:\users\elson\desktop\sp2\sp2framework\glfw\include\glfw\glfw3.h(98): note: see previous definition of 'APIENTRY'
-  Compiling...
-  main.cpp
-  Utility.cpp
-  Texture.cpp
-  Transformation.cpp
+c:\users\compu\desktop\sp2\sp2 day1\sp2framework\opengl\source\car.cpp(27): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\users\compu\desktop\sp2\sp2 day1\sp2framework\opengl\source\car.cpp(28): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\users\compu\desktop\sp2\sp2 day1\sp2framework\opengl\source\car.cpp(63): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
   Generating code
-  All 2513 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  2 of 2474 functions (<0.1%) were compiled, the rest were copied from previous compilation.
+    0 functions were new in current compilation
+    4 functions had inline decision re-evaluated but remain unchanged
   Finished generating code
-  OpenGL.vcxproj -> C:\Users\Elson\Desktop\SP2\SP2Framework\Release\OpenGL.exe
+  OpenGL.vcxproj -> C:\Users\compu\Desktop\SP2\SP2 Day1\SP2Framework\Release\OpenGL.exe
