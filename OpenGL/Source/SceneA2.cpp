@@ -122,7 +122,7 @@ void SceneA2::RenderScene()
 
 	modelStack.PushMatrix();
 	manager->getObject("playerAxes")->Translate(modelStack, player->position.x, player->position.y, player->position.z);
-	manager->getObject("playerAxes")->Rotate(modelStack, -player->getCamera()->getYaw() + 90, 0, 1, 0);
+	manager->getObject("playerAxes")->Rotate(modelStack, car->rotation.y - car->currentSteer, 0, 1, 0);
 	RenderMesh(manager->getObject("playerAxes"), false);
 	modelStack.PopMatrix();
 

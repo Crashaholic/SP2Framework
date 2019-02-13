@@ -17,7 +17,7 @@ Car::Car(const char* meshName, Primitive* primitive, unsigned int texID, DRAW_MO
 	kBraking = 2.0f;
 	kMass = 100.0f;
 	kDrag = 0.2f;
-	kFriction = 0.2f;
+	kFriction = 0.15f;
 	maxReverseVelocity = -0.5f;
 
 	engineAcceleration = brakingAcceleration = reverseAcceleration = 0.0f;
@@ -69,12 +69,12 @@ void Car::Update(double dt)
 
 Vector3 Car::calcResultant(float accInput, float steerInput, float dt) {
 
-	Vector3 resultant, traction, drag, friction, braking, acceleration, lateral, reverse, engineForward = Vector3(0,0,0);
+	Vector3 resultant, traction, rotDrag, drag, friction, braking, acceleration, lateral, reverse, engineForward = Vector3(0,0,0);
 
 
 
 	// Steering Car
-	if (accInput != 0.0f && velocity.Length() > 0.05f)
+	if (velocity.Length() > 0.05f)
 		steerAngle = steerInput * 15;
 	else
 		steerAngle = 0.0f;
@@ -83,6 +83,7 @@ Vector3 Car::calcResultant(float accInput, float steerInput, float dt) {
 		steerAngle = -steerAngle;
 
 	currentSteer = Utility::Lerp(currentSteer, currentSteer + steerAngle, (float)dt * 1.25f);
+	//currentSteer -= Utility::Sign(currentSteer) * accInput * 0.1f;
 
 	float rad = Math::DegreeToRadian(rotation.y + 90.0f + currentSteer);
 	forward.x = cos(rad);
@@ -113,8 +114,18 @@ Vector3 Car::calcResultant(float accInput, float steerInput, float dt) {
 		engineForward = forward * engineAcceleration * 25.0f * dt;
 	}
 	else if (accInput == -1) {
-		braking = forward * brakingAcceleration * 18.0f * dt;
-		reverse = forward * reverseAcceleration * 8.0f * dt;
+		if (velocity.Length() > 0.01f)
+		{
+			braking = velocityDir * velocity.Normalized() * brakingAcceleration * 18.0f * dt;
+		}
+		if (steerInput != 0)
+		{
+			float rad = Math::DegreeToRadian(rotation.y + 90.0f - currentSteer);
+			braking.x = cos(rad);
+			braking.z = sin(rad);
+			braking *= brakingAcceleration * 18.0f * dt;
+		}
+		reverse = forward * reverseAcceleration * 15.0f * dt;
 	}
 
 	if (velocity.Length() != 0.0f) {
@@ -122,21 +133,31 @@ Vector3 Car::calcResultant(float accInput, float steerInput, float dt) {
 		drag = kDrag * velocity.Length() * -velocity.Normalized();
 	}
 
-	
+	//if (accInput == 0)
+	//{
+	//	float rad = Math::DegreeToRadian(-(rotation.y + 90.0f + currentSteer) + currentSteer);
+	//	rotDrag.x = cos(rad);
+	//	rotDrag.z = sin(rad);
+	//	rotDrag.Normalized();
+	//	rotDrag *= 0.5f * kDrag * velocity.Length();
+	//}
 
-	acceleration = friction + engineForward + braking + drag + reverse;
+	acceleration = friction + engineForward + braking + drag + reverse + rotDrag;
 	if (fabs(currentSteer) > 0.05f) {
 		acceleration *= 0.5f;
 	}
 
-	velocity += acceleration * dt;
+	float circleRadius = (5.0f / sin(Math::DegreeToRadian(currentSteer)));
 	
 
 
+	velocity += acceleration * dt;
+	
+
+	std::cout << "Reverse: " << reverse << std::endl;
 	//velocity += angularVelocity;
 	//std::cout << "Current Steer: " << currentSteer << std::endl;
 	//std::cout << "Circle Radius: " << circleRadius << std::endl;
-	std::cout << "Angular Velocity: " << angularVelocity << std::endl;
 
 	return resultant;
 }

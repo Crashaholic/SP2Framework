@@ -1,10 +1,30 @@
 ﻿  Car.cpp
-c:\users\compu\desktop\sp2\sp2 day1\sp2framework\opengl\source\car.cpp(27): warning C4305: 'argument': truncation from 'double' to 'float'
-c:\users\compu\desktop\sp2\sp2 day1\sp2framework\opengl\source\car.cpp(28): warning C4305: 'argument': truncation from 'double' to 'float'
-c:\users\compu\desktop\sp2\sp2 day1\sp2framework\opengl\source\car.cpp(63): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+c:\users\elson\desktop\sp2\sp2framework\opengl\source\car.cpp(27): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\users\elson\desktop\sp2\sp2framework\opengl\source\car.cpp(28): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\users\elson\desktop\sp2\sp2framework\opengl\source\car.cpp(63): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
   Generating code
-  2 of 2474 functions (<0.1%) were compiled, the rest were copied from previous compilation.
+  0 of 2524 functions ( 0.0%) were compiled, the rest were copied from previous compilation.
     0 functions were new in current compilation
-    4 functions had inline decision re-evaluated but remain unchanged
+    0 functions had inline decision re-evaluated but remain unchanged
   Finished generating code
-  OpenGL.vcxproj -> C:\Users\compu\Desktop\SP2\SP2 Day1\SP2Framework\Release\OpenGL.exe
+GUIText.obj : warning LNK4020: a type record in 'c:\users\elson\desktop\sp2\sp2framework\opengl\release\vc141.pdb' is corrupted; some symbols and types may not be accessible from the debugger
+GUIFont.obj : warning LNK4020: a type record in 'c:\users\elson\desktop\sp2\sp2framework\opengl\release\vc141.pdb' is corrupted; some symbols and types may not be accessible from the debugger
+GUIManager.obj : warning LNK4020: a type record in 'c:\users\elson\desktop\sp2\sp2framework\opengl\release\vc141.pdb' is corrupted; some symbols and types may not be accessible from the debugger
+GUIChar.obj : warning LNK4020: a type record in 'c:\users\elson\desktop\sp2\sp2framework\opengl\release\vc141.pdb' is corrupted; some symbols and types may not be accessible from the debugger
+ShaderProgram.obj : warning LNK4020: a type record in 'c:\users\elson\desktop\sp2\sp2framework\opengl\release\vc141.pdb' is corrupted; some symbols and types may not be accessible from the debugger
+shader.obj : warning LNK4020: a type record in 'c:\users\elson\desktop\sp2\sp2framework\opengl\release\vc141.pdb' is corrupted; some symbols and types may not be accessible from the debugger
+Manager.obj : warning LNK4020: a type record in 'c:\users\elson\desktop\sp2\sp2framework\opengl\release\vc141.pdb' is corrupted; some symbols and types may not be accessible from the debugger
+Primitive.obj : warning LNK4020: a type record in 'c:\users\elson\desktop\sp2\sp2framework\opengl\release\vc141.pdb' is corrupted; some symbols and types may not be accessible from the debugger
+Camera.obj : warning LNK4020: a type record in 'c:\users\elson\desktop\sp2\sp2framework\opengl\release\vc141.pdb' is corrupted; some symbols and types may not be accessible from the debugger
+LightSource.obj : warning LNK4020: a type record in 'c:\users\elson\desktop\sp2\sp2framework\opengl\release\vc141.pdb' is corrupted; some symbols and types may not be accessible from the debugger
+Primitives.obj : warning LNK4020: a type record in 'c:\users\elson\desktop\sp2\sp2framework\opengl\release\vc141.pdb' is corrupted; some symbols and types may not be accessible from the debugger
+FreeLookCamera.obj : warning LNK4020: a type record in 'c:\users\elson\desktop\sp2\sp2framework\opengl\release\vc141.pdb' is corrupted; some symbols and types may not be accessible from the debugger
+SceneA2.obj : warning LNK4020: a type record in 'c:\users\elson\desktop\sp2\sp2framework\opengl\release\vc141.pdb' is corrupted; some symbols and types may not be accessible from the debugger
+LoadTGA.obj : warning LNK4020: a type record in 'c:\users\elson\desktop\sp2\sp2framework\opengl\release\vc141.pdb' is corrupted; some symbols and types may not be accessible from the debugger
+Mesh.obj : warning LNK4020: a type record in 'c:\users\elson\desktop\sp2\sp2framework\opengl\release\vc141.pdb' is corrupted; some symbols and types may not be accessible from the debugger
+Application.obj : warning LNK4020: a type record in 'c:\users\elson\desktop\sp2\sp2framework\opengl\release\vc141.pdb' is corrupted; some symbols and types may not be accessible from the debugger
+main.obj : warning LNK4020: a type record in 'c:\users\elson\desktop\sp2\sp2framework\opengl\release\vc141.pdb' is corrupted; some symbols and types may not be accessible from the debugger
+Utility.obj : warning LNK4020: a type record in 'c:\users\elson\desktop\sp2\sp2framework\opengl\release\vc141.pdb' is corrupted; some symbols and types may not be accessible from the debugger
+Texture.obj : warning LNK4020: a type record in 'c:\users\elson\desktop\sp2\sp2framework\opengl\release\vc141.pdb' is corrupted; some symbols and types may not be accessible from the debugger
+Transformation.obj : warning LNK4020: a type record in 'c:\users\elson\desktop\sp2\sp2framework\opengl\release\vc141.pdb' is corrupted; some symbols and types may not be accessible from the debugger
+  OpenGL.vcxproj -> C:\Users\Elson\Desktop\SP2\SP2Framework\Release\OpenGL.exe

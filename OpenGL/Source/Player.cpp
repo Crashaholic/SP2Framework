@@ -7,7 +7,7 @@
 Player::Player(const char* meshName, Primitive* primitive, unsigned int texID, DRAW_MODE drawMode)
 	: Mesh(meshName, primitive, texID, true, drawMode) {
 
-	position.Set(0, 10.0f, 0);
+	position.Set(0, 2.0f, 0);
 	rotation.Set(0, 0, 0);
 	walkSpeed = 4.5f;
 	isInVehicle = false;
@@ -84,7 +84,7 @@ void Player::Update(double dt) {
 	}
 	else if (car != nullptr) {
 		// Update Position of the Player in the car according to the car's rotation
-		float rad = Math::DegreeToRadian(car->rotation.y + 90 /*+ car->currentSteer*/);
+		float rad = Math::DegreeToRadian(car->rotation.y + 90 + car->currentSteer);
 		car->Update(dt);
 		position = car->position + Vector3(cos(rad), 0.0f, sin(rad)) * -0.5f + Vector3(0.0f, 1.2f, 0.0f);
 		rotation.y = car->rotation.y;
