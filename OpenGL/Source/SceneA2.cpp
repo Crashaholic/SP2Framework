@@ -11,6 +11,7 @@
 
 SceneA2::SceneA2()
 {
+	
 }
 
 
@@ -21,6 +22,18 @@ SceneA2::~SceneA2()
 
 void SceneA2::Init()
 {
+	//device initialisation
+	deviceOne = alcOpenDevice(NULL);
+
+	if (deviceOne)
+	{
+		context = alcCreateContext(deviceOne, NULL);
+		alcMakeContextCurrent(context);
+	}
+
+	alGetError();
+	
+
 	manager = Manager::getInstance();
 	manager->loadPlayerProgress();
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
@@ -228,6 +241,7 @@ void SceneA2::InitShaderProperties()
 	lit->setUniform("numLights", LightSource::lightCount);
 	lit->updateUniforms();
 }
+
 
 
 void SceneA2::Update(double dt)
