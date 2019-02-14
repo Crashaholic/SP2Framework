@@ -87,10 +87,10 @@
     <ClCompile Include="Source\FreeLookCamera.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\OctCube.cpp">
+    <ClCompile Include="Source\QuadNode.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\OctNode.cpp">
+    <ClCompile Include="Source\QuadTree.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -176,10 +176,10 @@
     <ClInclude Include="Source\FreeLookCamera.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Source\OctCube.h">
+    <ClInclude Include="Source\QuadTree.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Source\OctNode.h">
+    <ClInclude Include="Source\QuadNode.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

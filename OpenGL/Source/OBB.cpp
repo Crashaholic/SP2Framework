@@ -2,6 +2,18 @@
 #include "Utility.h"
 
 
+
+OBB::OBB(Vector3 bottomLeft, Vector3 topRight)
+{
+	axisX = Vector3(1, 0, 0);
+	axisY = Vector3(0, 1, 0);
+	axisZ = Vector3(0, 0, 1);
+	halfSize.x = 0.5f * (bottomLeft.x + topRight.x);
+	halfSize.y = 0.5f * (bottomLeft.y + topRight.y);
+	halfSize.z = 0.5f * (bottomLeft.z + topRight.z);
+	position = 0.5f * (bottomLeft + topRight);
+}
+
 OBB::OBB(Vector3 half){ 
 	axisX = Vector3(1, 0, 0);
 	axisY = Vector3(0, 1, 0);

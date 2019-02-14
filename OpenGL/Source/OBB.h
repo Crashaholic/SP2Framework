@@ -7,6 +7,7 @@ class OBB
 {
 public:
 
+	OBB(Vector3 bottomLeft, Vector3 topRight);
 	OBB(Vector3 half);
 	OBB();
 	~OBB();

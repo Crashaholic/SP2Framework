@@ -7,6 +7,7 @@
 #include "shader.hpp"
 #include "ShaderProgram.h"
 #include "Collision.h"
+#include "QuadTree.h"
 
 
 SceneA2::SceneA2()
@@ -77,6 +78,18 @@ void SceneA2::CreateMesh()
 
 	player->setCar(car);
 	//manager->spawnObject(new Mesh("car", Primitives::loadModel("Models//car.obj"), LoadTGA("Models//car.tga")));
+
+	QuadTree tree(Vector3(0, 0, 0), Vector3(8, 8, 8));
+	QuadNode n1(OBB(Vector3(1, 0, 1), Vector3(5, 4, 5)));
+	QuadNode n2(OBB(Vector3(4, 2, 1), Vector3(7, 4, 7)));
+	QuadNode n3(OBB(Vector3(1, 1, 7), Vector3(7, 6, 8)));
+	tree.Insert(&n1);
+	tree.Insert(&n2);
+	tree.Insert(&n3);
+
+	std::cout << "N1: " << tree.Search(Vector3(3,2,3)) << std::endl;
+	std::cout << "N2: " << tree.Search(Vector3(2, 8 ,1)) << std::endl;
+	std::cout << "N3: " << tree.Search(Vector3(2, 1, 2)) << std::endl;
 
 }
 
