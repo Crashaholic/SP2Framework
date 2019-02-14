@@ -194,7 +194,7 @@ void SceneA2::RenderScene()
 		//else if (i == 4)
 		//{
 		//	carBody->at(i)->Translate(modelStack, -1.55f, 0.73f, -2.85f);
-		//	carBody->at(i)->Rotate(modelStack, car->wheelAngle, 1, 0, 0);
+		//	carBody->at(i)->Rotate(modelStack, car->wheel Angle, 1, 0, 0);
 		//}
 		RenderMesh(carBody->at(i), true);
 		modelStack.PopMatrix();
@@ -366,10 +366,11 @@ void SceneA2::Update(double dt)
 			bounceTimeCounter = 0.3f;
 		}
 		else if (Application::IsKeyPressed('F')) {
-			if (!player->isInVehicle && (player->getCar()->position - player->position).Length() <= 6.0f) {
+			if (!player->isInVehicle && (player->getCar()->position - player->position).Length() <= 5.0f) {
 				player->isInVehicle = true;
 				player->getCar()->setOccupied(true);
-				player->setCameraMode(THIRD_PERSON);
+				player->setCameraMode(FIXED_CAR);
+
 			}
 			else if (player->isInVehicle) {
 				player->isInVehicle = false;

@@ -31,6 +31,7 @@ void FreeLookCamera::Init(const Vector3& pos)
 	
 	flying = true;
 	inCar = false;
+	canFreeLook = true;
 
 	updateMouse();
 }
@@ -40,6 +41,10 @@ void FreeLookCamera::Reset()
 	position.Set(1, 100, 0);
 	target.Set(0, 0, 0);
 	up.Set(0, 1, 0);
+}
+
+void FreeLookCamera::setFreeLook(bool state) {
+	canFreeLook = state;
 }
 
 void FreeLookCamera::updateMouse()
@@ -84,8 +89,8 @@ void FreeLookCamera::updateMouse()
 void FreeLookCamera::Update(double dt)
 {
 
-
-	updateMouse();
+	if (canFreeLook)
+		updateMouse();
 }
 
 Mtx44 FreeLookCamera::LookAt()
@@ -94,10 +99,17 @@ Mtx44 FreeLookCamera::LookAt()
 	Vector3 s = f.Cross(up).Normalize();
 	Vector3 u = s.Cross(f);
 
-	Mtx44 mat(s.x, u.x, -f.x, 0,
-		s.y, u.y, -f.y, 0,
-		s.z, u.z, -f.z, 0,
-		-s.Dot(target), -u.Dot(target), f.Dot(target), 1);
+	Mtx44 mat;
+	if (canFreeLook) {
+
+		mat = Mtx44(s.x, u.x, -f.x, 0,
+			s.y, u.y, -f.y, 0,
+			s.z, u.z, -f.z, 0,
+			-s.Dot(target), -u.Dot(target), f.Dot(target), 1);
+
+	}
+
+
 	return mat;
 }
 

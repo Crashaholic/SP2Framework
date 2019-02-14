@@ -13,7 +13,8 @@ Player::Player(const char* meshName, Primitive* primitive, unsigned int texID, D
 	isInVehicle = false;
 	cameraMode = FIRST_PERSON;
 
-	camera = new FreeLookCamera(position - Vector3(0.0f, 0.1f, 0.0f) + Vector3(-0.2f, 0.0f, 0.0f));
+	firstPerson = new FreeLookCamera(position - Vector3(0.0f, 0.1f, 0.0f) + Vector3(-0.2f, 0.0f, 0.0f));
+	fixedCar = new Camera(position + Vector3(0.0f, 8.0f, -6.0f));
 
 	obb->setHalf(Vector3(0.5945f, 1.5505f, 0.378f));
 	defaultObb->setHalf(Vector3(0.5945f, 1.5505f, 0.378f));
@@ -45,15 +46,17 @@ void Player::Render(MS& modelStack, MS& viewStack, MS& projectionStack, ShaderPr
 
 void Player::Update(double dt) {
 
-	Vector3 right = camera->getRight();
-	float rad = Math::DegreeToRadian(camera->getYaw());
+	Vector3 right = firstPerson->getRight();
+	float rad = Math::DegreeToRadian(firstPerson->getYaw());
 	Vector3 forward;
 
-	Vector3 deltaRotation = Vector3(0.0f, -camera->getYaw() + 90, 0.0f);
+
+	Vector3 deltaRotation = Vector3(0.0f, -firstPerson->getYaw() + 90, 0.0f);
 
 	Vector3 targetRotation = Utility::Lerp(rotation, deltaRotation, 12.0f * dt);
-	if (isInVehicle || Collision::checkCollisionR(this, deltaRotation, { "ground" }).size() == 0) {
+	if (!isInVehicle && Collision::checkCollisionR(this, deltaRotation, { "ground" }).size() == 0) {
 		rotation = targetRotation;
+			
 	}
 
 	if (!isInVehicle) {
@@ -69,13 +72,13 @@ void Player::Update(double dt) {
 			translation += forward * walkSpeed * (float)dt;
 		}
 		if (Application::IsKeyPressed('A')) {
-			translation -=  camera->getRight() * walkSpeed * (float)dt;
+			translation -=  firstPerson->getRight() * walkSpeed * (float)dt;
 		}
 		if (Application::IsKeyPressed('S')) {
 			translation -= forward * walkSpeed * (float)dt;
 		}
 		if (Application::IsKeyPressed('D')) {
-			translation += camera->getRight() * walkSpeed * (float)dt;
+			translation += firstPerson->getRight() * walkSpeed * (float)dt;
 		}
 
 		if (Collision::checkCollisionT(this, translation, { "ground" }).size() == 0)
@@ -87,30 +90,33 @@ void Player::Update(double dt) {
 		float rad = Math::DegreeToRadian(car->rotation.y + 90 + car->currentSteer);
 		car->Update(dt);
 		position = car->position + Vector3(cos(rad), 0.0f, sin(rad)) * -0.5f + Vector3(0.0f, 1.2f, 0.0f);
-		rotation.y = car->rotation.y;
+		rotation.y = car->rotation.y - car->currentSteer;
 	}
 	
 
 	// Set Camera's Position
 	if (cameraMode == FIRST_PERSON) {
-		camera->position = position + Vector3(0.0f, 1.5f, 0.0f) + Vector3(cos(rad), 0.0f, sin(rad)) * 0.3f;
-		//rotation.y = -firstPerson->getYaw() + 90;
+		firstPerson->position = position + Vector3(0.0f, 1.5f, 0.0f) + Vector3(cos(rad), 0.0f, sin(rad)) * 0.3f;
 	}
-	else if (cameraMode == THIRD_PERSON) {
-		Vector3 target = position + Vector3(cos(rad), 0.0f, sin(rad)) * -5.0f;
+	else if (cameraMode == FIXED_CAR) {
+		Vector3 target = position;
+		float rad = Math::DegreeToRadian(90 - rotation.y);
 		if (isInVehicle) {
-			target += Vector3(0.0f, 3.0f, 0.0f);
+			target += Vector3(cos(rad), 0.0f, sin(rad)) * -7.5f + Vector3(0.0f, 3.5f, 0.0f);
+			fixedCar->position = Utility::Lerp(fixedCar->position, target, 0.4f);
 		}
 		else {
-			target += Vector3(0.0f, 1.5f, 0.0f);
+			target += Vector3(cos(rad), 0.0f, sin(rad)) * -5.0f + Vector3(0.0f, 1.5f, 0.0f);
+			fixedCar->position = Utility::Lerp(fixedCar->position, target, 0.1f);
+			
 		}
-		//camera->position = Utility::sLerp(camera->position, target, 0.1f);
-		camera->position = Utility::Lerp(camera->position, target, 18.0f * dt);
+		Vector3 lookAtTarget = position + Vector3(cos(rad), 0.5f, sin(rad)) * 2.5f;
+		fixedCar->setTarget(lookAtTarget);
 	}
 
 	//topDown.position = position + Vector3(0.0f, 30.0f, 1.0f);
 	//topDown.setTarget(position);
-	camera->Update(dt);
+	getCamera()->Update(dt);
 
 	if(!isInVehicle)
 		Mesh::Update(dt);
@@ -127,13 +133,17 @@ Car* Player::getCar() {
 
 
 
-FreeLookCamera* Player::getCamera() {
-	return camera;
+Camera* Player::getCamera() {
+	if (cameraMode == FIRST_PERSON)
+		return firstPerson;
+	else if (cameraMode == FIXED_CAR)
+		return fixedCar;
+	return nullptr;
 }
 
 void Player::switchCameraMode() {
 	if (cameraMode == FIRST_PERSON)
-		cameraMode = THIRD_PERSON;
+		cameraMode = FIXED_CAR;
 	else
 		cameraMode = FIRST_PERSON;
 }

@@ -19,6 +19,7 @@ public:
 	void Reset();
 	void Update(double dt);
 	void Invert();
+	void setFreeLook(bool state);
 
 	Vector3 getRight();
 	Vector3 getFront();
@@ -27,6 +28,7 @@ public:
 private:
 
 	bool firstMouse;
+	bool canFreeLook;
 	double lastX = 0.0;
 	double lastY = 0.0;
 	float sensitivity = 0.08f;

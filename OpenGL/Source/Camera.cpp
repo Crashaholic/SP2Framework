@@ -34,6 +34,8 @@ void Camera::setTarget(const Vector3& pos) {
 	front = target - position;
 }
 
+
+
 void Camera::Reset()
 {
 	position.Set(1, 0, 0);

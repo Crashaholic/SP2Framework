@@ -17,7 +17,7 @@ public:
 	virtual void Reset();
 	virtual void Update(double dt);
 	void setTarget(const Vector3& pos);
-
+	//void setTargetAndFront(const Vector3& target, const Vector3 front);
 	
 protected:
 	Vector3 target;
