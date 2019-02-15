@@ -11,7 +11,9 @@
 
 SceneA2::SceneA2()
 {
-	
+	state_MainMenu = true;
+	state_InGame = true;
+	state_Race = false;
 }
 
 
@@ -24,6 +26,12 @@ void SceneA2::Init()
 {
 
 	manager = Manager::getInstance();
+
+	Engine.init();
+	Music[BGM_MAIN].load("Music//BGM_MainMenu.wav");
+	Music[BGM_INGAME].load("Music//BGM_InGame.wav");
+
+
 	/*manager->loadPlayerProgress();*/
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 	elapsedTimeCounter = bounceTimeCounter = lastTimed = 0.0f;
@@ -233,18 +241,28 @@ void SceneA2::InitShaderProperties()
 
 void SceneA2::playMusic()
 {
-	if (!musicFlag)
+	if (state_MainMenu)
 	{
-		PlaySound(TEXT("Source\\BGM.wav"), NULL, SND_ASYNC | SND_LOOP);
-		musicFlag = true;
+		Engine.play(Music[BGM_MAIN]);
+		state_MainMenu = false;
 	}
+	if (state_InGame)
+	{
+		Engine.play(Music[BGM_INGAME]);
+		state_InGame = false;
+	}
+	if (!state_Race)
+	{
+		Engine.play(Music[BGM_RACE]);
+	}
+
 }
 
 
 void SceneA2::Update(double dt)
 {
-	playMusic();
 	// Bounce Time
+	playMusic();
 	if (bounceTimeCounter <= 0.0f) {
 
 		static float LSPEED = 10.0f;
@@ -293,11 +311,10 @@ void SceneA2::Update(double dt)
 
 
 
-
-
 void SceneA2::Exit()
 {
 	manager->savePlayerProgress();
+	Engine.deinit();
 	delete manager;
 	delete gui;
 
