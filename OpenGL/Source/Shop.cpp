@@ -1,65 +1,133 @@
 #include "Shop.h"
-Shop::Shop(){
+Shop::Shop() {
 }
 Shop::~Shop() {
 }
 void Shop::enterShop() {
 	Head = Tail = new shopNode;
 }
-void Shop::Buy(int Number) {
-	if (Number > 0 && Number <= 4) {
-		//if (Player.getMoney() >= (Car.Tier[Number - 1] * objMoney[Number - 1])) {
-		Tail->setObjNo(Number - 1);
+int Shop::Buy(/*Player Player,*/Car*& Car, int Number) {//4 options: Car, Nitro, Tires, Engine
+	if (Number == 1) {
+		//Make the data of the car save if buying new car, be cause of delete
+		//if (Player.getMoney() >= (Player.getCarPrice[Number - 1] * Player.getCarTeir[Number - 1])) {
+		delete Car;//if/switch statement for different cars
+		Car = new Car1;
+		Tail->setObjNo(Number);
 		Tail->setNext();
+		Tail->getNext()->setBack(Tail);
 		Tail = Tail->getNext();
-		Tail->setBack(Tail->getBack);
-		//Player.setMoney(Player.getMoney() - (Car.Tier[Number - 1] * "Money"));
-		//++tier
-	//}
-			//else {
-		Number = 0;
+		//Player.setMoney(Player.getMoney() - (Player.getCarPrice[Number - 1] * Player.getCarTeir[Number - 1]));
+		//}
+		//else{
+			//Number = 0;
 		//}
 	}
-	if (!Number) {
-		//RenderTextOnScreen(meshList[GEO_TEXT], "Not Enough", color(0, 1, 0), 2, 2, 2);
+	else if (Number >= 2 && Number <= 4) {
+		//if (Player.getMoney() >= (Car->getTier(Number - 2) * Car->getObjMoney(Number - 1))) {//&& teir limit not reached
+		Tail->setObjNo(Number);
+		Tail->setNext();
+		Tail->getNext()->setBack(Tail);
+		Tail = Tail->getNext();
+		//Player.setMoney(Player.getMoney() - (Car->getTier(Number - 2) * Car->getObjMoney(Number - 1)));
+		Car->Upgrade(Number - 2);
+		//}
+		/*else {
+			Number = 0;//This means not enough money
+		}*/
+	}
+	else if (Number == 6) {
+		Number = Undo(Car);
 	}
 	else {
-		//RenderTextOnScreen(meshList[GEO_TEXT], "Item Bought", color(0, 1, 0), 2, 2, 2);
+		Number = 5;//This means item does not exists
 	}
-};
-void Shop::Undo(int Obj) {
-	shopNode* Current = Head;
-	while (Current->getNext != nullptr) {//No case needed for only 1 obj since a new shopNode needs to be declared first for 'Buy(Number)' to even run
-		if (Current->getObjNo==Obj) {
-			//Player.setMoney(Player.getMoney() + ((Car.Tier[Obj]-1) * objMoney[Obj]));
-			//--tier
-			if (Current == Head) {//Don't need make a case for tail since tail is always empty
-				Head = Head->getNext();
-			}
-			else {
-				Current->getBack()->setNext(Current->getNext());
-				Current->getNext()->setBack(Current->getBack());
-			}
-			delete Current;
-			return;
-		}
-		Current = Current->getNext();
-	}
-	//RenderTextOnScreen(meshList[GEO_TEXT], "No item of that type bought this time", color(0, 1, 0), 2, 2, 2);
+	return Number;
 }
+int Shop::Undo(/*Player Player,*/Car*& Car) {
+	if (Tail != Head) {
+		if (Tail->getBack()->getObjNo() == 1) {
+			//Player.setMoney(Player.getMoney() + (Player.getCarPrice[Number - 1] * Player.getCarTeir[Number - 1]-1));
+			delete Car;
+			Car = new Car1;
+			//load the files.
+		}
+		else {
+			//Car->setTier(Car->getTier()-1);
+			//Player.setMoney(Player.getMoney() + ((Car->getTier(Tail->getBack()->getTier()-1)) * Car->getObjMoney(Tail->getBack()->getObjNo())));
+		}
+		if (Tail->getBack() == Head) {
+			delete Tail;
+			Head = Tail = new shopNode;
+		}
+		else {
+			Tail->setNext(Tail);
+			Tail = Tail->getBack();
+			Tail->setBack(Tail->getBack());
+			delete Tail->getNext();
+		}
+	}
+	else {
+		return 5;
+	}
+	return 6;
+}
+
+
 void Shop::exitShop() {
-	while (Head->getNext() != nullptr) {
-		Head=Head->getNext();
-		delete Head->getBack();
+	while (Tail->getBack() != nullptr) {
+		Tail = Tail->getBack();
+		delete Tail->getNext();
 	}
 	delete Head;
 }
 
 
+//int main() {//what i used to test
+//	int Item;
+//	int inGame;
+//	Shop Shop;
+//	Car* Car;
+//	Car = new Car1;
+//	do {//Game loop
+//		std::cout << "Select action (1=Enter Shop,0=ExitGame):\n";
+//		std::cin >> inGame;
+//		if (inGame) {
+//			Shop.enterShop();
+//			while (true) {//Shop loop
+//				std::cout << "1:New Car\n2:Stronger Nitro\n3:New Tires\n4:Stronger Engine\n5:Exit\n6:Undo Last Item\n";
+//				std::cout << "enter item No.:\n";
+//
+//				std::cin >> Item;
+//				if (Item == 5) {
+//					Shop.exitShop();
+//					break;
+//				}
+//				Item = Shop.Buy(Car, Item);
+//				if (!Item) {
+//					std::cout << "Not enough Money\n";
+//				}
+//				else if (Item == 5) {
+//					std::cout << "Item selected does not exists\n";
+//				}
+//				else if (Item == 1) {
+//					std::cout << "new car bought\n";
+//				}
+//				else if (Item == 6) {
+//					std::cout << "Undo Successful\n";
+//				}
+//				else {
+//					std::cout << "Item " << Item << " Bought\n" << std::endl;
+//				}
+//			}
+//		}
+//	} while (inGame);
+//}
+
+
 shopNode::shopNode() {
 	Next = nullptr;
 	Back = nullptr;
-	objNo=0;
+	objNo = 0;
 }
 shopNode::~shopNode() {
 }
@@ -81,7 +149,7 @@ void shopNode::setObjNo(int Number) {
 shopNode* shopNode::getNext() {
 	return Next;
 }
-shopNode* shopNode::getBack(){
+shopNode* shopNode::getBack() {
 	return Back;
 }
 int shopNode::getObjNo() {

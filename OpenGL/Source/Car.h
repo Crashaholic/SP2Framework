@@ -2,7 +2,9 @@
 #define CAR_H
 class Car {
 public:
-	virtual void upgrade() = 0;
+	Car();
+	virtual ~Car();
+	virtual void Upgrade(int) = 0;
 protected:
 	//physics
 	int Nitro;//Power of nitro
@@ -10,10 +12,12 @@ protected:
 	float Acceleration;
 	int topSpeed;
 	float Braking;
-
+	static int money;
+	//int carNo;
+	//int carTeir;
 	int* tier;
 };
-class Car1 : Car {//Car1 is an example
+class Car1 : public Car {//Car1 is an example
 public:
 	Car1();
 	~Car1();

@@ -2,20 +2,6 @@
 #define SHOP_H
 //#include "Player.h"
 #include "Car.h"
-class Shop {
-public:
-	Shop();
-	~Shop();
-	void enterShop();
-	void Buy(int);
-	void Undo(int);
-	void exitShop();
-private:
-	shopNode* Head;
-	shopNode* Tail;
-};//make objMoney[4]
-
-
 class shopNode {
 public:
 	shopNode();
@@ -33,4 +19,18 @@ protected:
 	shopNode* Back;
 	int objNo;//the obj bought eg. tires,engine,nitro
 };
+
+
+class Shop {
+public:
+	Shop();
+	~Shop();
+	void enterShop();
+	int Buy(/*Player,*/Car*&, int);
+	int Undo(/*Player,*/Car*&);
+	void exitShop();
+private:
+	shopNode* Head;
+	shopNode* Tail;
+};//make objMoney[4]
 #endif
