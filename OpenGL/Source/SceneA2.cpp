@@ -286,10 +286,10 @@ void SceneA2::RenderUI() {
 	gui->renderText("bahnschrift", 0, 40, "Hello World", 0.4f, Color(0, 1, 0));
 	gui->renderText("consolas", 0, 400, "Hello World", 0.5f, Color(0, 1, 0));
 
-	gui->renderText("game", 0, 15, "FPS: " + std::to_string(lastFramesPerSecond), 0.4f, Color(0, 1, 0));
+	gui->renderText("default", 0, 15, "FPS: " + std::to_string(lastFramesPerSecond), 0.4f, Color(0, 1, 0));
 
 	if (!player->isInVehicle && (player->getCar()->position - player->position).Length() <= 6.0f)
-		gui->renderText("game", 400, 300, "Press F to enter car", 0.4f, Color(0, 1, 0), TEXT_ALIGN_MIDDLE);
+		gui->renderText("default", 400, 300, "Press F to enter car", 0.4f, Color(0, 1, 0), TEXT_ALIGN_MIDDLE);
 
 }
 
@@ -449,7 +449,7 @@ void SceneA2::Update(double dt)
 			bounceTimeCounter = 0.3f;
 		}
 		else if (Application::IsKeyPressed('F')) {
-			if (!player->isInVehicle && (player->getCar()->position - player->position).Length() <= 5.0f) {
+			if (!player->isInVehicle && (player->getCar()->position - player->position).Length() <= 6.0f) {
 				player->isInVehicle = true;
 				player->getCar()->setOccupied(true);
 				player->setCameraMode(FIXED_CAR);

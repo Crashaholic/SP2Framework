@@ -86,9 +86,9 @@ void Mesh::Update(double dt) {
 
 		if (name == "human") {
 			if (collided.size() != 0)
-				GUIManager::getInstance()->renderText("game", 400, 400, "Collisions: " + std::to_string(collided.size()), 0.35f, Color(1, 0, 1), TEXT_ALIGN_BOTTOMLEFT);
+				GUIManager::getInstance()->renderText("default", 400, 400, "Collisions: " + std::to_string(collided.size()), 0.35f, Color(1, 0, 1), TEXT_ALIGN_BOTTOMLEFT);
 			else
-				GUIManager::getInstance()->renderText("game", 400, 400, "Collision: None", 0.35f, Color(1, 0, 1), TEXT_ALIGN_BOTTOMLEFT);
+				GUIManager::getInstance()->renderText("default", 400, 400, "Collision: None", 0.35f, Color(1, 0, 1), TEXT_ALIGN_BOTTOMLEFT);
 
 		}
 

@@ -29,7 +29,7 @@ private:
 	float reverseAcceleration;
 	float maxReverseVelocity;
 	float brakingAcceleration;
-	
+
 
 	bool start;
 
@@ -40,7 +40,7 @@ private:
 	float kBraking;
 	float kMass;
 	float kDrag;
-	float kFriction;	
+	float kFriction;
 	float steerAngle;
 
 
