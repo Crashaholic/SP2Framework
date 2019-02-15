@@ -9,11 +9,16 @@ Manager::Manager()
 	shaders["overlay"] = new ShaderProgram("Shader//UI.vert", "Shader//UI.frag");
 	for(int i = 0; i < 2; i++)
 		lightSources.push_back(new LightSource());
+
+	tree = new QuadTree(Vector3(0, 0, 0), Vector3(100, 0, 100));
+
 }
 
 
 Manager::~Manager()
 {
+	delete tree;
+
 	for (auto const& object : objects)
 		if (object.second != nullptr)
 			delete object.second;
@@ -63,5 +68,11 @@ std::map<std::string, ShaderProgram*>* Manager::getShaders()
 void Manager::spawnObject(Mesh* mesh)
 {
 	objects[mesh->name] = mesh;
+	if (mesh->collisionEnabled)
+		tree->Insert(mesh);
 }
 
+
+QuadTree* Manager::getTree() {
+	return tree;
+}

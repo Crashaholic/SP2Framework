@@ -1,28 +1,38 @@
 #ifndef QUADTREE_H
 #define QUADTREE_H
 
-
-#include "QuadNode.h"
+#include "Mesh.h"
 
 class QuadTree
 {
 public:
-	QuadTree(Vector3 topLeft, Vector3 bottomRight);
+
+	const int capacity = 4;
+
+
+	Vector3 min;
+	Vector3 max;
+	//OBB boundary;
+	std::vector<Mesh*> meshes;
+
+	QuadTree* topLeft = NULL;
+	QuadTree* topRight = NULL;
+	QuadTree* bottomLeft = NULL;
+	QuadTree* bottomRight = NULL;
+
+	bool Insert(Mesh* mesh);
+	void Subdivide();
+	bool withinBounds(Vector3 point);
+	bool withinBounds(Vector3 point, Vector3 min, Vector3 max);
+	bool placeOverlap(Vector3 minA, Vector3 maxA, Vector3 minB, Vector3 maxB);
+	std::vector<Mesh*> queryMesh(Vector3 position, float width, float depth);
+	std::vector<Mesh*> queryMesh(Vector3 bottomLeft, Vector3 topRight);
+	QuadTree(Vector3 min, Vector3 max);
 	QuadTree();
 	~QuadTree();
-	Vector3 topLeft;
-	Vector3 botRight;
 
-	QuadNode* node;
 
-	QuadTree *topLeftTree;
-	QuadTree *topRightTree;
-	QuadTree *botLeftTree;
-	QuadTree *botRightTree;
-
-	void Insert(QuadNode* node);
-	QuadNode* Search(Vector3 point);
-	bool isWithin(Vector3 point);
 };
+
 
 #endif

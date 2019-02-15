@@ -1,152 +1,105 @@
 #include "QuadTree.h"
 
 
-QuadTree::QuadTree(Vector3 topLeft, Vector3 bottomRight)
-{
-	node = nullptr;
-	topLeftTree = topRightTree = botLeftTree = botRightTree = nullptr;
-	this->topLeft = topLeft;
-	this->botRight = bottomRight;
-	
+QuadTree::QuadTree(Vector3 min, Vector3 max) {
+	this->min = min;
+	this->max = max;
 }
 
-QuadTree::QuadTree()
-{
-	node = nullptr;
-	topLeftTree = topRightTree = botLeftTree = botRightTree = nullptr;
-	topLeft = botRight = Vector3(0, 0, 0);
+QuadTree::QuadTree() {
+
+}
+
+QuadTree::~QuadTree() {
+
+}
+
+bool QuadTree::withinBounds(Vector3 point) {
+	return (point.x >= min.x && point.x <= max.x &&
+		point.z >= min.z && point.z <= max.z);
+}
+
+bool QuadTree::withinBounds(Vector3 point, Vector3 min, Vector3 max) {
+	return (point.x >= min.x && point.x <= max.x &&
+		point.z >= min.z && point.z <= max.z);
+}
+
+void QuadTree::Subdivide() {
+	Vector3 half = 0.5f* (min + max);
+	topLeft = new QuadTree(min, half);
+	topRight = new QuadTree(Vector3(half.x, 0, min.z), Vector3(max.x, 0, half.z));
+	bottomLeft = new QuadTree(Vector3(min.x, 0, half.z), Vector3(half.x, 0, max.z));
+	bottomRight = new QuadTree(half, max);
 }
 
 
-QuadTree::~QuadTree()
-{
-}
+bool QuadTree::Insert(Mesh* mesh) {
 
+	Vector3 pos = mesh->position;
 
-void QuadTree::Insert(QuadNode* node)
-{
-	if (node == nullptr) return;
+	if (!withinBounds(pos)) return false;
 
-	Vector3 nodePos = node->getOBB()->getPos();
-
-	if (!isWithin(nodePos))
-		return;
-
-	if (abs(topLeft.x - botRight.x) <= 1 &&
-		abs(topLeft.z - botRight.z) <= 1)
-	{
-		if (this->node == nullptr)
-			this->node = node;
-		return;
+	if (meshes.size() < capacity) {
+		meshes.push_back(mesh);
+		return true;
 	}
 
-	if ((topLeft.x + botRight.x) / 2 >= nodePos.x)
-	{
-		// Indicates topLeftTree 
-		if ((topLeft.z + botRight.z) / 2 >= nodePos.z)
-		{
-			if (topLeftTree == nullptr)
-				topLeftTree = new QuadTree(
-					Vector3(topLeft.x, 0, topLeft.z),
-					Vector3((topLeft.x + botRight.x) / 2, 0,
-					(topLeft.z + botRight.z) / 2));
-			topLeftTree->Insert(node);
-		}
+	// Subdivide and add each point according to the Quad it belongs in
+	if (topRight == nullptr) Subdivide();
 
-		// Indicates botLeftTree 
-		else
-		{
-			if (botLeftTree == nullptr)
-				botLeftTree = new QuadTree(
-					Vector3(topLeft.x, 0,
-					(topLeft.z + botRight.z) / 2),
-					Vector3((topLeft.x + botRight.x) / 2,
-						botRight.z));
-			botLeftTree->Insert(node);
-		}
-	}
+	if (topRight->Insert(mesh)) return true;
+	if (topLeft->Insert(mesh)) return true;
+	if (bottomLeft->Insert(mesh)) return true;
+	if (bottomRight->Insert(mesh)) return true;
+
+	return false;
+}
+
+bool QuadTree::placeOverlap(Vector3 minA, Vector3 maxA, Vector3 minB, Vector3 maxB) {
+	if (maxA.x < minB.x || minA.x > maxB.x || maxA.z < minB.z || minA.z > maxB.z)
+		return false;
 	else
-	{
-		// Indicates topRightTree 
-		if ((topLeft.z + botRight.z) / 2 >= nodePos.z)
-		{
-			if (topRightTree == nullptr)
-				topRightTree = new QuadTree(
-					Vector3((topLeft.x + botRight.x) / 2,
-						topLeft.z),
-					Vector3(botRight.x,
-					(topLeft.z + botRight.z) / 2));
-			topRightTree->Insert(node);
-		}
-
-		// Indicates botRightTree 
-		else
-		{
-			if (botRightTree == nullptr)
-				botRightTree = new QuadTree(
-					Vector3((topLeft.x + botRight.x) / 2,
-					(topLeft.z + botRight.z) / 2),
-					Vector3(botRight.x, botRight.z));
-			botRightTree->Insert(node);
-		}
-	}
+		return true;
 }
 
-
-QuadNode* QuadTree::Search(Vector3 point)
-{
-	// Current quad cannot contain it 
-	if (!isWithin(point))
-		return nullptr;
-
-	// We are at a quad of unit length 
-	// We cannot subdivide this quad further 
-	if (this->node != nullptr)
-		return this->node;
-
-	if ((topLeft.x + botRight.x) / 2 >= point.x)
-	{
-		// Indicates topLeftTree 
-		if ((topLeft.z + botRight.z) / 2 >= point.z)
-		{
-			if (topLeftTree == nullptr)
-				return nullptr;
-			return topLeftTree->Search(point);
-		}
-
-		// Indicates botLeftTree 
-		else
-		{
-			if (botLeftTree == nullptr)
-				return nullptr;
-			return botLeftTree->Search(point);
-		}
-	}
-	else
-	{
-		// Indicates topRightTree 
-		if ((topLeft.z + botRight.z) / 2 >= point.z)
-		{
-			if (topRightTree == nullptr)
-				return nullptr;
-			return topRightTree->Search(point);
-		}
-
-		// Indicates botRightTree 
-		else
-		{
-			if (botRightTree == nullptr)
-				return nullptr;
-			return botRightTree->Search(point);
-		}
-	}
+std::vector<Mesh*> QuadTree::queryMesh(Vector3 position, float width, float depth) {
+	Vector3 minB = position + Vector3(-width, 0, -depth);
+	Vector3 maxB = position + Vector3(width, 0, depth);
+	return queryMesh(minB, maxB);
 }
 
-bool QuadTree::isWithin(Vector3 point)
-{
-	return (point.x >= topLeft.x &&
-		point.x <= botRight.x &&
-		point.z >= topLeft.z &&
-		point.z <= botRight.z);
-}
+std::vector<Mesh*> QuadTree::queryMesh(Vector3 minB, Vector3 maxB) {
 
+	std::vector<Mesh*> results;
+
+	// Ignore if specified bounds doesn't overlap with Quadtree's boundary
+	if (!placeOverlap(min, max, minB, maxB))
+		return results;
+
+	// For every mesh, check if they are within the specified bounds and add them to the results if they are
+	for (int g = 0; g < (int)meshes.size(); g++) {
+		Mesh* current = meshes[g];
+		if (current == nullptr) continue;
+		if (withinBounds(current->position, minB, maxB))
+			results.push_back(current);
+	}
+
+	// Terminate if there are no children Quads
+	if (topRight == nullptr)
+		return results;
+
+	// Otherwise, add all the mesh from children Quads
+	std::vector<Mesh*> topRightResults = topRight->queryMesh(minB, maxB);
+	results.insert(results.end(), topRightResults.begin(), topRightResults.end());
+
+	std::vector<Mesh*> topLeftResults = topLeft->queryMesh(minB, maxB);
+	results.insert(results.end(), topLeftResults.begin(), topLeftResults.end());
+
+	std::vector<Mesh*> bottomLeftResults = bottomLeft->queryMesh(minB, maxB);
+	results.insert(results.end(), bottomLeftResults.begin(), bottomLeftResults.end());
+
+	std::vector<Mesh*> bottomRightResults = bottomRight->queryMesh(minB, maxB);
+	results.insert(results.end(), bottomRightResults.begin(), bottomRightResults.end());
+
+	return results;
+}
