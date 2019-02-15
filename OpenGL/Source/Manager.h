@@ -42,7 +42,6 @@ private:
 	std::map<std::string, Mesh*> objects;
 	std::map<std::string, ShaderProgram*> shaders;
 	std::vector<LightSource*> lightSources;
-	FPSCamera* camera;
 	bool startsWith(std::string input, std::string keyWord);
 };
 

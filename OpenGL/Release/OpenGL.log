@@ -1,29 +1,9 @@
-﻿  Collision.cpp
-  OBB.cpp
-  GUIText.cpp
-  GUIFont.cpp
-  GUIManager.cpp
-  GUIChar.cpp
-  ShaderProgram.cpp
-  shader.cpp
-  Manager.cpp
-  Primitive.cpp
-  Camera.cpp
-  LightSource.cpp
-  Primitives.cpp
-  FPSCamera.cpp
-  SceneA2.cpp
-  LoadTGA.cpp
-  Mesh.cpp
-  Application.cpp
-c:\program files (x86)\windows kits\10\include\10.0.17763.0\shared\minwindef.h(130): warning C4005: 'APIENTRY': macro redefinition
-  c:\users\ryant\source\repos\sp2framework\glfw\include\glfw\glfw3.h(98): note: see previous definition of 'APIENTRY'
-  main.cpp
-  Utility.cpp
-  Compiling...
-  Texture.cpp
-  Transformation.cpp
+﻿  Player.cpp
+c:\users\elson\desktop\sp2\sp2framework\opengl\source\player.cpp(10): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\users\elson\desktop\sp2\sp2framework\opengl\source\player.cpp(56): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
   Generating code
-  All 2402 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  1 of 2718 functions (<0.1%) were compiled, the rest were copied from previous compilation.
+    0 functions were new in current compilation
+    0 functions had inline decision re-evaluated but remain unchanged
   Finished generating code
-  OpenGL.vcxproj -> C:\Users\ryant\source\repos\SP2Framework\Release\OpenGL.exe
+  OpenGL.vcxproj -> C:\Users\Elson\Desktop\SP2\SP2Framework\Release\OpenGL.exe
