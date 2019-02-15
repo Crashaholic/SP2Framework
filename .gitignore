@@ -9,11 +9,13 @@
 /Debug/OpenGL.pdb
 /Debug/OpenGL.ilk
 /Debug/Common.pdb
+/Debug/OpenGL.exe
+/Debug/Common.lib
 /OpenGL/Debug
 /OpenGL/x64/Debug
 /Release/OpenGL.pdb
 /Release/OpenGL.ipdb
 /Release/OpenGL.iobj
-Debug/OpenGL.exe
+/Release/Common.lib
 x64/Debug/Common.lib
 x64/Debug/Common.pdb
