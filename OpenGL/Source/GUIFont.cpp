@@ -2,6 +2,7 @@
 #include "GL\glew.h"
 #include "LoadTGA.h"
 #include "Utility.h"
+#include "Application.h"
 
 
 GUIFont::GUIFont(const char* path, const char* texturePath)
@@ -102,10 +103,10 @@ void GUIFont::createDataFromText(std::vector<GUIGlyph>& glyphs, float xPos, floa
 		float maxX = x + (c->width * fontSize);
 		float maxY = y + (c->height * fontSize);
 
-		float actualX = (x + 1) / 400.0f - 1;
-		float actualY = -((y + 1) / 300.0f - 1);
-		float actualMaxX = (maxX + 1) / 400.0f - 1;
-		float actualMaxY = -((maxY + 1) / 300.0f - 1);
+		float actualX = (x + 1) / ((float)Application::winWidth * 0.5f) - 1;
+		float actualY = -((y + 1) / ((float)Application::winHeight * 0.5f) - 1);
+		float actualMaxX = (maxX + 1) / ((float)Application::winWidth * 0.5f) - 1;
+		float actualMaxY = -((maxY + 1) / ((float)Application::winHeight * 0.5f) - 1);
 
 		// Tex Coords (Range 0-1 - 0,0 Bottom Left)
 		float xTexCoord = c->xPos / 512.0f;
@@ -180,7 +181,6 @@ void GUIFont::load(const char* path)
 			data[(int) text->id] = text;
 		}
 	}
-
 	handle.close();
 }
 

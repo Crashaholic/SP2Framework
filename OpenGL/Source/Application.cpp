@@ -20,6 +20,9 @@ void resize_callback(GLFWwindow* window, int w, int h);
 double Application::mouse_x = 0.0;
 double Application::mouse_y = 0.0;
 
+int Application::winWidth = 800;
+int Application::winHeight = 600;
+
 //Define an error callback
 static void error_callback(int error, const char* description)
 {
@@ -143,4 +146,6 @@ void Application::Exit()
 
 void resize_callback(GLFWwindow* window, int w, int h) {
 	glViewport(0, 0, w, h);
+	Application::winWidth = w;
+	Application::winHeight = h;
 }

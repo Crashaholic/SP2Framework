@@ -3,18 +3,17 @@
 #include "GL\glew.h"
 #include "Utility.h"
 #include "LoadTGA.h"
+#include "GUITexture.h"
 
 GUIManager* GUIManager::instance = nullptr;
 
-
-
 GUIManager::GUIManager()
 {
-	fonts["game"] = new GUIFont("Fonts//game2.fnt", "Fonts//game2.tga");
-
-
-	//InitFBO();
-
+	fonts["bahnschrift"] = new GUIFont("Fonts//bahnschrift.fnt", "Fonts//bahnschrift.tga");
+	fonts[ "consolas"  ] = new GUIFont("Fonts//consolas.fnt"   , "Fonts//consolas.tga"   );
+	fonts[  "default"  ] = new GUIFont("Fonts//default.fnt"    , "Fonts//default.tga"    );
+	//GUITexture* test = new GUITexture(Vector3(0, 0, 0), Vector3(0, 0, 0), Vector3(1, 1, 1), LoadTGA("Image//cursor.tga"));
+	renderables.push_back(cursor.getGUITexture()->getIRender());
 	//textures.push_back(new Texture(Vector3(0.7f, 0.7f), 0, Vector3(0.25f, 0.25f), topdownTexture, -1));
 	//textures.push_back(new Texture(Vector3(0.7f, 0.7f), 90, Vector3(0.025f, 0.025f), LoadTGA("Image//arrow.tga"), 1));
 }
@@ -22,15 +21,13 @@ GUIManager::GUIManager()
 
 GUIManager::~GUIManager()
 {
-
-
 	for (auto const& font : fonts)
 		if (font.second != nullptr)
 			delete font.second;
 
-	for (int i = 0; i < (int) textures.size(); i++)
-		if(textures[i] != nullptr)
-			delete textures[i];
+	for (int i = 0; i < (int) renderables.size(); i++)
+		if(renderables[i] != nullptr)
+			delete renderables[i];
 }
 
 void GUIManager::InitFBO()
@@ -63,8 +60,11 @@ Texture* GUIManager::getTexture(int pos) {
 	return textures.at(pos);
 }
 
-
-
+void GUIManager::cursorUpdate(double newX, double newY)
+{
+	cursor.updateVars(newX, newY);
+	cursor.updateTexture();
+}
 
 GUIManager* GUIManager::getInstance()
 {
@@ -72,7 +72,6 @@ GUIManager* GUIManager::getInstance()
 		instance = new GUIManager();
 	return instance;
 }
-
 
 void GUIManager::renderUI() {
 	
@@ -116,7 +115,11 @@ void GUIManager::renderUI() {
 	for (int i = 0; i < (int)guiText.size(); i++) {
 		guiText[i]->render();
 		delete guiText[i];
-	}		
+	}
+
+	for (int i = 0; i < (int)renderables.size(); i++) {
+		renderables[i]->draw();
+	}
 	guiText.clear();
 
 }
@@ -126,4 +129,5 @@ void GUIManager::renderText(std::string font, float xPos, float yPos, std::strin
 	std::vector<GUIGlyph> glyphs;
 	fonts[font]->createDataFromText(glyphs, xPos, yPos, text, fontSize, align);
 	guiText.push_back(new GUIText(glyphs, xPos, yPos, fonts[font]->getTexture(), fontSize, color));
+
 }

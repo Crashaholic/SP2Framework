@@ -14,7 +14,6 @@ GUIText::GUIText(std::vector<GUIGlyph> glyphs, float xPos, float yPos, unsigned 
 	glGenBuffers(1, &VBO);
 }
 
-
 GUIText::GUIText()
 {
 	xPos = yPos = fontSize = 0.0f;
@@ -52,6 +51,7 @@ void GUIText::render() {
 	// Update uniforms and bind texture
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, fontTexture);
+	shader->setUniform("fontSize", fontSize);
 	shader->setUniform("textColor", color.r, color.g, color.b);
 	shader->updateUniforms();
 

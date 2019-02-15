@@ -41,7 +41,6 @@ private:
 	unsigned int VBO;
 	float getValue(std::string input);
 	std::map<int, GUIChar*> data;
-	//GUIChar* data[256];
 };
 
 #endif

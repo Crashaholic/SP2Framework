@@ -3,4 +3,10 @@
 
 unsigned LoadTGA(const char *file_path);
 
+struct image
+{
+	unsigned int ID;
+	unsigned int width, height;
+};
+
 #endif

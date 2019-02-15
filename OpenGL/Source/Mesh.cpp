@@ -21,11 +21,9 @@ Mesh::Mesh(const char* meshName, Primitive* primitive, unsigned int texID, bool 
 	: name(meshName)
 	, mode(drawMode) , textureID(texID)
 {
-
 	// Generate Buffers
 	glGenBuffers(1, &vertexBuffer); 
 	glGenBuffers(1, &indexBuffer); 
-
 
 	// Bind & Buffer
 	glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);

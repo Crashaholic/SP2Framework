@@ -20,7 +20,6 @@ SceneA2::~SceneA2()
 {
 }
 
-
 void SceneA2::Init()
 {
 
@@ -33,13 +32,14 @@ void SceneA2::Init()
 	glGenVertexArrays(1, &m_vertexArrayID);
 	glBindVertexArray(m_vertexArrayID);
 
-
 	InitShaderProperties();
 	CreateMesh();
 
 	Mtx44 projection;
-	projection.SetToPerspective(45.0f, 4.0f / 3.0f, 0.1f, 10000.0f);
+	projection.SetToPerspective(45.0f, Application::winWidth / Application::winHeight, 0.1f, 10000.0f);
 	projectionStack.LoadMatrix(projection);
+
+	testTexture = LoadTGA("Image//rock.tga");
 
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
@@ -96,8 +96,6 @@ void SceneA2::CreateMesh()
 
 }
 
-
-
 void SceneA2::Render()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -106,17 +104,15 @@ void SceneA2::Render()
 	viewStack.LoadMatrix(player->getCamera()->LookAt());
 
 	std::vector<LightSource*>* lightSources = manager->getLightSources();
-	for (int i = 0; i < (int)lightSources->size(); i++){
+	for (int i = 0; i < (int)lightSources->size(); i++)
+	{
 		lightSources->at(i)->updateAttributes(viewStack);
 	}
 
 	gui = GUIManager::getInstance();
 	RenderScene();
 	RenderUI();
-
-
 }
-
 
 void SceneA2::RenderScene()
 {
@@ -283,7 +279,13 @@ void SceneA2::RenderScene()
 }
 
 void SceneA2::RenderUI() {
+	gui->cursorUpdate(Application::mouse_x, Application::mouse_y);
 	gui->renderUI();
+	//gui->renderText("default", 0, 15, "FPS: " + std::to_string(lastFramesPerSecond), 0.4f, Color(0, 1, 0));
+	gui->renderText("bahnschrift", 0, 15, "FPS: " + std::to_string(lastFramesPerSecond), 0.4f, Color(0, 1, 0));
+	gui->renderText("bahnschrift", 0, 40, "Hello World", 0.4f, Color(0, 1, 0));
+	gui->renderText("consolas", 0, 400, "Hello World", 0.5f, Color(0, 1, 0));
+
 	gui->renderText("game", 0, 15, "FPS: " + std::to_string(lastFramesPerSecond), 0.4f, Color(0, 1, 0));
 
 	if (!player->isInVehicle && (player->getCar()->position - player->position).Length() <= 6.0f)
@@ -291,12 +293,8 @@ void SceneA2::RenderUI() {
 
 }
 
-
-
 void SceneA2::RenderMesh(Mesh* mesh, bool enableLight, unsigned int shader)
 {
-
-
 	Mtx44 MVP, modelView, modelView_inverse_tranpose;
 	MVP = projectionStack.Top() * viewStack.Top() * modelStack.Top();
 	modelView = viewStack.Top() * modelStack.Top();
@@ -487,11 +485,6 @@ void SceneA2::Update(double dt)
 	}
 
 }
-
-
-
-
-
 
 void SceneA2::Exit()
 {

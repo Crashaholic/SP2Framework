@@ -16,6 +16,9 @@
 #include "Manager.h"
 #include "GUIManager.h"
 #include "Player.h"
+#include "Cursor.h"
+
+#include "GUITexture.h"
 
 class SceneA2 : public Scene
 {
@@ -30,9 +33,7 @@ public:
 	virtual void Exit();
 private:
 
-
-
-	void RenderMesh(Mesh* mesh, bool enableLight, unsigned int shader = 0);
+	void RenderMesh(Mesh* mesh, bool enableLight, unsigned int shader=0);
 	void RenderScene();
 	void RenderUI();
 	void RenderSkybox();
@@ -44,6 +45,7 @@ private:
 	MS modelStack, viewStack, projectionStack;
 
 	unsigned m_vertexArrayID;
+	unsigned testTexture;
 
 	float bounceTimeCounter = 0.0f;
 	float lastTimed = 0.0f;

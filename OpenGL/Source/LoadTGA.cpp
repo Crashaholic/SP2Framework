@@ -14,9 +14,9 @@ unsigned LoadTGA(const char *file_path)				// load TGA file to memory
 	}
 
 	GLubyte		header[ 18 ];									// first 6 useful header bytes
-	GLuint		bytesPerPixel;								    // number of bytes per pixel in TGA gile
-	GLuint		imageSize;									    // for setting memory
-	GLubyte *	data;
+	GLuint		bytesPerPixel;									// number of bytes per pixel in TGA gile
+	GLuint		imageSize;										// for setting memory
+	GLubyte*	data;
 	GLuint		texture = 0;
 	unsigned	width, height;
 
