@@ -4,7 +4,7 @@ Shop::Shop() {
 Shop::~Shop() {
 }
 void Shop::enterShop() {
-	Head = Tail = new shopNode;
+	//Head = Tail = new shopNode;
 }
 int Shop::Buy(/*Player Player,*/Car*& Car, int Number) {//4 options: Car, Nitro, Tires, Engine
 	//if (Number == 1) {
@@ -76,11 +76,11 @@ int Shop::Undo(/*Player Player,*/Car*& Car) {
 
 
 void Shop::exitShop() {
-	while (Tail->getBack() != nullptr) {
-		Tail = Tail->getBack();
-		delete Tail->getNext();
-	}
-	delete Head;
+	//while (Tail->getBack() != nullptr) {
+	//	Tail = Tail->getBack();
+	//	delete Tail->getNext();
+	//}
+	//delete Head;
 }
 
 
