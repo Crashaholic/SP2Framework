@@ -4,6 +4,7 @@
 #include "Utility.h"
 #include "Manager.h"
 
+
 Car::Car(const char* meshName, Primitive* primitive, unsigned int texID, DRAW_MODE drawMode)
 	: Mesh(meshName, primitive, texID, true, drawMode) {
 
@@ -16,18 +17,25 @@ Car::Car(const char* meshName, Primitive* primitive, unsigned int texID, DRAW_MO
 
 	kBraking = 2.0f;
 	kMass = 50.0f;
-	kDrag = 0.1f;
-	kFriction = 0.20f;
+	kDrag = 0.2f;
+	kFriction = 0.22f;
 	maxReverseVelocity = -0.5f;
 
 	engineAcceleration = brakingAcceleration = reverseAcceleration = 0.0f;
 	isOccupied = false;
 	currentSteer = steerAmount = 0.0f;
 
+	start = false;
+
+	previousInputs[0] = previousInputs[1] = 0;
+
 	obb->setHalf(Vector3(2.192, 1.2445, 4.289));
 	defaultObb->setHalf(Vector3(2.192, 1.2445, 4.289));
 }
 
+Car::Car() {
+
+}
 
 Car::~Car()
 {
@@ -46,6 +54,7 @@ void Car::Update(double dt)
 		float accInput = 0.0f;
 		float steerInput = 0.0f;
 
+		
 		if (Application::IsKeyPressed('W'))
 			accInput = 1.0f;
 		else if (Application::IsKeyPressed('S'))
@@ -60,29 +69,32 @@ void Car::Update(double dt)
 		else
 			steerInput = 0;
 
-		calcResultant(accInput, steerInput, dt);
+		if (Application::IsKeyPressed('K') && !start) start = true;
+
+		
+		velocity += updatePosition(accInput, steerInput, dt);
 		
 	}
 
 	Mesh::Update(dt);
 }
 
-Vector3 Car::calcResultant(float accInput, float steerInput, float dt) {
+Vector3 Car::updatePosition(float accInput, float steerInput, float dt) {
 
-	Vector3 resultant, traction, rotDrag, drag, friction, braking, acceleration, lateral, reverse, engineForward = Vector3(0,0,0);
+	Vector3 resultant, rotDrag, drag, friction, braking, acceleration, reverse, engineForward = Vector3(0,0,0);
 
 
 
 	// Steering Car
 	if (velocity.Length() > 0.01f)
-		steerAngle = steerInput * 25;
+		steerAngle = steerInput * 30;
 	else if (accInput != -1)
 		steerAngle = 0;
 
 	if (accInput < 0.0f)
 		steerAngle = -steerAngle;
 
-	currentSteer = Utility::Lerp(currentSteer, currentSteer + steerAngle, (float)dt * 0.75f);
+	currentSteer = Utility::Lerp(currentSteer, currentSteer + steerAngle, (float)dt * 0.70f);
 
 	float angle = rotation.y + 90.0f + currentSteer;
 	float rad = Math::DegreeToRadian(angle);
@@ -150,56 +162,20 @@ Vector3 Car::calcResultant(float accInput, float steerInput, float dt) {
 	}
 
 	
-
-	std::cout << "Reverse: " << reverse  << std::endl;
+	if (accInput != previousInputs[0] && start) {
+		std::cout << "Acc: " << position << ", Rot: " << rotation.y-currentSteer << "-> A: " << accInput << std::endl;
+	}else if (steerInput != previousInputs[1] && start) {
+		std::cout << "Steering: " << position << ", Rot: " << rotation.y - currentSteer << " -> S: " << steerInput << std::endl;
+	}
 	
 
-	velocity += acceleration * dt;
 	
-	
-	//velocity += angularVelocity;
-	//std::cout << "Braking: " << braking << std::endl;
-	//std::cout << "Circle Radius: " << circleRadius << std::endl;
-
-	return resultant;
+	previousInputs[0] = accInput;
+	previousInputs[1] = steerInput;
+	return acceleration * dt;
 }
 
-void Car::switchGears(float rpm) {
 
-
-	
-}
-
-float Car::getTurnRatio(float gear) {
-	if (gear == 1) {
-		return 3.13f;
-	}
-	else if (gear == 2) {
-		return 2.59f;
-	}
-	else if (gear == 3) {
-		return 1.96f;
-	}
-	else if (gear == 4) {
-		return 1.24f;
-	}
-	else if (gear == 5 || gear == 6) {
-		return 0.98f;
-	}
-	else if (gear == 7) {
-		return 0.84f;
-	}
-}
-
-float Car::getFinalTurnRatio(float gear) {
-	if (gear == 1 || gear == 4 || gear == 5) {
-		return 4.89f;
-	}
-	else if (gear == 2 || gear == 3 || gear == 6 || gear == 7) {
-		return 3.94f;
-	}
-
-}
 
 void Car::Render(MS& modelStack, MS& viewStack, MS& projectionStack, ShaderProgram* shader)
 {

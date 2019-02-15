@@ -1,0 +1,9 @@
+waypoint=pos:(-94.6872 1.76629 85.0918),rot:-2.85549,acc:1,steer:0
+waypoint=pos:(-97.1228 1.76629 133.923),rot:-2.49845,acc:0,steer:-1
+waypoint=pos:(-97.3037 1.76629 152.518),rot:16.0671,acc:0,steer:0
+waypoint=pos:(-96.6685 1.76629 163.876),rot:31.7768,acc:1,steer:0
+waypoint=pos:(-93.9622 1.76629 170.807),rot:50.6999,acc:0,steer:0
+waypoint=pos:(-90.2562 1.77629 174.8),rot:51.057,acc:0,steer:-1
+waypoint=pos:(-69.0359 1.76629 187.865),rot:86.4029,acc:0,steer:0
+waypoint=pos:(-48.3364 1.77629 192.259),rot:86.7599,acc:0,steer:1
+waypoint=pos:(-42.0006 1.77629 193.054),rot:92.8292,acc:0,steer:0

@@ -53,7 +53,7 @@ public:
 	OBB* getOBB();
 	std::vector<Transformation*> transformations;
 
-	virtual void Render(MS& modelStack, MS& viewStack, MS& projectionStack, ShaderProgram* shader);
+	void Render(MS& modelStack, MS& viewStack, MS& projectionStack, ShaderProgram* shader);
 
 	virtual void Translate(MS& modelStack, float x, float y, float z);
 	void Scale(MS& modelStack, float x, float y, float z);

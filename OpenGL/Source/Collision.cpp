@@ -89,6 +89,7 @@ bool Collision::checkCollision(OBB& box, OBB& other, Vector3& translation) {
 std::vector<Mesh*> Collision::checkCollision(Mesh* mesh) {
 	Manager* manager = Manager::getInstance();
 	std::vector<Mesh*> objects = manager->getTree()->queryMesh(mesh->position, 50.0f, 50.0f);
+	objects.push_back(manager->getObject("ground"));
 	//std::map<std::string, Mesh*>* objects = manager->getObjects();
 	
 	std::vector<Mesh*> collided;
@@ -109,6 +110,7 @@ std::vector<Mesh*> Collision::checkCollisionT(Mesh* mesh, Vector3& translation, 
 {
 	Manager* manager = Manager::getInstance();
 	std::vector<Mesh*> objects = manager->getTree()->queryMesh(mesh->position, 50.0f, 50.0f);
+	objects.push_back(manager->getObject("ground"));
 	//std::map<std::string, Mesh*>* objects = manager->getObjects();
 
 	std::vector<Mesh*> collided;
@@ -134,6 +136,7 @@ std::vector<Mesh*> Collision::checkCollisionR(Mesh* mesh, Vector3& rotation, std
 {
 	Manager* manager = Manager::getInstance();
 	std::vector<Mesh*> objects = manager->getTree()->queryMesh(mesh->position, 50.0f, 50.0f);
+	objects.push_back(manager->getObject("ground"));
 	//std::map<std::string, Mesh*>* objects = manager->getObjects();
 
 	std::vector<Mesh*> collided;

@@ -145,6 +145,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Source\AICar.cpp" />
+    <ClCompile Include="Source\AIWaypoint.cpp" />
     <ClCompile Include="Source\QuadNode.cpp" />
     <ClCompile Include="Source\QuadTree.cpp" />
     <ClCompile Include="Source\Car.cpp" />
@@ -173,6 +175,8 @@
     <ClCompile Include="Source\Transformation.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Source\AICar.h" />
+    <ClInclude Include="Source\AIWaypoint.h" />
     <ClInclude Include="Source\QuadNode.h" />
     <ClInclude Include="Source\QuadTree.h" />
     <ClInclude Include="Source\Car.h" />

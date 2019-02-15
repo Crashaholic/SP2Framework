@@ -8,7 +8,7 @@
 #include "ShaderProgram.h"
 #include "Collision.h"
 #include "QuadTree.h"
-
+#include "AICar.h"
 
 SceneA2::SceneA2()
 {
@@ -63,6 +63,7 @@ void SceneA2::CreateMesh()
 	manager->spawnObject(new Mesh("playerAxes", axes, 0, false, Mesh::DRAW_LINES));
 
 	// Environment
+	manager->spawnObject(new Mesh("track", Primitives::loadModel("Models//track.obj"), LoadTGA("Models//human.tga"), false));
 	manager->spawnObject(new Mesh("ground", Primitives::loadModel("Models//ground.obj"), LoadTGA("Image//rock.tga"), true));
 	manager->spawnObject(new Player("human", Primitives::loadModel("Models//human.obj"), LoadTGA("Models//human.tga")));
 	//manager->spawnObject(new Mesh("cube1", Primitives::loadModel("Models//cube1.obj"), LoadTGA("Image//rock.tga"), true));
@@ -79,6 +80,8 @@ void SceneA2::CreateMesh()
 	player->setCar(car);
 	//manager->spawnObject(new Mesh("car", Primitives::loadModel("Models//car.obj"), LoadTGA("Models//car.tga")));
 
+	manager->spawnObject(new AICar("ai", Primitives::loadModel("Models//car.obj"), LoadTGA("Models//bridge.tga")));
+	
 
 	//tree.Insert(player);
 	//tree.Insert(car);
@@ -127,14 +130,20 @@ void SceneA2::RenderScene()
 	modelStack.PopMatrix();
 
 	modelStack.PushMatrix();
-	RenderMesh(manager->getObject("axes"), false);
+	manager->getObject("track")->Translate(modelStack, 0, 1.1f, 0.0);
+	manager->getObject("track")->Rotate(modelStack, 180, 0, 1, 0);
+	RenderMesh(manager->getObject("track"), true);
 	modelStack.PopMatrix();
 
-	modelStack.PushMatrix();
-	manager->getObject("playerAxes")->Translate(modelStack, player->position.x, player->position.y, player->position.z);
-	manager->getObject("playerAxes")->Rotate(modelStack, car->rotation.y - car->currentSteer, 0, 1, 0);
-	RenderMesh(manager->getObject("playerAxes"), false);
-	modelStack.PopMatrix();
+	//modelStack.PushMatrix();
+	//RenderMesh(manager->getObject("axes"), false);
+	//modelStack.PopMatrix();
+
+	//modelStack.PushMatrix();
+	//manager->getObject("playerAxes")->Translate(modelStack, player->position.x, player->position.y, player->position.z);
+	//manager->getObject("playerAxes")->Rotate(modelStack, car->rotation.y - car->currentSteer, 0, 1, 0);
+	//RenderMesh(manager->getObject("playerAxes"), false);
+	//modelStack.PopMatrix();
 
 	modelStack.PushMatrix();
 	manager->getObject("human")->ResetOBB();
@@ -209,6 +218,59 @@ void SceneA2::RenderScene()
 		RenderMesh(carBody->at(i), true);
 		modelStack.PopMatrix();
 	}
+
+
+	modelStack.PopMatrix();
+	glEnable(GL_CULL_FACE);
+
+	glDisable(GL_CULL_FACE); // Disable Cull Face for Car
+	modelStack.PushMatrix();
+	AICar* ai = dynamic_cast<AICar*>(manager->getObject("ai"));
+	ai->ResetOBB();
+
+	ai->Translate(modelStack, ai->position.x, ai->position.y, ai->position.z);
+	ai->Rotate(modelStack, ai->rotation.x, 1, 0, 0);
+	ai->Rotate(modelStack, ai->rotation.y, 0, 1, 0);
+	ai->Rotate(modelStack, -ai->currentSteer, 0, 1, 0);
+	ai->Rotate(modelStack, ai->rotation.z, 0, 0, 1);
+	RenderMesh(ai, true);
+	//std::vector<Mesh*>* aiBody = ai->getChildren();
+	//for (int i = 0; i < (int)aiBody->size(); i++)
+	//{
+	//	modelStack.PushMatrix();
+	//	//if (i == 0)
+	//	//{
+	//	//	Mesh* steeringWheel = carBody->at(0);
+	//	//	steeringWheel->Translate(modelStack, 0, 1.75f, 0.7f);
+	//	//	steeringWheel->Rotate(modelStack, car->steeringWheelAngle * 2.4f, 0, 0, 1);
+
+	//	//}
+	//	//else if (i == 1)
+	//	//{
+	//	//	carBody->at(i)->Translate(modelStack, 1.55f, 0.72f, 2.2f);
+	//	//	carBody->at(i)->Rotate(modelStack, -car->steeringWheelAngle, 0, 1, 0);
+	//	//	carBody->at(i)->Rotate(modelStack, car->wheelAngle, 1, 0, 0);
+
+	//	//}
+	//	//else if (i == 2)
+	//	//{
+	//	//	carBody->at(i)->Translate(modelStack, -1.55f, 0.72f, 2.2f);
+	//	//	carBody->at(i)->Rotate(modelStack, -car->steeringWheelAngle, 0, 1, 0);
+	//	//	carBody->at(i)->Rotate(modelStack, car->wheelAngle, 1, 0, 0);
+	//	//}
+	//	//else if (i == 3)
+	//	//{
+	//	//	carBody->at(i)->Translate(modelStack, 1.55f, 0.73f, -2.85f);
+	//	//	carBody->at(i)->Rotate(modelStack, car->wheelAngle, 1, 0, 0);
+	//	//}
+	//	//else if (i == 4)
+	//	//{
+	//	//	carBody->at(i)->Translate(modelStack, -1.55f, 0.73f, -2.85f);
+	//	//	carBody->at(i)->Rotate(modelStack, car->wheel Angle, 1, 0, 0);
+	//	//}
+	//	RenderMesh(aiBody->at(i), true);
+	//	modelStack.PopMatrix();
+	//}
 
 
 	modelStack.PopMatrix();
