@@ -122,6 +122,6 @@ void main(){
 			color = vec4( fragmentColor, 1 );
 	}
 
-	color.rgb += vec3(60.0 / 255.0, 30.0 / 255.0, 10.0 / 255.0);
+	
 
 }

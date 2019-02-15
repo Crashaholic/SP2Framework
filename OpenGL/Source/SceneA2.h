@@ -14,6 +14,7 @@
 #include "LightSource.h"
 #include "Manager.h"
 #include "GUIManager.h"
+#include "Cursor.h"
 
 #include "GUITexture.h"
 
@@ -48,7 +49,6 @@ private:
 	int lastFramesPerSecond = 0;
 	float elapsedTimeCounter = 0.0f;
 
-	GUITexture name;
 	Manager *manager;
 	GUIManager *gui;
 	ShaderProgram* lit;

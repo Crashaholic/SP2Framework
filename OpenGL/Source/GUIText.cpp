@@ -14,7 +14,6 @@ GUIText::GUIText(std::vector<GUIGlyph> glyphs, float xPos, float yPos, unsigned 
 	glGenBuffers(1, &VBO);
 }
 
-
 GUIText::GUIText()
 {
 	xPos = yPos = fontSize = 0.0f;

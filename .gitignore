@@ -15,3 +15,5 @@
 /Release/OpenGL.ipdb
 /Release/OpenGL.iobj
 Debug/OpenGL.exe
+x64/Debug/Common.lib
+x64/Debug/Common.pdb

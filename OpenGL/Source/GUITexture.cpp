@@ -1,8 +1,13 @@
 #include "GUITexture.h"
 
-GUITexture::GUITexture()
+/**
+* 
+*/
+
+GUITexture::GUITexture(Vector3 pos, Vector3 rot, Vector3 scale, unsigned int textureID)
 {
-	render.initShape();
+	quad = Primitives::generateQuad(Color(1, 0, 1));
+	render = new IRender(pos, rot, scale, *quad->getVertices(), *quad->getIndices(), textureID);
 }
 
 GUITexture::~GUITexture()
@@ -10,40 +15,28 @@ GUITexture::~GUITexture()
 
 }
 
-GUITexture::GUITexture(unsigned int existingTexture)
-{
-	render.setTexture(existingTexture);
-}
-
-GUITexture::GUITexture(const char* path)
-{
-	render.setTexture(path);
-}
-
 void GUITexture::setTexture(unsigned int existingTexture)
 {
-	render.setTexture(existingTexture);
+	render->setTexture(existingTexture);
 }
 
 void GUITexture::setTexture(const char* newTexture)
 {
-	render.setTexture(newTexture);
+	render->setTexture(newTexture);
 }
 
-void GUITexture::draw(float x, float y, float rotX, float rotY, float scaleX, float scaleY)
+IRender* GUITexture::getIRender() const
 {
-	glBindBuffer(GL_ARRAY_BUFFER, render.getVBO());
+	return this->render;
+}
 
-	glEnableVertexAttribArray(0);
-	glEnableVertexAttribArray(1);
-	glEnableVertexAttribArray(2);
-	glEnableVertexAttribArray(3);
+void GUITexture::draw() 
+{
+	// empty
+}
 
-	glVertexAttribPointer(0, 3, GL_FLOAT, false, sizeof(Vertex), (void*)0);
-	glVertexAttribPointer(1, 3, GL_FLOAT, false, sizeof(Vertex), (void*) sizeof(Position));
-	glVertexAttribPointer(2, 3, GL_FLOAT, false, sizeof(Vertex), (void*)(sizeof(Position) + sizeof(Color)));
-	glVertexAttribPointer(3, 2, GL_FLOAT, false, sizeof(Vertex), (void*)(sizeof(Position) + sizeof(Color) + sizeof(Vector3)));
-
-	render.draw();
-
+void GUITexture::SetPos(Vector3 b)
+{
+	pos = b;
+	render->SetPos(pos);
 }

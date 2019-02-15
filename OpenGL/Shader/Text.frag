@@ -16,11 +16,8 @@ float edge;
 
 void main()
 {
-	//width = fontSize / (fontSize * 2) + fontSize * 0.001;
-	width = 0.55;
-	edge = (fontSize * 0.1) / (2 * (fontSize / (10 / fontSize)));
-	
-	edge = 0.10;
+	width = fontSize / (fontSize * 2) + fontSize * 0.001;
+	edge = (fontSize * 0.01) / (2 * (fontSize / (5 / fontSize)));
 
 	float dist = 1.0 - texture(atlas, texCoord).a;
 	float alpha = 1.0 - smoothstep(width, width + edge, dist);
