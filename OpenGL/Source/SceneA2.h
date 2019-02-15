@@ -11,6 +11,7 @@
 #include <conio.h>
 #include <vector>
 #include <string>
+#include <Windows.h>
 #include "LightSource.h"
 #include "Manager.h"
 #include "GUIManager.h"
@@ -31,12 +32,14 @@ private:
 
 
 
-	void RenderMesh(Mesh* mesh, bool enableLight, unsigned int shader=0);
+	void RenderMesh(Mesh* mesh, bool enableLight, unsigned int shader = 0);
 	void RenderScene();
 	void RenderUI();
 	void RenderSkybox();
 	void InitShaderProperties();
+	void playMusic();
 	void CreateMesh();
+
 
 	MS modelStack, viewStack, projectionStack;
 
@@ -48,11 +51,14 @@ private:
 	int lastFramesPerSecond = 0;
 	float elapsedTimeCounter = 0.0f;
 
+	bool musicFlag = false;
+
 	Manager *manager;
 	Player* player;
 	Car* car;
 	GUIManager *gui;
 	ShaderProgram* lit;
+
 };
 
 #endif

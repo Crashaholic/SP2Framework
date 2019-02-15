@@ -12,6 +12,7 @@
 
 SceneA2::SceneA2()
 {
+	
 }
 
 
@@ -22,7 +23,9 @@ SceneA2::~SceneA2()
 
 void SceneA2::Init()
 {
+
 	manager = Manager::getInstance();
+	/*manager->loadPlayerProgress();*/
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 	elapsedTimeCounter = bounceTimeCounter = lastTimed = 0.0f;
 	lastFramesPerSecond = framesPerSecond = 1;
@@ -404,9 +407,19 @@ void SceneA2::InitShaderProperties()
 	lit->updateUniforms();
 }
 
+void SceneA2::playMusic()
+{
+	if (!musicFlag)
+	{
+		PlaySound(TEXT("Source\\BGM.wav"), NULL, SND_ASYNC | SND_LOOP);
+		musicFlag = true;
+	}
+}
+
 
 void SceneA2::Update(double dt)
 {
+	playMusic();
 	// Bounce Time
 	if (bounceTimeCounter <= 0.0f) {
 
@@ -482,6 +495,7 @@ void SceneA2::Update(double dt)
 
 void SceneA2::Exit()
 {
+	manager->savePlayerProgress();
 	delete manager;
 	delete gui;
 

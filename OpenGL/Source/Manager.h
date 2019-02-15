@@ -7,6 +7,10 @@
 #include "FreeLookCamera.h"
 #include "QuadTree.h"
 #include <map>
+#include <fstream>
+#include <string>
+
+#include <iostream>
 
 class Manager
 {
@@ -15,6 +19,8 @@ public:
 	static Manager* getInstance();
 
 	void spawnObject(Mesh* mesh);
+	void loadPlayerProgress();
+	void savePlayerProgress();
 
 	Mesh* getObject(std::string name);
 	ShaderProgram* getShader(std::string name);
@@ -25,12 +31,19 @@ public:
 	QuadTree* getTree();
 
 private:
+
 	Manager();
 	static Manager* instance;
 	QuadTree* tree;
+	bool carOneUnlock;
+	bool carTwoUnlock;
+	bool carThreeUnlock;
+	int money;
 	std::map<std::string, Mesh*> objects;
 	std::map<std::string, ShaderProgram*> shaders;
 	std::vector<LightSource*> lightSources;
+	FPSCamera* camera;
+	bool startsWith(std::string input, std::string keyWord);
 };
 
 #endif
