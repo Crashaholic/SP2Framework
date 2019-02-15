@@ -8,6 +8,7 @@
 #include "MatrixStack.h"
 #include "Transformation.h"
 #include "ShaderProgram.h"
+#include "OBB.h"
 
 /******************************************************************************/
 /*!
@@ -42,27 +43,33 @@ public:
 	unsigned int indexSize;
 	unsigned int textureID;
 	bool hasResetCollider;
-
+	bool collisionEnabled;
 	Vector3 position;
 	Vector3 rotation;
+	Vector3 velocity;
 
 	Material material;
 	std::vector<Mesh*>* getChildren();
+	OBB* getOBB();
 	std::vector<Transformation*> transformations;
 
-	virtual void Render(MS& modelStack, MS& viewStack, MS& projectionStack, ShaderProgram* shader);
+	void Render(MS& modelStack, MS& viewStack, MS& projectionStack, ShaderProgram* shader);
 
-	void Translate(MS& modelStack, float x, float y, float z);
+	virtual void Translate(MS& modelStack, float x, float y, float z);
 	void Scale(MS& modelStack, float x, float y, float z);
-	void Rotate(MS& modelStack, float angle, float x, float y, float z);
-	void Transform(MS& modelStack);
-	void ResetCollider();
+	virtual void Rotate(MS& modelStack, float angle, float x, float y, float z);
+	void ResetOBB();
+
+	virtual void Update(double dt);
+
 
 private:
 	virtual void InitTexture();
 
 protected:
-	Vector3 forward;
+
+	OBB* obb;
+	OBB* defaultObb;
 	std::vector<Mesh*> children;
 
 };

@@ -7,6 +7,7 @@
 class Camera
 {
 public:
+	Camera(const Vector3& pos);
 	Camera();
 	~Camera();
 	Vector3 position;
@@ -16,7 +17,7 @@ public:
 	virtual void Reset();
 	virtual void Update(double dt);
 	void setTarget(const Vector3& pos);
-
+	//void setTargetAndFront(const Vector3& target, const Vector3 front);
 	
 protected:
 	Vector3 target;
@@ -38,7 +39,7 @@ protected:
 #include "Mtx44.h"
 
 
-class FPSCamera
+class FreeLookCamera
 {
 public:
 
@@ -46,8 +47,8 @@ Vector3 position;
 bool flying;
 bool inCar;
 
-FPSCamera();
-~FPSCamera();
+FreeLookCamera();
+~FreeLookCamera();
 virtual void Init(const Vector3& pos);
 virtual void Reset();
 virtual void Update(double dt);

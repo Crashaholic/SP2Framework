@@ -9,13 +9,16 @@ Manager::Manager()
 	shaders["overlay"] = new ShaderProgram("Shader//UI.vert", "Shader//UI.frag");
 	for(int i = 0; i < 2; i++)
 		lightSources.push_back(new LightSource());
-	camera = new FPSCamera();
-	camera->Init(Vector3(0, 5, 0));
+
+	tree = new QuadTree(Vector3(0, 0, 0), Vector3(100, 0, 100));
+
 }
 
 
 Manager::~Manager()
 {
+	delete tree;
+
 	for (auto const& object : objects)
 		if (object.second != nullptr)
 			delete object.second;
@@ -27,7 +30,6 @@ Manager::~Manager()
 	for (int i = 0; i < (int)lightSources.size(); i++)
 		delete lightSources[i];
 
-	delete camera;
 }
 
 
@@ -66,8 +68,11 @@ std::map<std::string, ShaderProgram*>* Manager::getShaders()
 void Manager::spawnObject(Mesh* mesh)
 {
 	objects[mesh->name] = mesh;
+	if (mesh->collisionEnabled)
+		tree->Insert(mesh);
 }
 
-FPSCamera* Manager::getCamera() {
-	return camera;
+
+QuadTree* Manager::getTree() {
+	return tree;
 }

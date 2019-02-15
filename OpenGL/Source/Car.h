@@ -1,39 +1,51 @@
 #ifndef CAR_H
 #define CAR_H
-class Car {
+
+#include "Vector3.h"
+#include "Mesh.h"
+#include "LightSource.h"
+
+class Car : public Mesh
+{
 public:
+	Car(const char* meshName, Primitive* primitive, unsigned int texID = 0, DRAW_MODE drawMode = DRAW_TRIANGLES);
 	Car();
-	virtual ~Car();
-	virtual void Upgrade(int) = 0;
+	~Car();
+
+	virtual void Update(double dt);
+	void Render(MS& modelStack, MS& viewStack, MS& projectionStack, ShaderProgram* shader);
+
+	void setOccupied(bool isOccupied);
+	float currentSteer;
+	float angularVelocity;
+
 protected:
-	//physics
-	int Nitro;//Power of nitro
-	float Control;//conering and handling ability
-	float Acceleration;
-	int topSpeed;
-	float Braking;
-	static int money;
-	//int carNo;
-	//int carTeir;
-	int* tier;
-};
-class Car1 : public Car {//Car1 is an example
-public:
-	Car1();
-	~Car1();
-	void Upgrade(int);
+	Vector3 updatePosition(float accInput, float steerInput, float dt);
+	Vector3 forward;
+
 private:
 
+	float engineAcceleration;
+	float reverseAcceleration;
+	float maxReverseVelocity;
+	float brakingAcceleration;
+	
+
+	bool start;
+
+	bool isOccupied;
+
+	float steerAmount;
+
+	float kBraking;
+	float kMass;
+	float kDrag;
+	float kFriction;	
+	float steerAngle;
+
+
+	float previousInputs[2];
+
 };
-//requires a way to change teirs from shop..
+
 #endif
-//In Main
-//Car* car;
-//car=new car1;
-//loads car info
-//saves car info;
-//delete car;
-//car=new car2;
-//loads car info
-//saves car info;
-//delete car;

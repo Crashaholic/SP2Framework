@@ -145,7 +145,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Source\AICar.cpp" />
+    <ClCompile Include="Source\AIWaypoint.cpp" />
+    <ClCompile Include="Source\QuadNode.cpp" />
+    <ClCompile Include="Source\QuadTree.cpp" />
     <ClCompile Include="Source\Car.cpp" />
+    <ClCompile Include="Source\Player.cpp" />
     <ClCompile Include="Source\Collision.cpp" />
     <ClCompile Include="Source\OBB.cpp" />
     <ClCompile Include="Source\GUIText.cpp" />
@@ -159,7 +164,7 @@
     <ClCompile Include="Source\Camera.cpp" />
     <ClCompile Include="Source\LightSource.cpp" />
     <ClCompile Include="Source\Primitives.cpp" />
-    <ClCompile Include="Source\FPSCamera.cpp" />
+    <ClCompile Include="Source\FreeLookCamera.cpp" />
     <ClCompile Include="Source\SceneA2.cpp" />
     <ClCompile Include="Source\LoadTGA.cpp" />
     <ClCompile Include="Source\Mesh.cpp" />
@@ -171,7 +176,12 @@
     <ClCompile Include="Source\Transformation.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Source\AICar.h" />
+    <ClInclude Include="Source\AIWaypoint.h" />
+    <ClInclude Include="Source\QuadNode.h" />
+    <ClInclude Include="Source\QuadTree.h" />
     <ClInclude Include="Source\Car.h" />
+    <ClInclude Include="Source\Player.h" />
     <ClInclude Include="Source\Collision.h" />
     <ClInclude Include="Source\OBB.h" />
     <ClInclude Include="Source\GUIText.h" />
@@ -184,7 +194,7 @@
     <ClInclude Include="Source\Camera.h" />
     <ClInclude Include="Source\LightSource.h" />
     <ClInclude Include="Source\Primitives.h" />
-    <ClInclude Include="Source\FPSCamera.h" />
+    <ClInclude Include="Source\FreeLookCamera.h" />
     <ClInclude Include="Source\SceneA2.h" />
     <ClInclude Include="Source\LoadTGA.h" />
     <ClInclude Include="Source\Light.h" />

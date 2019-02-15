@@ -5,6 +5,8 @@
 #include "Primitives.h"
 #include "Utility.h"
 #include "Manager.h"
+#include "Collision.h"
+#include "GUIManager.h"
 
 
 /******************************************************************************/
@@ -32,8 +34,10 @@ Mesh::Mesh(const char* meshName, Primitive* primitive, unsigned int texID, bool 
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, primitive->getIndices()->size() * sizeof(unsigned int), &primitive->getIndices()->at(0), GL_STATIC_DRAW);
 	indexSize = primitive->getIndices()->size();
 
-
-
+	obb = new OBB(Vector3(primitive->getWidth() * 0.5f, primitive->getHeight() * 0.5f, primitive->getDepth() * 0.5f));
+	defaultObb = new OBB(Vector3(primitive->getWidth() * 0.5f, primitive->getHeight() * 0.5f, primitive->getDepth() * 0.5f));
+	velocity.SetZero();
+	this->collisionEnabled = collisionEnabled;
 }
 
 Mesh::Mesh() {
@@ -57,6 +61,9 @@ Destructor - delete VBO/IBO here
 /******************************************************************************/
 Mesh::~Mesh()
 {
+	delete obb;
+	delete defaultObb;
+
 	if (textureID > 0)
 	{
 		glDeleteTextures(1, &textureID);
@@ -72,6 +79,40 @@ Mesh::~Mesh()
 
 }
 
+void Mesh::Update(double dt) {
+
+	if (collisionEnabled) {
+		if (name == "ground" || name.substr(0,4) == "car_") return;
+		Vector3 grav = Vector3(0, -1.0f, 0);
+		std::vector<Mesh*> collided = Collision::checkCollisionT(this, grav, {});
+
+		if (name == "human") {
+			if (collided.size() != 0)
+				GUIManager::getInstance()->renderText("game", 400, 400, "Collisions: " + std::to_string(collided.size()), 0.35f, Color(1, 0, 1), TEXT_ALIGN_BOTTOMLEFT);
+			else
+				GUIManager::getInstance()->renderText("game", 400, 400, "Collision: None", 0.35f, Color(1, 0, 1), TEXT_ALIGN_BOTTOMLEFT);
+
+		}
+
+		bool ground = false;
+		for (int i = 0; i < collided.size(); i++) {
+			if (collided[i]->name == "ground") {
+				ground = true;
+				break;
+			}
+		}
+
+		if (!ground) {
+			velocity += grav * dt;
+		}
+		else {
+			velocity.y = 0;
+		}
+		position += velocity;
+	}
+	//position += velocity;
+}
+
 /******************************************************************************/
 /*!
 \brief
@@ -80,6 +121,7 @@ OpenGL render code
 /******************************************************************************/
 void Mesh::Render(MS& modelStack, MS& viewStack, MS& projectionStack, ShaderProgram* shader)
 {
+	
 
 	Mtx44 MVP, modelView, modelView_inverse_tranpose, model;
 	MVP = projectionStack.Top() * viewStack.Top() * modelStack.Top();
@@ -104,6 +146,7 @@ void Mesh::Render(MS& modelStack, MS& viewStack, MS& projectionStack, ShaderProg
 
 
 	InitTexture();
+	obb->setPos(position);
 
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
@@ -125,6 +168,7 @@ void Mesh::Render(MS& modelStack, MS& viewStack, MS& projectionStack, ShaderProg
 	glDisableVertexAttribArray(2);
 	glDisableVertexAttribArray(1);
 	glDisableVertexAttribArray(0);
+
 }
 
 std::vector<Mesh*>* Mesh::getChildren()
@@ -140,12 +184,47 @@ void Mesh::loadChildren(std::vector<std::string> names)
 	for (int i = 0; i < (int)names.size(); i++)
 	{
 		std::string modelPath = "Models//" + names[i] + ".obj";
-		children.push_back(new Mesh(names[i].c_str(), Primitives::loadModel(modelPath.c_str()), textureID));
-
+		Primitive* primitive = Primitives::loadModel(modelPath.c_str());
+		Mesh* mesh = new Mesh(names[i].c_str(), primitive, textureID);
+		children.push_back(mesh);
 	}
 
 }
 
+OBB* Mesh::getOBB() {
+	return obb;
+}
+
+void Mesh::Translate(MS& modelStack, float x, float y, float z) {
+	position.Set(x, y, z);
+	obb->setPosAxis(position, obb->getX(), obb->getY(), obb->getZ());
+	modelStack.Translate(x, y, z);
+}
+
+void Mesh::Rotate(MS& modelStack, float angle, float x, float y, float z) {
 
 
+	if (x == 1) {
+		obb->setPosAxis(position, Utility::rotatePointByX(obb->getX(), angle),
+			Utility::rotatePointByX(obb->getY(), angle),
+			Utility::rotatePointByX(obb->getZ(), angle));
+	}
+	else if (y == 1) {
+		obb->setPosAxis(position, Utility::rotatePointByY(obb->getX(), angle),
+			Utility::rotatePointByY(obb->getY(), angle),
+			Utility::rotatePointByY(obb->getZ(), angle));
+	}
+	else if (z == 1) {
+		obb->setPosAxis(position, Utility::rotatePointByZ(obb->getX(), angle),
+			Utility::rotatePointByZ(obb->getY(), angle),
+			Utility::rotatePointByZ(obb->getZ(), angle));
+	}
 
+	modelStack.Rotate(angle, x, y, z);
+
+}
+
+void Mesh::ResetOBB() {
+	obb->setPosAxis(position, defaultObb->getX(), defaultObb->getY(), defaultObb->getZ());
+
+}

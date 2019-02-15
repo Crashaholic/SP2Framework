@@ -1,0 +1,11 @@
+﻿  AICar.cpp
+c:\users\compu\desktop\sp2\sp2 day1\sp2framework\opengl\source\aicar.cpp(8): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\users\compu\desktop\sp2\sp2 day1\sp2framework\opengl\source\aicar.cpp(9): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\users\compu\desktop\sp2\sp2 day1\sp2framework\opengl\source\aicar.cpp(42): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+c:\users\compu\desktop\sp2\sp2 day1\sp2framework\opengl\source\aicar.cpp(103): warning C4018: '<': signed/unsigned mismatch
+  Generating code
+  1 of 2578 functions (<0.1%) were compiled, the rest were copied from previous compilation.
+    0 functions were new in current compilation
+    0 functions had inline decision re-evaluated but remain unchanged
+  Finished generating code
+  OpenGL.vcxproj -> C:\Users\compu\Desktop\SP2\SP2 Day1\SP2Framework\Release\OpenGL.exe

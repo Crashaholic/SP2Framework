@@ -7,10 +7,17 @@ class OBB
 {
 public:
 
-	OBB(Vector3 pos, Vector3 axisX, Vector3 axisY, Vector3 axisZ, Vector3 half);
+	OBB(Vector3 bottomLeft, Vector3 topRight);
+	OBB(Vector3 half);
 	OBB();
 	~OBB();
 	
+	void setPosAxis(Vector3 pos, Vector3 x, Vector3 y, Vector3 z);
+	void setPos(Vector3 pos);
+	void setHalf(Vector3 half);
+
+	OBB Rotate(Vector3 rotation);
+	OBB Translate(Vector3 translation);
 
 	Vector3& getPos();
 	Vector3& getX();

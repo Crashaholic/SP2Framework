@@ -2,6 +2,12 @@
 #include "Application.h"
 
 
+Camera::Camera(const Vector3& pos) {
+	Reset();
+	Init(pos);
+}
+
+
 Camera::Camera()
 {
 	Reset();
@@ -27,6 +33,8 @@ void Camera::setTarget(const Vector3& pos) {
 	target = pos;
 	front = target - position;
 }
+
+
 
 void Camera::Reset()
 {
