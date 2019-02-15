@@ -145,6 +145,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Source\Car.cpp" />
     <ClCompile Include="Source\Collision.cpp" />
     <ClCompile Include="Source\OBB.cpp" />
     <ClCompile Include="Source\GUIText.cpp" />
@@ -164,11 +165,13 @@
     <ClCompile Include="Source\Mesh.cpp" />
     <ClCompile Include="Source\Application.cpp" />
     <ClCompile Include="Source\main.cpp" />
+    <ClCompile Include="Source\Shop.cpp" />
     <ClCompile Include="Source\Utility.cpp" />
     <ClCompile Include="Source\Texture.cpp" />
     <ClCompile Include="Source\Transformation.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Source\Car.h" />
     <ClInclude Include="Source\Collision.h" />
     <ClInclude Include="Source\OBB.h" />
     <ClInclude Include="Source\GUIText.h" />
@@ -190,6 +193,7 @@
     <ClInclude Include="Source\Application.h" />
     <ClInclude Include="Source\Scene.h" />
     <ClInclude Include="Source\shader.hpp" />
+    <ClInclude Include="Source\Shop.h" />
     <ClInclude Include="Source\Vertex.h" />
     <ClInclude Include="Source\Utility.h" />
     <ClInclude Include="Source\Texture.h" />
