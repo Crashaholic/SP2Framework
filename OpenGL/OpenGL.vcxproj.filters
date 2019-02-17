@@ -99,7 +99,7 @@
     <ClCompile Include="Source\AIWaypoint.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-	<ClCompile Include="Source\Shop.cpp">
+    <ClCompile Include="Source\Shop.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\Car.cpp">
@@ -112,6 +112,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\Cursor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\LevitationPad.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -218,14 +221,14 @@
     <ClInclude Include="Source\AICar.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-	<ClInclude Include="Source\Shop.h">
+    <ClInclude Include="Source\Shop.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Source\Car.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="playerProgress.txt" />
+    <ClInclude Include="Source\LevitationPad.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

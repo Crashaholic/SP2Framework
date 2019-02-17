@@ -5,11 +5,12 @@
 #include "Collision.h"
 
 Player::Player(const char* meshName, Primitive* primitive, unsigned int texID, DRAW_MODE drawMode)
-	: Mesh(meshName, primitive, texID, true, drawMode) {
+	: Mesh(meshName, primitive, texID, true, true, drawMode) {
 
-	position.Set(-65.8296, 3.0f, 72.4981);
+	position.Set(0, 7.5f, 0);
+	//position.Set(-65.8296, 3.0f, 72.4981);
 	rotation.Set(0, 0, 0);
-	walkSpeed = 4.5f;
+	walkSpeed = 5.0f;
 	isInVehicle = false;
 	cameraMode = FIRST_PERSON;
 
@@ -18,6 +19,7 @@ Player::Player(const char* meshName, Primitive* primitive, unsigned int texID, D
 
 	obb->setHalf(Vector3(0.5945f, 1.5505f, 0.378f));
 	defaultObb->setHalf(Vector3(0.5945f, 1.5505f, 0.378f));
+	
 }
 
 Player::Player()
@@ -81,7 +83,7 @@ void Player::Update(double dt) {
 			translation += firstPerson->getRight() * walkSpeed * (float)dt;
 		}
 
-		if (Collision::checkCollisionT(this, translation, { "ground" }).size() == 0)
+		if (translation != Vector3(0,0,0) && Collision::checkCollisionT(this, translation, { "ground" }).size() == 0)
 			position += translation;
 
 	}

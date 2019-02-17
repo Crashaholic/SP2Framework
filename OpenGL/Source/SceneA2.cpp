@@ -9,6 +9,7 @@
 #include "Collision.h"
 #include "QuadTree.h"
 #include "AICar.h"
+#include "LevitationPad.h"
 
 SceneA2::SceneA2()
 {
@@ -24,7 +25,6 @@ void SceneA2::Init()
 {
 
 	manager = Manager::getInstance();
-	/*manager->loadPlayerProgress();*/
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 	elapsedTimeCounter = bounceTimeCounter = lastTimed = 0.0f;
 	lastFramesPerSecond = framesPerSecond = 1;
@@ -68,6 +68,8 @@ void SceneA2::CreateMesh()
 	// Environment
 	manager->spawnObject(new Mesh("track", Primitives::loadModel("Models//track.obj"), LoadTGA("Models//human.tga"), false));
 	manager->spawnObject(new Mesh("ground", Primitives::loadModel("Models//ground.obj"), LoadTGA("Image//rock.tga"), true));
+
+	manager->spawnObject(new LevitationPad("pad1", Primitives::loadModel("Models//levitationpad.obj"), LoadTGA("Models//building.tga"), 5.0f));
 	manager->spawnObject(new Player("human", Primitives::loadModel("Models//human.obj"), LoadTGA("Models//human.tga")));
 	//manager->spawnObject(new Mesh("cube1", Primitives::loadModel("Models//cube1.obj"), LoadTGA("Image//rock.tga"), true));
 	//manager->spawnObject(new Mesh("cube2", Primitives::loadModel("Models//cube2.obj"), LoadTGA("Image//rock.tga"), true));
@@ -111,7 +113,9 @@ void SceneA2::Render()
 
 	gui = GUIManager::getInstance();
 	RenderScene();
+	glDisable(GL_DEPTH_TEST);
 	RenderUI();
+	glEnable(GL_DEPTH_TEST);
 }
 
 void SceneA2::RenderScene()
@@ -145,6 +149,17 @@ void SceneA2::RenderScene()
 	//modelStack.PopMatrix();
 
 	modelStack.PushMatrix();
+	LevitationPad* pad = dynamic_cast<LevitationPad*>(manager->getObject("pad1"));
+	pad->ResetOBB();
+	pad->Translate(modelStack, pad->position.x, pad->position.y, pad->position.z);
+	pad->Rotate(modelStack, pad->rotation.x, 1, 0, 0);
+	pad->Rotate(modelStack, pad->rotation.y, 0, 1, 0);
+	pad->Rotate(modelStack, pad->rotation.z, 0, 0, 1);
+	RenderMesh(pad, true);
+	modelStack.PopMatrix();
+
+
+	modelStack.PushMatrix();
 	manager->getObject("human")->ResetOBB();
 	manager->getObject("human")->Translate(modelStack, player->position.x, player->position.y, player->position.z);
 	manager->getObject("human")->Rotate(modelStack, player->rotation.x, 1, 0, 0);
@@ -163,15 +178,9 @@ void SceneA2::RenderScene()
 	}
 	modelStack.PopMatrix();
 
-	//modelStack.PushMatrix();
-	//RenderMesh(manager->getObject("cube1"), true);
-	//modelStack.PopMatrix();
 
-	//modelStack.PushMatrix();
-	//RenderMesh(manager->getObject("cube2"), true);
-	//modelStack.PopMatrix();
-
-	glDisable(GL_CULL_FACE); // Disable Cull Face for Car
+	// Disable face culling for car
+	glDisable(GL_CULL_FACE); 
 	modelStack.PushMatrix();
 	manager->getObject("car")->ResetOBB();
 	manager->getObject("car")->Translate(modelStack, car->position.x, car->position.y, car->position.z);
@@ -222,7 +231,8 @@ void SceneA2::RenderScene()
 	modelStack.PopMatrix();
 	glEnable(GL_CULL_FACE);
 
-	glDisable(GL_CULL_FACE); // Disable Cull Face for Car
+	// Disable Cull Face for Car
+	glDisable(GL_CULL_FACE); 
 	modelStack.PushMatrix();
 	AICar* ai = dynamic_cast<AICar*>(manager->getObject("ai"));
 	ai->ResetOBB();
@@ -233,44 +243,6 @@ void SceneA2::RenderScene()
 	ai->Rotate(modelStack, -ai->currentSteer, 0, 1, 0);
 	ai->Rotate(modelStack, ai->rotation.z, 0, 0, 1);
 	RenderMesh(ai, true);
-	//std::vector<Mesh*>* aiBody = ai->getChildren();
-	//for (int i = 0; i < (int)aiBody->size(); i++)
-	//{
-	//	modelStack.PushMatrix();
-	//	//if (i == 0)
-	//	//{
-	//	//	Mesh* steeringWheel = carBody->at(0);
-	//	//	steeringWheel->Translate(modelStack, 0, 1.75f, 0.7f);
-	//	//	steeringWheel->Rotate(modelStack, car->steeringWheelAngle * 2.4f, 0, 0, 1);
-
-	//	//}
-	//	//else if (i == 1)
-	//	//{
-	//	//	carBody->at(i)->Translate(modelStack, 1.55f, 0.72f, 2.2f);
-	//	//	carBody->at(i)->Rotate(modelStack, -car->steeringWheelAngle, 0, 1, 0);
-	//	//	carBody->at(i)->Rotate(modelStack, car->wheelAngle, 1, 0, 0);
-
-	//	//}
-	//	//else if (i == 2)
-	//	//{
-	//	//	carBody->at(i)->Translate(modelStack, -1.55f, 0.72f, 2.2f);
-	//	//	carBody->at(i)->Rotate(modelStack, -car->steeringWheelAngle, 0, 1, 0);
-	//	//	carBody->at(i)->Rotate(modelStack, car->wheelAngle, 1, 0, 0);
-	//	//}
-	//	//else if (i == 3)
-	//	//{
-	//	//	carBody->at(i)->Translate(modelStack, 1.55f, 0.73f, -2.85f);
-	//	//	carBody->at(i)->Rotate(modelStack, car->wheelAngle, 1, 0, 0);
-	//	//}
-	//	//else if (i == 4)
-	//	//{
-	//	//	carBody->at(i)->Translate(modelStack, -1.55f, 0.73f, -2.85f);
-	//	//	carBody->at(i)->Rotate(modelStack, car->wheel Angle, 1, 0, 0);
-	//	//}
-	//	RenderMesh(aiBody->at(i), true);
-	//	modelStack.PopMatrix();
-	//}
-
 
 	modelStack.PopMatrix();
 	glEnable(GL_CULL_FACE);
@@ -281,15 +253,17 @@ void SceneA2::RenderScene()
 void SceneA2::RenderUI() {
 	gui->cursorUpdate(Application::mouse_x, Application::mouse_y);
 	gui->renderUI();
-	//gui->renderText("default", 0, 15, "FPS: " + std::to_string(lastFramesPerSecond), 0.4f, Color(0, 1, 0));
-	gui->renderText("bahnschrift", 0, 15, "FPS: " + std::to_string(lastFramesPerSecond), 0.4f, Color(0, 1, 0));
-	gui->renderText("bahnschrift", 0, 40, "Hello World", 0.4f, Color(0, 1, 0));
-	gui->renderText("consolas", 0, 400, "Hello World", 0.5f, Color(0, 1, 0));
+	gui->renderText("bahnschrift", 0, 10, "FPS: " + std::to_string(lastFramesPerSecond), 0.4f, Color(0, 1, 0));
 
-	gui->renderText("default", 0, 15, "FPS: " + std::to_string(lastFramesPerSecond), 0.4f, Color(0, 1, 0));
-
+	//gui->renderText("default", 0, 300, "Waypoints: " + std::to_string(dynamic_cast<AICar*>(manager->getObject("ai"))->currentID), 0.4f, Color(0, 1, 0));
 	if (!player->isInVehicle && (player->getCar()->position - player->position).Length() <= 6.0f)
 		gui->renderText("default", 400, 300, "Press F to enter car", 0.4f, Color(0, 1, 0), TEXT_ALIGN_MIDDLE);
+
+
+	gui->renderText("default", 0, 200, "Player Pos: " + std::to_string(player->position.x) + "," + std::to_string(player->position.y) + "," 
+		+ std::to_string(player->position.z), 0.25f, Color(1,0,1));
+	gui->renderText("default", 0, 300, "Car Pos: " + std::to_string(car->position.x) + "," + std::to_string(car->position.y) + ","
+		+ std::to_string(car->position.z), 0.25f, Color(0,1,0));
 
 }
 
@@ -349,7 +323,7 @@ void SceneA2::RenderSkybox()
 
 	modelStack.PushMatrix();
 	modelStack.Translate(0.0f, length / 2, 0.0f);
-	modelStack.Rotate(90.0f, 0, 1, 0);
+	modelStack.Rotate(-90.0f, 0, 1, 0);
 	modelStack.Rotate(90.0f, 1, 0, 0);
 	modelStack.Scale(length, length, 1.0f);
 	RenderMesh(manager->getObject("skyboxTop"), false, lit->getID());
@@ -409,7 +383,7 @@ void SceneA2::playMusic()
 {
 	if (!musicFlag)
 	{
-		PlaySound(TEXT("Source\\BGM.wav"), NULL, SND_ASYNC | SND_LOOP);
+		//PlaySound(TEXT("Source\\BGM.wav"), NULL, SND_ASYNC | SND_LOOP);
 		musicFlag = true;
 	}
 }
@@ -488,7 +462,6 @@ void SceneA2::Update(double dt)
 
 void SceneA2::Exit()
 {
-	manager->savePlayerProgress();
 	delete manager;
 	delete gui;
 

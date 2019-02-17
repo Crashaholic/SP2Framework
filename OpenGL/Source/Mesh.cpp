@@ -17,13 +17,13 @@ Default constructor - generate VBO/IBO here
 \param meshName - name of mesh
 */
 /******************************************************************************/
-Mesh::Mesh(const char* meshName, Primitive* primitive, unsigned int texID, bool collisionEnabled, DRAW_MODE drawMode)
+Mesh::Mesh(const char* meshName, Primitive* primitive, unsigned int texID, bool collisionEnabled, bool gravityEnabled, DRAW_MODE drawMode)
 	: name(meshName)
-	, mode(drawMode) , textureID(texID)
+	, mode(drawMode), textureID(texID)
 {
 	// Generate Buffers
-	glGenBuffers(1, &vertexBuffer); 
-	glGenBuffers(1, &indexBuffer); 
+	glGenBuffers(1, &vertexBuffer);
+	glGenBuffers(1, &indexBuffer);
 
 	// Bind & Buffer
 	glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
@@ -36,9 +36,11 @@ Mesh::Mesh(const char* meshName, Primitive* primitive, unsigned int texID, bool 
 	defaultObb = new OBB(Vector3(primitive->getWidth() * 0.5f, primitive->getHeight() * 0.5f, primitive->getDepth() * 0.5f));
 	velocity.SetZero();
 	this->collisionEnabled = collisionEnabled;
+	this->gravityEnabled = gravityEnabled;
 }
 
-Mesh::Mesh() {
+Mesh::Mesh()
+{
 
 }
 
@@ -77,38 +79,36 @@ Mesh::~Mesh()
 
 }
 
-void Mesh::Update(double dt) {
+void Mesh::Update(double dt)
+{
 
-	if (collisionEnabled) {
-		if (name == "ground" || name.substr(0,4) == "car_") return;
-		Vector3 grav = Vector3(0, -1.0f, 0);
-		std::vector<Mesh*> collided = Collision::checkCollisionT(this, grav, {});
+	if (collisionEnabled)
+	{
+		if (gravityEnabled)
+		{
+			if (name == "ground" || name.substr(0, 4) == "car_") return;
+			Vector3 grav = Vector3(0, -1.0f, 0);
+			std::vector<Mesh*> collided = Collision::checkCollisionT(this, grav, {});
 
-		if (name == "human") {
-			if (collided.size() != 0)
-				GUIManager::getInstance()->renderText("default", 400, 400, "Collisions: " + std::to_string(collided.size()), 0.35f, Color(1, 0, 1), TEXT_ALIGN_BOTTOMLEFT);
-			else
-				GUIManager::getInstance()->renderText("default", 400, 400, "Collision: None", 0.35f, Color(1, 0, 1), TEXT_ALIGN_BOTTOMLEFT);
+			//if (name == "human")
+			//{
+			//	if (collided.size() != 0)
+			//		GUIManager::getInstance()->renderText("default", 400, 400, "Collisions: " + std::to_string(collided.size()), 0.35f, Color(1, 0, 1), TEXT_ALIGN_BOTTOMLEFT);
+			//	else
+			//		GUIManager::getInstance()->renderText("default", 400, 400, "Collision: None", 0.35f, Color(1, 0, 1), TEXT_ALIGN_BOTTOMLEFT);
 
-		}
+			//}
 
-		bool ground = false;
-		for (int i = 0; i < collided.size(); i++) {
-			if (collided[i]->name == "ground") {
-				ground = true;
-				break;
+			if (std::find(collided.begin(), collided.end(), Manager::getInstance()->getObject("ground")) == collided.end()){
+				velocity += grav * dt;
 			}
-		}
-
-		if (!ground) {
-			velocity += grav * dt;
-		}
-		else {
-			velocity.y = 0;
+			else
+			{	
+				velocity.y = 0;
+			}
 		}
 		position += velocity;
 	}
-	//position += velocity;
 }
 
 /******************************************************************************/

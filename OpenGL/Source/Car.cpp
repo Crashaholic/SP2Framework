@@ -2,11 +2,12 @@
 #include "Application.h"
 #include "GUIManager.h"
 #include "Utility.h"
+#include "Collision.h"
 #include "Manager.h"
 
 
 Car::Car(const char* meshName, Primitive* primitive, unsigned int texID, DRAW_MODE drawMode)
-	: Mesh(meshName, primitive, texID, true, drawMode)
+	: Mesh(meshName, primitive, texID, true, true, drawMode)
 {
 
 
@@ -32,6 +33,7 @@ Car::Car(const char* meshName, Primitive* primitive, unsigned int texID, DRAW_MO
 
 	obb->setHalf(Vector3(2.192, 1.2445, 4.289));
 	defaultObb->setHalf(Vector3(2.192, 1.2445, 4.289));
+	handle.open("waypoints.txt");
 }
 
 Car::Car()
@@ -41,6 +43,7 @@ Car::Car()
 
 Car::~Car()
 {
+	handle.close();
 }
 
 void Car::setOccupied(bool isOccupied)
@@ -78,7 +81,15 @@ void Car::Update(double dt)
 
 		velocity += updatePosition(accInput, steerInput, dt);
 
+		//Vector3 grav = Vector3(0, -1.0, 0);
+		//std::vector<Mesh*> collided = Collision::checkCollisionT(this, grav, {"ground", "human"});
+		//if (collided.size() > 0)
+		//{
+		//	velocity += Vector3(0, 10.0f, 0) * dt;
+		//}
 	}
+
+	
 
 	Mesh::Update(dt);
 }
@@ -177,37 +188,24 @@ Vector3 Car::updatePosition(float accInput, float steerInput, float dt)
 
 	if (accInput != previousInputs[0] && start)
 	{
+		std::string text = "waypoint=pos:(" + std::to_string(position.x) + " " + std::to_string(position.y) + " " + std::to_string(position.z) + "),rot:" +
+			std::to_string(rotation.y - currentSteer) + ",acc:" + std::to_string(accInput) + ",steer:" + std::to_string(steerInput);
+		handle << text << std::endl;
 		std::cout << "Acc: " << position << ", Rot: " << rotation.y - currentSteer << "-> A: " << accInput << std::endl;
 	}
 	else if (steerInput != previousInputs[1] && start)
 	{
+		std::string text = "waypoint=pos:(" + std::to_string(position.x) + " " + std::to_string(position.y) + " " + std::to_string(position.z) + "),rot:" +
+			std::to_string(rotation.y - currentSteer) + ",acc:" + std::to_string(accInput) + ",steer:" + std::to_string(steerInput);
+		handle << text << std::endl;
 		std::cout << "Steering: " << position << ", Rot: " << rotation.y - currentSteer << " -> S: " << steerInput << std::endl;
 	}
 
-
+	
 
 	previousInputs[0] = accInput;
 	previousInputs[1] = steerInput;
 	return acceleration * dt;
 }
 
-
-
-void Car::Render(MS& modelStack, MS& viewStack, MS& projectionStack, ShaderProgram* shader)
-{
-
-
-	//// Draw Velocity
-	//int vSpeed = (int)(velocity.Length() * 161);
-	//GUIManager::getInstance()->point., 10, 590, "V: " + std::to_string(vSpeed) + " mph", 0.35f, Color(1, 0, 0), TEXT_ALIGN_BOTTOMLEFT);
-
-
-	// Render
-	Mesh::Render(modelStack, viewStack, projectionStack, shader);
-
-
-
-
-
-}
 

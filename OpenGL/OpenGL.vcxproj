@@ -84,6 +84,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Source\LevitationPad.cpp" />
     <ClCompile Include="Source\AICar.cpp" />
     <ClCompile Include="Source\AIWaypoint.cpp" />
     <ClCompile Include="Source\QuadNode.cpp" />
@@ -118,6 +119,7 @@
     <ClCompile Include="Source\Transformation.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Source\LevitationPad.h" />
     <ClInclude Include="Source\Cursor.h" />
     <ClInclude Include="Source\GUITexture.h" />
     <ClInclude Include="Source\IRender.h" />
@@ -153,9 +155,6 @@
     <ClInclude Include="Source\Utility.h" />
     <ClInclude Include="Source\Texture.h" />
     <ClInclude Include="Source\Transformation.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="playerProgress.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

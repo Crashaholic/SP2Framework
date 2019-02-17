@@ -12,6 +12,7 @@ public:
 	static std::vector<Mesh*> checkCollision(Mesh* mesh);
 	static std::vector<Mesh*> checkCollisionT(Mesh* mesh, Vector3& translation, std::vector<std::string> exceptions);
 	static std::vector<Mesh*> checkCollisionR(Mesh* mesh, Vector3& rotation, std::vector<std::string> exceptions);
+	static std::vector<Mesh*> checkCollisionAbove(Mesh* mesh, float distance, std::vector<std::string> exceptions);
 
 private:
 	static bool checkCollision(OBB& box, OBB& other);

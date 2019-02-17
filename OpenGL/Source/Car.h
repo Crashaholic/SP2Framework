@@ -4,6 +4,7 @@
 #include "Vector3.h"
 #include "Mesh.h"
 #include "LightSource.h"
+#include <fstream>
 
 class Car : public Mesh
 {
@@ -13,8 +14,6 @@ public:
 	~Car();
 
 	virtual void Update(double dt);
-	void Render(MS& modelStack, MS& viewStack, MS& projectionStack, ShaderProgram* shader);
-
 	void setOccupied(bool isOccupied);
 	float currentSteer;
 	float angularVelocity;
@@ -30,21 +29,22 @@ private:
 	float maxReverseVelocity;
 	float brakingAcceleration;
 
-
-	bool start;
-
 	bool isOccupied;
-
 	float steerAmount;
-
 	float kBraking;
 	float kMass;
 	float kDrag;
 	float kFriction;
 	float steerAngle;
 
-
+	// [DEBUG ONLY]
+	bool start;
+	std::ofstream handle;
 	float previousInputs[2];
+
+
+
+
 
 };
 

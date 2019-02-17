@@ -17,12 +17,13 @@ Manager::Manager()
 
 
 	tree = new QuadTree(Vector3(0, 0, 0), Vector3(100, 0, 100));
-
+	//loadPlayerProgress();
 }
 
 
 Manager::~Manager()
 {
+	savePlayerProgress();
 	delete tree;
 
 	for (auto const& object : objects)
