@@ -12,6 +12,7 @@
 /Debug/OpenGL.exe
 /Debug/Common.lib
 /OpenGL/Debug
+/OpenGL/Release
 /OpenGL/x64/Debug
 /Release/OpenGL.pdb
 /Release/OpenGL.ipdb
