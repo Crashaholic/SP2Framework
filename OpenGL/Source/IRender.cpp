@@ -19,6 +19,7 @@ IRender::IRender(Vector3 pos, Vector3 rot, Vector3 scale,
 IRender::~IRender()
 {
 	glDeleteBuffers(1, &this->vbo);
+	glDeleteTextures(1, &this->textureID);
 }
 
 void IRender::draw()
@@ -31,10 +32,10 @@ void IRender::draw()
 	float SCRHEIGHT = Application::winHeight;
 
 	float quadVertices[] = {
-		-0.5f,  0.5f,
-		-0.5f, -0.5f,
-		 0.5f,  0.5f,
-		 0.5f, -0.5f,
+		-1.0f,  1.0f,
+		-1.0f, -1.0f,
+		 1.0f,  1.0f,
+		 1.0f, -1.0f,
 	};
 
 	Mtx44 model, view, proj;
@@ -48,7 +49,6 @@ void IRender::draw()
 	Mtx44 transformationMat, translate, rotation, scale;
 	float newX = ((pos.x * 100.0f / SCRWIDTH / 2.0f) + 1.0f) * 0.1f * mouseSensX;
 	float newY = ((pos.y * 100.0f / SCRHEIGHT / 2.0f) + 1.0f) * 0.1f * mouseSensY;
-	//translate.SetToTranslation(pos.x, pos.y, 0.0f);
 	translate.SetToTranslation(newX, newY, 0.0f);
 	rotation.SetToRotation(rot.z, 0, 0, 1);
 	scale.SetToScale(this->scale.x, this->scale.y, 1.0f);
@@ -76,7 +76,7 @@ void IRender::draw()
 	glBindTexture(GL_TEXTURE_2D, this->textureID);
 	shader->setUniform("mvp", mvp.a);
 	shader->setUniform("colorTexture", 0);
-	shader->setUniform("dontFlip", 0);
+	shader->setUniform("Flip", 0);
 	shader->setUniform("transformationMatrix", transformationMat.a);
 	shader->updateUniforms();
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);

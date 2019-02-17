@@ -36,10 +36,8 @@ void SceneA2::Init()
 	CreateMesh();
 
 	Mtx44 projection;
-	projection.SetToPerspective(45.0f, Application::winWidth / Application::winHeight, 0.1f, 10000.0f);
+	projection.SetToPerspective(45.0f, (float)Application::winWidth / (float)Application::winHeight, 0.1f, 10000.0f);
 	projectionStack.LoadMatrix(projection);
-
-	testTexture = LoadTGA("Image//rock.tga");
 
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
@@ -278,11 +276,11 @@ void SceneA2::RenderScene()
 
 }
 
-void SceneA2::RenderUI() {
+void SceneA2::RenderUI() 
+{
 	gui->cursorUpdate(Application::mouse_x, Application::mouse_y);
 	gui->renderUI();
-	//gui->renderText("default", 0, 15, "FPS: " + std::to_string(lastFramesPerSecond), 0.4f, Color(0, 1, 0));
-	gui->renderText("bahnschrift", 0, 15, "FPS: " + std::to_string(lastFramesPerSecond), 0.4f, Color(0, 1, 0));
+	
 	gui->renderText("bahnschrift", 0, 40, "Hello World", 0.4f, Color(0, 1, 0));
 	gui->renderText("consolas", 0, 400, "Hello World", 0.5f, Color(0, 1, 0));
 
@@ -409,7 +407,7 @@ void SceneA2::playMusic()
 {
 	if (!musicFlag)
 	{
-		PlaySound(TEXT("Source\\BGM.wav"), NULL, SND_ASYNC | SND_LOOP);
+		//PlaySound(TEXT("Source\\BGM.wav"), NULL, SND_ASYNC | SND_LOOP);
 		musicFlag = true;
 	}
 }
@@ -469,6 +467,10 @@ void SceneA2::Update(double dt)
 	for (auto const& object : *objects) {
 		object.second->Update(dt);
 	}
+
+	Mtx44 projection;
+	projection.SetToPerspective(45.0f, (float)Application::winWidth / (float)Application::winHeight, 0.1f, 10000.0f);
+	projectionStack.LoadMatrix(projection);
 
 
 	// Bounce Time & Elapsed Time

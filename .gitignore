@@ -20,3 +20,4 @@
 /Release/Common.lib
 x64/Debug/Common.lib
 x64/Debug/Common.pdb
+*.exe

@@ -8,7 +8,7 @@ Cursor::Cursor()
 	cursorGUI = new GUITexture(
 		Vector3(0, 0, 0),
 		Vector3(0, 0, 0),
-		Vector3(1, 1, 1),
+		Vector3(0.25f, 0.25f, 0.25f),
 		LoadTGA("Image//cursor.tga"));
 }
 

@@ -56,10 +56,6 @@ void GUIManager::InitFBO()
 	//glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-Texture* GUIManager::getTexture(int pos) {
-	return textures.at(pos);
-}
-
 void GUIManager::cursorUpdate(double newX, double newY)
 {
 	cursor.updateVars(newX, newY);

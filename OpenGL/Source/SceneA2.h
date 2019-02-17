@@ -45,7 +45,6 @@ private:
 	MS modelStack, viewStack, projectionStack;
 
 	unsigned m_vertexArrayID;
-	unsigned testTexture;
 
 	float bounceTimeCounter = 0.0f;
 	float lastTimed = 0.0f;
