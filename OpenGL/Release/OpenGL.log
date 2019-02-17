@@ -1,9 +1,0 @@
-﻿  Player.cpp
-c:\users\elson\desktop\sp2\sp2framework\opengl\source\player.cpp(10): warning C4305: 'argument': truncation from 'double' to 'float'
-c:\users\elson\desktop\sp2\sp2framework\opengl\source\player.cpp(56): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
-  Generating code
-  1 of 2718 functions (<0.1%) were compiled, the rest were copied from previous compilation.
-    0 functions were new in current compilation
-    0 functions had inline decision re-evaluated but remain unchanged
-  Finished generating code
-  OpenGL.vcxproj -> C:\Users\Elson\Desktop\SP2\SP2Framework\Release\OpenGL.exe
