@@ -6,10 +6,8 @@
 LevitationPad::LevitationPad(const char* meshName, Primitive* primitive, unsigned int texID, float levitationForce, DRAW_MODE drawMode)
 	:Mesh(meshName, primitive, texID, true, false, drawMode)
 {
-	position.Set(10.0f, 0.5f, 10.0f);
+	//position.Set(10.0f, 1.0f, 10.0f);
 	this->levitationForce = levitationForce;
-	obb->setHalf(Vector3(2.5f, 0.08f, 2.5f));
-	defaultObb->setHalf(Vector3(2.5f, 0.08f, 2.5f));
 }
 
 LevitationPad::LevitationPad()
@@ -21,19 +19,41 @@ LevitationPad::~LevitationPad()
 {
 }
 
+float LevitationPad::getLevitationForce() {
+	return levitationForce;
+}
+
 void LevitationPad::Update(double dt)
 {
-	Vector3 levitate = Vector3(0, levitationForce, 0);
-	std::vector<Mesh*> collided = Collision::checkCollisionAbove(this, 100.0f, {"ground"});
-	Manager* manager = Manager::getInstance();
-	
-	if (collided.size() > 0)
-	{
-		collided[0]->velocity += levitate * dt;
-		std::cout << "." << std::endl;
-	}
+
 
 	Mesh::Update(dt);
+	Vector3 levitate = Vector3(0, levitationForce, 0) * 5.0 * dt;
+	std::vector<Mesh*> collided = Collision::checkCollisionAbove(this, 20.0f, {"ground"});
+	Manager* manager = Manager::getInstance();
+	
+	for (int i = 0; i < collided.size(); i++) {
+		Mesh* m = collided[i];
+		if (abs(m->position.y - position.y + levitate.y) < 20.0f) {
+			
+			m->position += levitate;
+		}
+		else {
+			m->position.y = position.y + 20.0f;
+			m->velocity.y = 0.0;
+		}
+	}
+
+	//if (collided.size() > 0 && collided[0]->position.y < 50.0f)
+	//{
+	//	//collided[0]->position += levitate;
+	//	collided[0]->position += levitate * dt;
+	//	std::cout << "." << std::endl;
+
+	//}
+	
+
+
 }
 
 

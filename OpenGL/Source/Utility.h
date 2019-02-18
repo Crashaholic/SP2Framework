@@ -22,6 +22,7 @@ public:
 	static float Lerp(float start, float end, float percent);
 	static std::vector<std::string> splitLine(const std::string& s, char delimiter);
 	static float Clamp(float min, float max, float value);
+	static bool startsWith(std::string& line, std::string keyword);
 	static float Sign(Vector3 value);
 	static float Sign(float value);
 };

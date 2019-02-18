@@ -6,6 +6,11 @@
 #include "LightSource.h"
 #include <fstream>
 
+enum PhysicsMode {
+	PHYSICS_CAR,
+	PHYSICS_PLANE,
+};
+
 class Car : public Mesh
 {
 public:
@@ -17,10 +22,13 @@ public:
 	void setOccupied(bool isOccupied);
 	float currentSteer;
 	float angularVelocity;
-
+	Vector3 forward;
+	PhysicsMode mode;
+	float xDelta;
+	float zDelta;
 protected:
 	Vector3 updatePosition(float accInput, float steerInput, float dt);
-	Vector3 forward;
+
 
 private:
 
@@ -36,6 +44,8 @@ private:
 	float kDrag;
 	float kFriction;
 	float steerAngle;
+	float thrust;
+	float thrusters = 300.0f;
 
 	// [DEBUG ONLY]
 	bool start;

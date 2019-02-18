@@ -6,6 +6,7 @@
 #include "Utility.h"
 #include "Manager.h"
 #include "Collision.h"
+#include "LevitationPad.h"
 #include "GUIManager.h"
 
 
@@ -35,6 +36,8 @@ Mesh::Mesh(const char* meshName, Primitive* primitive, unsigned int texID, bool 
 	obb = new OBB(Vector3(primitive->getWidth() * 0.5f, primitive->getHeight() * 0.5f, primitive->getDepth() * 0.5f));
 	defaultObb = new OBB(Vector3(primitive->getWidth() * 0.5f, primitive->getHeight() * 0.5f, primitive->getDepth() * 0.5f));
 	velocity.SetZero();
+	obb->setPos(position + Vector3(0, obb->getHalf().y, 0));
+	defaultObb->setPos(position + Vector3(0, obb->getHalf().y, 0));
 	this->collisionEnabled = collisionEnabled;
 	this->gravityEnabled = gravityEnabled;
 }
@@ -98,13 +101,30 @@ void Mesh::Update(double dt)
 			//		GUIManager::getInstance()->renderText("default", 400, 400, "Collision: None", 0.35f, Color(1, 0, 1), TEXT_ALIGN_BOTTOMLEFT);
 
 			//}
+			std::vector<Mesh*> collidePath = Collision::checkCollisionAbove(this, -20.0f, {});
+			bool hasPad = std::find(collidePath.begin(), collidePath.end(), Manager::getInstance()->getObject("pad1")) != collidePath.end();
 
-			if (std::find(collided.begin(), collided.end(), Manager::getInstance()->getObject("ground")) == collided.end()){
+
+			if (!hasPad && std::find(collided.begin(), collided.end(), Manager::getInstance()->getObject("ground")) == collided.end()) {
 				velocity += grav * dt;
 			}
-			else
-			{	
-				velocity.y = 0;
+			else {
+
+				if (!hasPad) {
+					Vector3 ground = Manager::getInstance()->getObject("ground")->getOBB()->getPos() + Manager::getInstance()->getObject("ground")->getOBB()->getHalf().y;
+					Vector3 distance = obb->getPos() - obb->getHalf().y - ground;
+					distance.x = 0;
+					distance.z = 0;
+					if (distance.Length() > 0.0f) {
+						position.y = Manager::getInstance()->getObject("ground")->position.y + Manager::getInstance()->getObject("ground")->getOBB()->getHalf().y;
+					}
+					else {
+						velocity.y = 0;
+					}
+				}
+
+				if(velocity.y < 0)
+					velocity.y = 0;
 			}
 		}
 		position += velocity;
@@ -144,7 +164,7 @@ void Mesh::Render(MS& modelStack, MS& viewStack, MS& projectionStack, ShaderProg
 
 
 	InitTexture();
-	obb->setPos(position);
+	obb->setPos(position + Vector3(0, obb->getHalf().y, 0));
 
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
@@ -195,25 +215,26 @@ OBB* Mesh::getOBB() {
 
 void Mesh::Translate(MS& modelStack, float x, float y, float z) {
 	position.Set(x, y, z);
-	obb->setPosAxis(position, obb->getX(), obb->getY(), obb->getZ());
-	modelStack.Translate(x, y, z);
+	obb->setPosAxis(position + Vector3(0, obb->getHalf().y, 0), obb->getX(), obb->getY(), obb->getZ());
+	modelStack.Translate(x, obb->getPos().y, z);
 }
 
 void Mesh::Rotate(MS& modelStack, float angle, float x, float y, float z) {
 
+	
 
 	if (x == 1) {
-		obb->setPosAxis(position, Utility::rotatePointByX(obb->getX(), angle),
+		obb->setPosAxis(position + Vector3(0, defaultObb->getHalf().y, 0), Utility::rotatePointByX(obb->getX(), angle),
 			Utility::rotatePointByX(obb->getY(), angle),
 			Utility::rotatePointByX(obb->getZ(), angle));
 	}
 	else if (y == 1) {
-		obb->setPosAxis(position, Utility::rotatePointByY(obb->getX(), angle),
+		obb->setPosAxis(position + Vector3(0, defaultObb->getHalf().y, 0), Utility::rotatePointByY(obb->getX(), angle),
 			Utility::rotatePointByY(obb->getY(), angle),
 			Utility::rotatePointByY(obb->getZ(), angle));
 	}
 	else if (z == 1) {
-		obb->setPosAxis(position, Utility::rotatePointByZ(obb->getX(), angle),
+		obb->setPosAxis(position + Vector3(0, defaultObb->getHalf().y, 0), Utility::rotatePointByZ(obb->getX(), angle),
 			Utility::rotatePointByZ(obb->getY(), angle),
 			Utility::rotatePointByZ(obb->getZ(), angle));
 	}
@@ -223,6 +244,6 @@ void Mesh::Rotate(MS& modelStack, float angle, float x, float y, float z) {
 }
 
 void Mesh::ResetOBB() {
-	obb->setPosAxis(position, defaultObb->getX(), defaultObb->getY(), defaultObb->getZ());
+	obb->setPosAxis(position + Vector3(0, defaultObb->getHalf().y, 0), defaultObb->getX(), defaultObb->getY(), defaultObb->getZ());
 
 }

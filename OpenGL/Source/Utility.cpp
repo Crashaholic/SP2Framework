@@ -110,3 +110,7 @@ float Utility::Clamp(float min, float max, float value)
 	else
 		return value;
 }
+
+bool Utility::startsWith(std::string& line, std::string keyword) {
+	return (line.substr(0, keyword.length()) == keyword);
+}

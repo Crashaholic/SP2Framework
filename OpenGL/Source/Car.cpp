@@ -4,6 +4,7 @@
 #include "Utility.h"
 #include "Collision.h"
 #include "Manager.h"
+#include "Player.h"
 
 
 Car::Car(const char* meshName, Primitive* primitive, unsigned int texID, DRAW_MODE drawMode)
@@ -12,7 +13,7 @@ Car::Car(const char* meshName, Primitive* primitive, unsigned int texID, DRAW_MO
 
 
 
-	position.Set(0.0f, 100.0f, 5.0f);
+	//position.Set(0.0f, 20.0f, 10.0f);
 	rotation.Set(0, 0, 0);
 	velocity.Set(0, 0, 0);
 	forward.Set(0, 0, 1);
@@ -31,9 +32,15 @@ Car::Car(const char* meshName, Primitive* primitive, unsigned int texID, DRAW_MO
 
 	previousInputs[0] = previousInputs[1] = 0;
 
-	obb->setHalf(Vector3(2.192, 1.2445, 4.289));
-	defaultObb->setHalf(Vector3(2.192, 1.2445, 4.289));
+	//obb->setHalf(Vector3(2.192, 1.2445, 4.289));
+	//defaultObb->setHalf(Vector3(2.192, 1.2445, 4.289));
 	handle.open("waypoints.txt");
+	mode = PHYSICS_CAR;
+
+	xDelta = 0.0f;
+	zDelta = 0.0f;
+	thrusters = 300.0f;
+	thrust = 0.0f;
 }
 
 Car::Car()
@@ -55,8 +62,10 @@ void Car::setOccupied(bool isOccupied)
 void Car::Update(double dt)
 {
 
+
 	if (isOccupied)
 	{
+
 
 		float accInput = 0.0f;
 		float steerInput = 0.0f;
@@ -78,21 +87,34 @@ void Car::Update(double dt)
 
 		if (Application::IsKeyPressed('K') && !start) start = true;
 
+		if (Application::IsKeyPressed('M')) {
+			mode = PHYSICS_PLANE;
+		}
 
 		velocity += updatePosition(accInput, steerInput, dt);
+	
+		if (mode == PHYSICS_PLANE) {
+		//	std::cout << thrusters << std::endl;
+		//	thrust = Utility::Lerp(thrust, Application::IsKeyPressed(VK_SPACE), 10.0 * dt);
+		//	if (Application::IsKeyPressed(VK_SPACE) && thrusters > 0.0f) {
 
-		//Vector3 grav = Vector3(0, -1.0, 0);
-		//std::vector<Mesh*> collided = Collision::checkCollisionT(this, grav, {"ground", "human"});
-		//if (collided.size() > 0)
-		//{
-		//	velocity += Vector3(0, 10.0f, 0) * dt;
-		//}
+		//		thrusters -= 10.0 * dt;
+		///*		velocity.y += thrust * dt;*/
+		//		velocity.y += 1.0 * dt;
+		//		/*position.y += thrust;*/
+		//	}
+		//	
+		}
+
 	}
+
+	Mesh::Update(dt);
 
 	
 
-	Mesh::Update(dt);
+
 }
+
 
 Vector3 Car::updatePosition(float accInput, float steerInput, float dt)
 {
@@ -112,11 +134,13 @@ Vector3 Car::updatePosition(float accInput, float steerInput, float dt)
 
 	currentSteer = Utility::Lerp(currentSteer, currentSteer + steerAngle, (float)dt * 0.70f);
 
-	float angle = rotation.y + 90.0f + currentSteer;
+	float angle = 90.0f + currentSteer;
 	float rad = Math::DegreeToRadian(angle);
 	forward.x = cos(rad);
 	forward.z = sin(rad);
 	forward.Normalized();
+
+	rotation.y = -currentSteer;
 
 	float velocityDir = Utility::Sign(velocity);
 

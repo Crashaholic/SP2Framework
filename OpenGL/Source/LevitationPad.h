@@ -11,6 +11,7 @@ public:
 	~LevitationPad();
 
 	void Update(double dt);
+	float getLevitationForce();
 
 private:
 	float levitationForce;

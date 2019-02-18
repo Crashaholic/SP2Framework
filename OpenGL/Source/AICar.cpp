@@ -31,46 +31,46 @@ AICar::~AICar()
 void AICar::Update(double dt) {
 
 
-	if (currentID + 1 < waypoints.size())
-	{
-		AIWaypoint* target = waypoints[currentID + 1];
-		Vector3 targetPos = target->getPos();
-		Vector3 targetRot = Vector3(0, target->getRot(), 0);
-		float distance = (targetPos - position).Length();
+	//if (currentID + 1 < waypoints.size())
+	//{
+	//	AIWaypoint* target = waypoints[currentID + 1];
+	//	Vector3 targetPos = target->getPos();
+	//	Vector3 targetRot = Vector3(0, target->getRot(), 0);
+	//	float distance = (targetPos - position).Length();
 
-		
-		//
-		//float tolerance = (target->getPos() - waypoints[currentID]->getPos()).Length() * 0.5f;
+	//	
+	//	//
+	//	//float tolerance = (target->getPos() - waypoints[currentID]->getPos()).Length() * 0.5f;
 
 
 
-		velocity += updatePosition(-currentAccInput, -currentSteerInput, dt);
-	
-		if (distance <= 1.0f)
-		{
-			currentID++;
-			getInputs();
-		}
-		//Vector3 forecastPos = position + velocity;
-		//if ((currentAccInput != 0 && (target->getPos() - forecastPos).Length() <= tolerance)) {
-		//	//velocity = Utility::Lerp(velocity, 0.0, 5.0 * dt);
-		//	//if (velocity.Length() < 0.1f) velocity.SetZero();
-		//	currentID++;
-		//	getInputs();
-		//}
-		//else if(currentSteerInput != 0 && (target->getRot() + currentSteer) <= 2.0f) {
-		//	currentID++;
-		//	getInputs();
-		//}
-		//else if (currentSteerInput == 0 && currentAccInput == 0 && (target->getPos() - forecastPos).Length() <= tolerance) {
-		//	currentID++;
-		//	getInputs();
-		//}
-		//else {
-		//	currentAccInput = 1;
-		//}
+	//	velocity += updatePosition(-currentAccInput, -currentSteerInput, dt);
+	//
+	//	if (distance <= 1.0f)
+	//	{
+	//		currentID++;
+	//		getInputs();
+	//	}
+	//	//Vector3 forecastPos = position + velocity;
+	//	//if ((currentAccInput != 0 && (target->getPos() - forecastPos).Length() <= tolerance)) {
+	//	//	//velocity = Utility::Lerp(velocity, 0.0, 5.0 * dt);
+	//	//	//if (velocity.Length() < 0.1f) velocity.SetZero();
+	//	//	currentID++;
+	//	//	getInputs();
+	//	//}
+	//	//else if(currentSteerInput != 0 && (target->getRot() + currentSteer) <= 2.0f) {
+	//	//	currentID++;
+	//	//	getInputs();
+	//	//}
+	//	//else if (currentSteerInput == 0 && currentAccInput == 0 && (target->getPos() - forecastPos).Length() <= tolerance) {
+	//	//	currentID++;
+	//	//	getInputs();
+	//	//}
+	//	//else {
+	//	//	currentAccInput = 1;
+	//	//}
 
-	}
+	//}
 	Mesh::Update(dt);
 }
 
