@@ -39,6 +39,11 @@ void AICar::Update(double dt) {
 	std::cout << "A: " << currentAccInput << std::endl;
 	std::cout << "S: " << currentSteerInput << std::endl;
 
+	//hey now
+	//you're an angle i luv
+	//sike nibba you though i was gonna say all star
+	//no u
+
 	//velocity += updatePosition(currentAccInput, currentSteerInput, dt);
 	//
 	//float tolerance = (target->getPos() - waypoints[currentID]->getPos()).Length() * 0.5f;
@@ -122,4 +127,8 @@ void AICar::loadWaypoints() {
 	}
 
 	handle.close();
+	//fer reals tho
+	//i <3 you
+	//8=D
+	//thats a smiley face
 }
