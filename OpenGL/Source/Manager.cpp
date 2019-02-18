@@ -20,7 +20,7 @@ Manager::Manager()
 	money = 0;
 
 
-	tree = new QuadTree(Vector3(0, 0, 0), Vector3(100, 0, 100));
+	tree = new QuadTree(Vector3(-100, 0, -100), Vector3(100, 0, 100));
 	//loadPlayerProgress();
 	loadMap();
 }
@@ -268,6 +268,7 @@ void Manager::loadMap() {
 		std::vector<std::string> rot = Utility::splitLine(current->Get("rotation"), ',');
 		m->position = Vector3(std::stof(pos[0]), std::stof(pos[1]), std::stof(pos[2]));
 		m->rotation = Vector3(std::stof(rot[0]), std::stof(rot[1]), std::stof(rot[2]));
+		m->Init();
 		spawnObject(m);
 	}
 

@@ -61,7 +61,7 @@ public:
 	void ResetOBB();
 
 	virtual void Update(double dt);
-
+	void Init();
 
 private:
 	virtual void InitTexture();

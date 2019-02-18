@@ -5,14 +5,12 @@ AICar::AICar(const char* meshName, Primitive* primitive, unsigned int texID, DRA
 	Car(meshName, primitive, texID, drawMode){
 
 
-	obb->setHalf(Vector3(2.192, 1.2445, 4.289));
-	defaultObb->setHalf(Vector3(2.192, 1.2445, 4.289));
-	loadWaypoints();
+	//loadWaypoints();
 
-	position = waypoints[0]->getPos();
-	currentID = 0;
-	rotation.y = waypoints[0]->getRot();
-	getInputs();
+	////position = waypoints[0]->getPos();
+	//currentID = 0;
+	//rotation.y = waypoints[0]->getRot();
+	//getInputs();
 	
 	//Vector3 targetDir = (current->getPos() - position);
 	//std::cout << "Angle: " << acos(targetDir.Dot(forward) * (1.0f / (targetDir.Length() * forward.Length())));

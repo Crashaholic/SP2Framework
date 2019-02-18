@@ -35,9 +35,7 @@ Mesh::Mesh(const char* meshName, Primitive* primitive, unsigned int texID, bool 
 
 	obb = new OBB(Vector3(primitive->getWidth() * 0.5f, primitive->getHeight() * 0.5f, primitive->getDepth() * 0.5f));
 	defaultObb = new OBB(Vector3(primitive->getWidth() * 0.5f, primitive->getHeight() * 0.5f, primitive->getDepth() * 0.5f));
-	velocity.SetZero();
-	obb->setPos(position + Vector3(0, obb->getHalf().y, 0));
-	defaultObb->setPos(position + Vector3(0, obb->getHalf().y, 0));
+
 	this->collisionEnabled = collisionEnabled;
 	this->gravityEnabled = gravityEnabled;
 }
@@ -45,6 +43,13 @@ Mesh::Mesh(const char* meshName, Primitive* primitive, unsigned int texID, bool 
 Mesh::Mesh()
 {
 
+}
+
+void Mesh::Init()
+{
+	velocity.SetZero();
+	obb->setPos(position + Vector3(0, obb->getHalf().y, 0));
+	defaultObb->setPos(position + Vector3(0, obb->getHalf().y, 0));
 }
 
 void Mesh::InitTexture()
@@ -117,9 +122,6 @@ void Mesh::Update(double dt)
 					distance.z = 0;
 					if (distance.Length() > 0.0f) {
 						position.y = Manager::getInstance()->getObject("ground")->position.y + Manager::getInstance()->getObject("ground")->getOBB()->getHalf().y;
-					}
-					else {
-						velocity.y = 0;
 					}
 				}
 

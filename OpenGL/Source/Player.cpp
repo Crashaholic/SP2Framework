@@ -7,8 +7,7 @@
 Player::Player(const char* meshName, Primitive* primitive, unsigned int texID, DRAW_MODE drawMode)
 	: Mesh(meshName, primitive, texID, true, true, drawMode) {
 
-	position.Set(0, 7.5f, 0);
-	rotation.Set(0, 0, 0);
+
 	walkSpeed = 5.0f;
 	isInVehicle = false;
 	cameraMode = FIRST_PERSON;
@@ -82,7 +81,8 @@ void Player::Update(double dt) {
 			translation += firstPerson->getRight() * walkSpeed * (float)dt;
 		}
 
-		if (translation != Vector3(0,0,0) && Collision::checkCollisionT(this, translation, { "ground", "pad1" }).size() == 0)
+		std::vector<Mesh*> collided = Collision::checkCollisionT(this, translation, { "ground", "pad1" });
+		if (translation != Vector3(0,0,0) && collided.size() == 0)
 			position += translation;
 
 	}

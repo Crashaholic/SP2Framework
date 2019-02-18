@@ -100,9 +100,9 @@ void SceneA2::RenderScene()
 
 	modelStack.PushMatrix();
 	manager->getObject("playerAxes")->Translate(modelStack, car->position.x, car->position.y + car->getOBB()->getHalf().y, car->position.z);
-	manager->getObject("playerAxes")->Rotate(modelStack, car->rotation.x + car->xDelta, 1, 0, 0);
+	manager->getObject("playerAxes")->Rotate(modelStack, car->rotation.x, 1, 0, 0);
 	manager->getObject("playerAxes")->Rotate(modelStack, car->rotation.y, 0, 1, 0);
-	manager->getObject("playerAxes")->Rotate(modelStack, car->rotation.z + car->zDelta, 0, 0, 1);
+	manager->getObject("playerAxes")->Rotate(modelStack, car->rotation.z, 0, 0, 1);
 	RenderMesh(manager->getObject("playerAxes"), false);
 	modelStack.PopMatrix();
 
@@ -118,8 +118,8 @@ void SceneA2::RenderScene()
 			glDisable(GL_CULL_FACE);
 		}
 
-		m->ResetOBB();
 		modelStack.PushMatrix();
+		m->ResetOBB();
 		m->Translate(modelStack, m->position.x, m->position.y, m->position.z);
 		m->Rotate(modelStack, m->rotation.x, 1, 0, 0);
 		m->Rotate(modelStack, m->rotation.y, 0, 1, 0);
@@ -336,6 +336,7 @@ void SceneA2::Update(double dt)
 	for (auto const& object : *objects) {
 		object.second->Update(dt);
 	}
+
 
 
 	// Bounce Time & Elapsed Time
