@@ -35,9 +35,9 @@ void AICar::Update(double dt) {
 	AIWaypoint* target = waypoints[currentID+1];
 	Vector3 targetDir = (target->getPos() - position);
 
-	std::cout << "WP: " << currentID << std::endl;
+	/*std::cout << "WP: " << currentID << std::endl;
 	std::cout << "A: " << currentAccInput << std::endl;
-	std::cout << "S: " << currentSteerInput << std::endl;
+	std::cout << "S: " << currentSteerInput << std::endl;*/
 
 	//hey now
 	//you're an angle i luv

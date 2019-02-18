@@ -6,6 +6,7 @@
 #include "Texture.h"
 #include "IRender.h"
 #include "Cursor.h"
+#include "GUIButton.h"
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -18,9 +19,10 @@ public:
 	~GUIManager();
 	void renderUI();
 	void renderText(std::string font, float xPos, float yPos, std::string text, float fontSize=1.0f, Color color=Color(1,1,1), TextAlignment align=TEXT_ALIGN_LEFT);
-	Texture* getTexture(int pos);
 	unsigned int FBO;
-	void cursorUpdate(double newX, double newY);
+	void update(double newX, double newY, double winWidth, double winHeight);
+	void cursorUpdate(double newX, double newY, double winWidth, double winHeight);
+	void buttonStateUpdate(double newX, double newY, double winWidth, double winHeight);
 private:
 	void InitFBO();
 	GUIManager();
@@ -34,6 +36,7 @@ private:
 	std::map<std::string, GUIFont*> fonts;
 	std::vector<GUIText*> guiText;
 	std::vector<IRender*> renderables;
+	std::vector<GUIButton*> buttons;
 };
 
 #endif

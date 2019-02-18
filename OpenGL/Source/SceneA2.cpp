@@ -286,13 +286,12 @@ void SceneA2::RenderScene()
 
 void SceneA2::RenderUI() 
 {
-	gui->cursorUpdate(Application::mouse_x, Application::mouse_y);
+	gui->update(Application::mouse_x, Application::mouse_y, Application::winWidth, Application::winHeight);
 	gui->renderUI();
 	
-	gui->renderText("bahnschrift", 0, 40, "Hello World", 0.4f, Color(0, 1, 0));
-	gui->renderText("consolas", 0, 400, "Hello World", 0.5f, Color(0, 1, 0));
-
 	gui->renderText("default", 0, 15, "FPS: " + std::to_string(lastFramesPerSecond), 0.4f, Color(0, 1, 0));
+	gui->renderText("bahnschrift", 0, 40, "the lazy brown fox jumps over the lazy dog", 0.4f, Color(0, 1, 0));
+	//gui->renderText("consolas", 0, 400, "Hello World", 0.5f, Color(0, 1, 0));
 
 	if (!player->isInVehicle && (player->getCar()->position - player->position).Length() <= 6.0f)
 		gui->renderText("default", 400, 300, "Press F to enter car", 0.4f, Color(0, 1, 0), TEXT_ALIGN_MIDDLE);

@@ -3,16 +3,13 @@
 #include "Application.h"
 #include "Utility.h"
 
-IRender::IRender(Vector3 pos, Vector3 rot, Vector3 scale, 
-	std::vector<Vertex> vertices, std::vector<unsigned> indices, unsigned int textureID)
+IRender::IRender(Vector3 pos, Vector3 rot, Vector3 scale, unsigned int textureID)
 {
 	glGenBuffers(1, &this->vbo);
 	glGenVertexArrays(1, &this->vao);
 	this->pos = pos;
 	this->rot = rot;
 	this->scale = scale;
-	this->vertices = vertices;
-	this->indices = indices;
 	this->textureID = textureID;
 }
 
@@ -28,10 +25,11 @@ void IRender::draw()
 
 	glBindVertexArray(this->vao);
 
-	float SCRWIDTH = Application::winWidth;
-	float SCRHEIGHT = Application::winHeight;
+	float SCRWIDTH = (float)Application::winWidth;
+	float SCRHEIGHT = (float)Application::winHeight;
 
-	float quadVertices[] = {
+	float quadVertices[] = 
+	{
 		-1.0f,  1.0f,
 		-1.0f, -1.0f,
 		 1.0f,  1.0f,
@@ -43,26 +41,16 @@ void IRender::draw()
 	ShaderProgram* shader = Manager::getInstance()->getShader("overlay");
 	shader->use();
 
-	float mouseSensX = 1.5f;
-	float mouseSensY = 1.25f;
-
 	Mtx44 transformationMat, translate, rotation, scale;
-	float newX = ((pos.x * 100.0f / SCRWIDTH / 2.0f) + 1.0f) * 0.1f * mouseSensX;
-	float newY = ((pos.y * 100.0f / SCRHEIGHT / 2.0f) + 1.0f) * 0.1f * mouseSensY;
-	translate.SetToTranslation(newX, newY, 0.0f);
+	translate.SetToTranslation(pos.x, pos.y, 0.0f);
 	rotation.SetToRotation(rot.z, 0, 0, 1);
 	scale.SetToScale(this->scale.x, this->scale.y, 1.0f);
 	model = transformationMat =  translate * rotation * scale;
 	view.SetToIdentity();
-	double aspectRatio = (double)SCRWIDTH / (double)SCRHEIGHT;
-	unsigned int percentageIncreaseX = (SCRWIDTH - 20) / 20;
-	unsigned int percentageIncreaseY = (SCRHEIGHT - 20) / 20;
-
 	proj.SetToOrtho(
-		-SCRWIDTH / 2 / 100, SCRWIDTH / 2 / 100,
-		-SCRHEIGHT /2 / 100, SCRHEIGHT/ 2 / 100,
+		-SCRWIDTH / 2 , SCRWIDTH / 2 ,
+		-SCRHEIGHT /2 , SCRHEIGHT/ 2 ,
 		-10.0f, 10.0f);
-
 
 	Mtx44 mvp = proj * view * model;
 
@@ -87,7 +75,7 @@ void IRender::draw()
 
 }
 
-void IRender::SetPos(Vector3 b)
+void IRender::setPos(Vector3 b)
 {
 	this->pos = b;
 }
