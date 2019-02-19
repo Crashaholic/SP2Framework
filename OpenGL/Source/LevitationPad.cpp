@@ -4,10 +4,10 @@
 
 
 LevitationPad::LevitationPad(const char* meshName, Primitive* primitive, unsigned int texID, float levitationForce, DRAW_MODE drawMode)
-	:Mesh(meshName, primitive, texID, true, false, drawMode)
+	:Mesh(meshName, primitive, texID, true, false, "pad", drawMode)
+	, levitationForce(levitationForce)
 {
-	//position.Set(10.0f, 1.0f, 10.0f);
-	this->levitationForce = levitationForce;
+
 }
 
 LevitationPad::LevitationPad()

@@ -5,7 +5,7 @@
 #include "Collision.h"
 
 Player::Player(const char* meshName, Primitive* primitive, unsigned int texID, DRAW_MODE drawMode)
-	: Mesh(meshName, primitive, texID, true, true, drawMode) {
+	: Mesh(meshName, primitive, texID, true, true, "player", drawMode) {
 
 
 	walkSpeed = 3.0f;
@@ -91,14 +91,14 @@ void Player::Update(double dt) {
 		// Update Position of the Player in the car according to the car's rotation
 		float rad = Math::DegreeToRadian(90 + car->currentSteer);
 		car->Update(dt);
-		position = car->position + forward * -0.5f + Vector3(0.0f, 1.2f, 0.0f);
+		position = car->position + Vector3(cos(rad), 0, sin(rad)) * -0.5f + Vector3(0.0f, 1.2f, 0.0f);
 		rotation = car->rotation;
 	}
 
 
 	// Set Camera's Position
 	if (cameraMode == FIRST_PERSON) {
-		firstPerson->position = position + Vector3(0.0f, 1.5f, 0.0f) + forward * 0.3f;
+		firstPerson->position = position + Vector3(0.0f, 1.2f, 0.0f) + forward * 0.2f;
 	}
 	else if (cameraMode == FIXED_CAR) {
 		// Target = Camera's position
@@ -106,16 +106,20 @@ void Player::Update(double dt) {
 		Vector3 target = position;
 		Vector3 lookAtTarget = position;
 
-		//float rad = Math::DegreeToRadian(90 - rotation.y);
+		float rad = Math::DegreeToRadian(90 - rotation.y);
+		Vector3 anotherForward;
+		anotherForward.x = cos(rad);
+		anotherForward.z = sin(rad);
+
 		if (isInVehicle) {
-			target += forward * -7.5f + Vector3(0.0f, 3.5f, 0.0f);
-			lookAtTarget += forward * 2.5f;
+			target += anotherForward * -7.5f + Vector3(0.0f, 3.5f, 0.0f);
+			lookAtTarget += anotherForward * 2.5f;
 		}
 		else {
-			target += forward * -5.0f + Vector3(0.0f, 3.5f, 0.0f);
-			lookAtTarget = position + forward * 2.5f + Vector3(0, 1.5f, 0.0);
+			target += anotherForward * -5.0f + Vector3(0.0f, 3.5f, 0.0f);
+			lookAtTarget = position + anotherForward * 2.5f + Vector3(0, 0.5f, 0.0);
 		}
-		fixedCar->position = Utility::Lerp(fixedCar->position, target, 0.8f);
+		fixedCar->position = Utility::Lerp(fixedCar->position, target, 0.9f);
 		fixedCar->setTarget(lookAtTarget);
 	}
 

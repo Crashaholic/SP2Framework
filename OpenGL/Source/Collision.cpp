@@ -171,3 +171,41 @@ std::vector<Mesh*> Collision::checkCollisionAbove(Mesh* mesh, float distance, st
 	}
 	return collided;
 }
+
+std::vector<Mesh*> Collision::checkCollisionType(Mesh* mesh, Vector3& translation, std::string type) {
+
+	Manager* manager = Manager::getInstance();
+	std::vector<Mesh*> objects = manager->getTree()->queryMesh(mesh->position, 50.0f, 50.0f);
+	objects.push_back(manager->getObject("ground"));
+	//std::map<std::string, Mesh*>* objects = manager->getObjects();
+
+	std::vector<Mesh*> collided;
+
+	for (int i = 0; i < objects.size(); i++)
+		//for (auto& object : *objects)
+	{
+		Mesh* obj = objects[i];
+		// Skip self and collision-disabled objects
+		if (obj == mesh || !obj->collisionEnabled | obj->getType() != type) continue;
+
+		bool doesCollide = checkCollision(*mesh->getOBB(), *obj->getOBB(), translation);
+		if (doesCollide)
+			collided.push_back(obj);
+	}
+	return collided;
+}
+
+void Collision::Collide(float initialVelA, float initialVelB, float massA, float massB, float& finalVelA, float& finalVelB, float percentageLost) {
+
+	float percentageRemaining = (100.0f - percentageLost) / 100.0f;
+
+	float y = percentageRemaining * (massA * initialVelA * initialVelA + massB * initialVelB * initialVelB);
+	float z = massA * initialVelA + massB * initialVelB;
+
+	float a = massA + massB * pow(massA/massB, 2);
+	float b = -2.0f * massB * (z / massB) * (massA / massB);
+	float c = massB * pow(z/massB, 2) - y;
+
+	finalVelA = (-b + sqrt(b * b - 4 * a * c)) / (2.0f * a);
+	finalVelB = (z - massA * finalVelA) / massB;
+}

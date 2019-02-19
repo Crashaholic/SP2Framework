@@ -18,9 +18,9 @@ Default constructor - generate VBO/IBO here
 \param meshName - name of mesh
 */
 /******************************************************************************/
-Mesh::Mesh(const char* meshName, Primitive* primitive, unsigned int texID, bool collisionEnabled, bool gravityEnabled, DRAW_MODE drawMode)
+Mesh::Mesh(const char* meshName, Primitive* primitive, unsigned int texID, bool collisionEnabled, bool gravityEnabled, std::string type, DRAW_MODE drawMode)
 	: name(meshName)
-	, mode(drawMode), textureID(texID)
+	, mode(drawMode), textureID(texID), collisionEnabled(collisionEnabled), gravityEnabled(gravityEnabled), type(type)
 {
 	// Generate Buffers
 	glGenBuffers(1, &vertexBuffer);
@@ -36,8 +36,6 @@ Mesh::Mesh(const char* meshName, Primitive* primitive, unsigned int texID, bool 
 	obb = new OBB(Vector3(primitive->getWidth() * 0.5f, primitive->getHeight() * 0.5f, primitive->getDepth() * 0.5f));
 	defaultObb = new OBB(Vector3(primitive->getWidth() * 0.5f, primitive->getHeight() * 0.5f, primitive->getDepth() * 0.5f));
 
-	this->collisionEnabled = collisionEnabled;
-	this->gravityEnabled = gravityEnabled;
 }
 
 Mesh::Mesh()
@@ -248,4 +246,8 @@ void Mesh::Rotate(MS& modelStack, float angle, float x, float y, float z) {
 void Mesh::ResetOBB() {
 	obb->setPosAxis(position + Vector3(0, defaultObb->getHalf().y, 0), defaultObb->getX(), defaultObb->getY(), defaultObb->getZ());
 
+}
+
+std::string Mesh::getType() {
+	return type;
 }
