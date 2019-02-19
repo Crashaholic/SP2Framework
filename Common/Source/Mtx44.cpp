@@ -438,7 +438,7 @@ void Mtx44::SetToLookAt(double eyeX, double eyeY, double eyeZ,
 	Vector3 up((float)upX, (float)upY, (float)upZ);
 	up.Normalize();
 	Vector3 s = f.Cross(up).Normalized();
-	Vector3 u = s.Cross(f);
+	Vector3 u = s.Cross(f).Normalized();
 
 	Mtx44 mat(s.x, u.x, -f.x, 0,
 		s.y, u.y, -f.y, 0,

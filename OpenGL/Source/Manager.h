@@ -19,7 +19,6 @@ public:
 	static Manager* getInstance();
 
 	void spawnObject(Mesh* mesh);
-	void loadMap();
 	void loadPlayerProgress();
 	void savePlayerProgress();
 

@@ -4,14 +4,15 @@
 AICar::AICar(const char* meshName, Primitive* primitive, unsigned int texID, DRAW_MODE drawMode) :
 	Car(meshName, primitive, texID, drawMode){
 
-	type = "ai";
 
-	//loadWaypoints();
+	obb->setHalf(Vector3(2.192, 1.2445, 4.289));
+	defaultObb->setHalf(Vector3(2.192, 1.2445, 4.289));
+	loadWaypoints();
 
-	////position = waypoints[0]->getPos();
-	//currentID = 0;
-	//rotation.y = waypoints[0]->getRot();
-	//getInputs();
+	position = waypoints[0]->getPos();
+	currentID = 0;
+
+	getInputs();
 	
 	//Vector3 targetDir = (current->getPos() - position);
 	//std::cout << "Angle: " << acos(targetDir.Dot(forward) * (1.0f / (targetDir.Length() * forward.Length())));
@@ -30,44 +31,42 @@ AICar::~AICar()
 void AICar::Update(double dt) {
 
 
-	//if (currentID + 1 < waypoints.size())
-	//{
-	//	AIWaypoint* target = waypoints[currentID + 1];
-	//	Vector3 targetPos = target->getPos();
-	//	Vector3 targetRot = Vector3(0, target->getRot(), 0);
-	//	float distance = (targetPos - position).Length();
 
-	//	
-	//	//
-	//	//float tolerance = (target->getPos() - waypoints[currentID]->getPos()).Length() * 0.5f;
+	AIWaypoint* target = waypoints[currentID+1];
+	Vector3 targetDir = (target->getPos() - position);
 
-	//	velocity += updatePosition(-currentAccInput, -currentSteerInput, dt);
+	/*std::cout << "WP: " << currentID << std::endl;
+	std::cout << "A: " << currentAccInput << std::endl;
+	std::cout << "S: " << currentSteerInput << std::endl;*/
+
+	//hey now
+	//you're an angle i luv
+	//sike nibba you though i was gonna say all star
+	//no u
+
+	//velocity += updatePosition(currentAccInput, currentSteerInput, dt);
 	//
-	//	if (distance <= 1.0f)
-	//	{
-	//		currentID++;
-	//		getInputs();
-	//	}
-	//	//Vector3 forecastPos = position + velocity;
-	//	//if ((currentAccInput != 0 && (target->getPos() - forecastPos).Length() <= tolerance)) {
-	//	//	//velocity = Utility::Lerp(velocity, 0.0, 5.0 * dt);
-	//	//	//if (velocity.Length() < 0.1f) velocity.SetZero();
-	//	//	currentID++;
-	//	//	getInputs();
-	//	//}
-	//	//else if(currentSteerInput != 0 && (target->getRot() + currentSteer) <= 2.0f) {
-	//	//	currentID++;
-	//	//	getInputs();
-	//	//}
-	//	//else if (currentSteerInput == 0 && currentAccInput == 0 && (target->getPos() - forecastPos).Length() <= tolerance) {
-	//	//	currentID++;
-	//	//	getInputs();
-	//	//}
-	//	//else {
-	//	//	currentAccInput = 1;
-	//	//}
+	//float tolerance = (target->getPos() - waypoints[currentID]->getPos()).Length() * 0.5f;
 
+	//Vector3 forecastPos = position + velocity;
+	//if ((currentAccInput != 0 && (target->getPos() - forecastPos).Length() <= tolerance)) {
+	//	//velocity = Utility::Lerp(velocity, 0.0, 5.0 * dt);
+	//	//if (velocity.Length() < 0.1f) velocity.SetZero();
+	//	currentID++;
+	//	getInputs();
 	//}
+	//else if(currentSteerInput != 0 && (target->getRot() + currentSteer) <= 2.0f) {
+	//	currentID++;
+	//	getInputs();
+	//}
+	//else if (currentSteerInput == 0 && currentAccInput == 0 && (target->getPos() - forecastPos).Length() <= tolerance) {
+	//	currentID++;
+	//	getInputs();
+	//}
+	//else {
+	//	currentAccInput = 1;
+	//}
+
 	Mesh::Update(dt);
 }
 
