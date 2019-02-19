@@ -7,7 +7,7 @@
 Player::Player(const char* meshName, Primitive* primitive, unsigned int texID, DRAW_MODE drawMode)
 	: Mesh(meshName, primitive, texID, true, drawMode) {
 
-	position.Set(-65.8296, 3.0f, 72.4981);
+	position.Set(0.1f, 3.0f, 0.1f);
 	rotation.Set(0, 0, 0);
 	walkSpeed = 4.5f;
 	isInVehicle = false;

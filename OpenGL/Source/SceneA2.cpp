@@ -107,9 +107,29 @@ void SceneA2::Render()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	modelStack.LoadIdentity();
 
-	viewStack.LoadMatrix(player->getCamera()->LookAt());
-
+	gui = GUIManager::getInstance();
+	glBindFramebuffer(GL_FRAMEBUFFER, gui->FBO);
+	Mtx44 view;
+	view.SetToLookAt(
+		player->position.x, player->position.y + 30.0f, player->position.z,
+		0.0f, -1.0f, 0.0f,
+		0.0f, 1.0f, 0.0f
+	);
+	viewStack.LoadMatrix(view);
 	std::vector<LightSource*>* lightSources = manager->getLightSources();
+	for (int i = 0; i < (int)lightSources->size(); i++)
+	{
+		lightSources->at(i)->updateAttributes(viewStack);
+	}
+
+	RenderScene();
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	modelStack.LoadIdentity();
+
+	viewStack.LoadMatrix(player->getCamera()->LookAt());
+	/*std::vector<LightSource*>* */ lightSources = manager->getLightSources();
 	for (int i = 0; i < (int)lightSources->size(); i++)
 	{
 		lightSources->at(i)->updateAttributes(viewStack);
