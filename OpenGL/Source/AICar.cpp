@@ -41,8 +41,6 @@ void AICar::Update(double dt) {
 	//	//
 	//	//float tolerance = (target->getPos() - waypoints[currentID]->getPos()).Length() * 0.5f;
 
-
-
 	//	velocity += updatePosition(-currentAccInput, -currentSteerInput, dt);
 	//
 	//	if (distance <= 1.0f)
@@ -130,4 +128,8 @@ void AICar::loadWaypoints() {
 	}
 
 	handle.close();
+	//fer reals tho
+	//i <3 you
+	//8=D
+	//thats a smiley face
 }

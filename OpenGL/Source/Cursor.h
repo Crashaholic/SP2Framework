@@ -1,6 +1,7 @@
 #pragma once
 #include "GUITexture.h"
 #include "LoadTGA.h"
+#include <iostream>
 
 class Cursor
 {
@@ -16,7 +17,7 @@ public:
 	double getMoveX();
 	double getMoveY();
 
-	void updateVars(double newX, double newY);
+	void updateVars(double newX, double newY, double winWidth, double winHeight);
 	void updateTexture();
 
 	GUITexture* getGUITexture() const;

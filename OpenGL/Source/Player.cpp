@@ -6,9 +6,8 @@
 
 Player::Player(const char* meshName, Primitive* primitive, unsigned int texID, DRAW_MODE drawMode)
 	: Mesh(meshName, primitive, texID, true, true, "player", drawMode) {
-
-
 	walkSpeed = 3.0f;
+
 	isInVehicle = false;
 	cameraMode = FIRST_PERSON;
 

@@ -17,10 +17,9 @@ public:
 	void setTexture(const char* newTexture);
 	IRender* getIRender() const;
 	void draw();
-	void SetPos(Vector3 b);
+	void setPos(Vector3 b);
 private:
 	IRender* render;
-	Primitive* quad;
 	Vector3 pos, rot, scale;
 };
 

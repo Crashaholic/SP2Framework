@@ -144,7 +144,8 @@ void Application::Exit()
 	glfwTerminate();
 }
 
-void resize_callback(GLFWwindow* window, int w, int h) {
+void resize_callback(GLFWwindow* window, int w, int h)
+{
 	glViewport(0, 0, w, h);
 	Application::winWidth = w;
 	Application::winHeight = h;

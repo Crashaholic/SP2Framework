@@ -116,6 +116,11 @@
     </ClCompile>
     <ClCompile Include="Source\LevitationPad.cpp">
       <Filter>Source Files</Filter>
+    </CICompile>
+    <ClCompile Include="Source\GUIButton.cpp">
+      <Filter>Source Files</Filter>
+    </CICompile>
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -230,5 +235,19 @@
     <ClInclude Include="Source\LevitationPad.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Source\GUIButton.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="playerProgress.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Shader\Blending.frag" />
+    <None Include="Shader\Text.frag" />
+    <None Include="Shader\Text.vert" />
+    <None Include="Shader\Texture.vert" />
+    <None Include="Shader\UI.frag" />
+    <None Include="Shader\UI.vert" />
   </ItemGroup>
 </Project>
