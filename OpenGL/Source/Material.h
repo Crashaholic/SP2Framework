@@ -23,7 +23,7 @@ struct Material {
 
 	Material() {
 		//kAmbient.Set(0.2f, 0.3f, 0.3f);
-		kAmbient.Set(0.1f, 0.1f, 0.1f);
+		kAmbient.Set(0.2f, 0.2f, 0.2f);
 		kDiffuse.Set(0.4f, 0.4f, 0.4f);
 		kSpecular.Set(0.1f, 0.1f, 0.1f);
 		kShininess = 1.0f;

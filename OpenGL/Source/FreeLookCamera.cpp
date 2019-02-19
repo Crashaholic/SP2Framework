@@ -23,7 +23,7 @@ void FreeLookCamera::Init(const Vector3& pos)
 	lastY = 300.0f;
 	yaw = -89.0f;
 	pitch = 0.0f;
-	sensitivity = 0.123591f;
+	sensitivity = 0.08f;
 
 	front = Vector3(0.0f, 0.0f, 1.0f);
 	up = Vector3(0.0f, 1.0f, 0.0f);
@@ -83,27 +83,6 @@ void FreeLookCamera::updateMouse()
 
 
 	this->target = position + front;
-
-	if (Application::IsKeyPressed('A')) {
-		Vector3 temp(front.z, 0, -front.x);
-		target += temp;
-		position += temp;
-	}
-	if (Application::IsKeyPressed('D')) {
-		Vector3 temp(-front.z, 0, front.x);
-		target += temp;
-		position += temp;
-	}
-	if (Application::IsKeyPressed('W')) {
-		Vector3 temp(front.x, 0, front.z);
-		target += temp;
-		position += temp;
-	}
-	if (Application::IsKeyPressed('S')) {
-		Vector3 temp(-front.x, 0, -front.z);
-		target += temp;
-		position += temp;
-	}
 }
 
 void FreeLookCamera::Update(double dt)
@@ -126,7 +105,6 @@ Mtx44 FreeLookCamera::LookAt()
 			s.y, u.y, -f.y, 0,
 			s.z, u.z, -f.z, 0,
 			-s.Dot(target), -u.Dot(target), f.Dot(target), 1);
-
 	}
 
 

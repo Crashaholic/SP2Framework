@@ -1,4 +1,8 @@
 #include "Manager.h"
+#include "LoadTGA.h"
+#include "Player.h"
+#include "AICar.h"
+#include "LevitationPad.h"
 
 Manager* Manager::instance = nullptr;
 
@@ -16,13 +20,15 @@ Manager::Manager()
 	money = 0;
 
 
-	tree = new QuadTree(Vector3(0, 0, 0), Vector3(100, 0, 100));
-
+	tree = new QuadTree(Vector3(-100, 0, -100), Vector3(100, 0, 100));
+	//loadPlayerProgress();
+	loadMap();
 }
 
 
 Manager::~Manager()
 {
+	savePlayerProgress();
 	delete tree;
 
 	for (auto const& object : objects)
@@ -192,6 +198,81 @@ void Manager::savePlayerProgress()
 			}
 	}
 	playerProgress.close();
+}
+
+void Manager::loadMap() {
+	std::ifstream handle("Data//level.txt");
+	if (!handle.is_open()) {
+		std::cout << "[Error] Could not load level.txt!" << std::endl;
+	}
+
+	std::string line;
+	struct Object {
+		std::map<std::string, std::string> values;
+		void Set(std::string key, std::string value)
+		{
+			values[key] = value;
+		}
+
+		std::string Get(std::string key)
+		{
+			return values[key];
+		}
+	};
+
+	std::vector<Object*> objs;
+	Object* current = nullptr;
+
+	while (std::getline(handle, line)) {
+		std::vector<std::string> args = Utility::splitLine(line, '=');
+
+		if (startsWith(line, " ") || line == "")
+		{
+			continue;
+		}
+		else if (startsWith(line, "name"))
+		{
+			if (current != nullptr) objs.push_back(current);
+			current = new Object();
+		}
+		current->Set(args[0], args[1]);
+	}
+
+	if (current != nullptr) objs.push_back(current);
+
+	for (int i = 0; i < (int)objs.size(); i++) {
+		current = objs[i];
+		bool collision = (current->Get("collision") == "true" ? true : false);
+		bool gravity = (current->Get("gravity") == "true" ? true : false);
+		unsigned int textureID = LoadTGA(current->Get("texture").c_str());
+		Primitive* primitive = Primitives::loadModel(current->Get("model").c_str());
+
+		std::string type = current->Get("type");
+		Mesh* m = nullptr;
+		if (type == "player") {
+			m = new Player(current->Get("name").c_str(), primitive, textureID);
+		}
+		else if (type == "car") {
+			m = new Car(current->Get("name").c_str(), primitive, textureID);
+		}
+		else if (type == "pad") {
+			m = new LevitationPad(current->Get("name").c_str(), primitive, textureID, std::stof(current->Get("levitation")));
+		}
+		else if (type == "ai") {
+			m = new AICar(current->Get("name").c_str(), primitive, textureID);
+		}
+		else {
+			m = new Mesh(current->Get("name").c_str(), primitive, textureID, collision, gravity, type);
+		}
+		std::vector<std::string> pos = Utility::splitLine(current->Get("position"), ',');
+		std::vector<std::string> rot = Utility::splitLine(current->Get("rotation"), ',');
+		m->position = Vector3(std::stof(pos[0]), std::stof(pos[1]), std::stof(pos[2]));
+		m->rotation = Vector3(std::stof(rot[0]), std::stof(rot[1]), std::stof(rot[2]));
+		m->Init();
+		spawnObject(m);
+	}
+
+	handle.close();
 }
 
 bool Manager::startsWith(std::string input, std::string keyWord)

@@ -114,7 +114,12 @@
     <ClCompile Include="Source\Cursor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Source\LevitationPad.cpp">
+      <Filter>Source Files</Filter>
+    </CICompile>
     <ClCompile Include="Source\GUIButton.cpp">
+      <Filter>Source Files</Filter>
+    </CICompile>
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -225,6 +230,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Source\Car.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\LevitationPad.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Source\GUIButton.h">

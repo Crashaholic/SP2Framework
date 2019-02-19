@@ -12,11 +12,11 @@ public:
 	~AICar();
 	void Update(double dt);
 	void loadWaypoints();
+	int currentID;
 private:
 	void getInputs();
 	float currentAccInput;
 	float currentSteerInput;
-	int currentID;
 	std::vector<AIWaypoint*> waypoints;
 };
 

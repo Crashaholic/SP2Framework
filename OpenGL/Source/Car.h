@@ -4,6 +4,12 @@
 #include "Vector3.h"
 #include "Mesh.h"
 #include "LightSource.h"
+#include <fstream>
+
+enum PhysicsMode {
+	PHYSICS_CAR,
+	PHYSICS_PLANE,
+};
 
 class Car : public Mesh
 {
@@ -13,15 +19,16 @@ public:
 	~Car();
 
 	virtual void Update(double dt);
-	void Render(MS& modelStack, MS& viewStack, MS& projectionStack, ShaderProgram* shader);
-
 	void setOccupied(bool isOccupied);
 	float currentSteer;
 	float angularVelocity;
-
+	Vector3 forward;
+	PhysicsMode mode;
+	float xDelta;
+	float zDelta;
 protected:
 	Vector3 updatePosition(float accInput, float steerInput, float dt);
-	Vector3 forward;
+
 
 private:
 
@@ -30,21 +37,24 @@ private:
 	float maxReverseVelocity;
 	float brakingAcceleration;
 
-
-	bool start;
-
 	bool isOccupied;
-
 	float steerAmount;
-
 	float kBraking;
 	float kMass;
 	float kDrag;
 	float kFriction;
 	float steerAngle;
+	float thrust;
+	float thrusters = 300.0f;
 
-
+	// [DEBUG ONLY]
+	bool start;
+	std::ofstream handle;
 	float previousInputs[2];
+
+
+
+
 
 };
 
