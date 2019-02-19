@@ -22,7 +22,11 @@ public:
 
 	Camera* getCamera();
 	void setCar(Car* car);
+	void unlockCar(int carSelected);
+	void lockCar(int carSelected);
 	Car* getCar();
+	int getMoney();
+	bool getCarsUnlocked(int carID); //for saving player progress
 
 	void switchCameraMode();
 	bool isInVehicle;
@@ -34,6 +38,12 @@ private:
 	FreeLookCamera* firstPerson;
 	Camera* fixedCar;
 	float walkSpeed;
+	int money;
+
+	bool carOneUnlock;
+	bool carTwoUnlock;
+	bool carThreeUnlock;
+	bool carFourUnlock;
 };
 
 #endif

@@ -1,50 +1,84 @@
 #include "Shop.h"
-Shop::Shop() {
+Shop::Shop()
+{
+
 }
-Shop::~Shop() {
+
+Shop::~Shop()
+{
+
 }
-void Shop::enterShop() {
+
+void Shop::enterShop()
+{
 	//Head = Tail = new shopNode;
 }
-int Shop::Buy(/*Player Player,*/Car*& Car, int Number) {//4 options: Car, Nitro, Tires, Engine
-	//if (Number == 1) {
-	//	//Make the data of the car save if buying new car, be cause of delete
-	//	//if (Player.getMoney() >= (Player.getCarPrice[Number - 1] * Player.getCarTeir[Number - 1])) {
-	//	delete Car;//if/switch statement for different cars
-	//	Car = new Car1;
-	//	Tail->setObjNo(Number);
-	//	Tail->setNext();
-	//	Tail->getNext()->setBack(Tail);
-	//	Tail = Tail->getNext();
-	//	//Player.setMoney(Player.getMoney() - (Player.getCarPrice[Number - 1] * Player.getCarTeir[Number - 1]));
-	//	//}
-	//	//else{
-	//		//Number = 0;
-	//	//}
-	//}
-	//else if (Number >= 2 && Number <= 4) {
-	//	//if (Player.getMoney() >= (Car->getTier(Number - 2) * Car->getObjMoney(Number - 1))) {//&& teir limit not reached
-	//	Tail->setObjNo(Number);
-	//	Tail->setNext();
-	//	Tail->getNext()->setBack(Tail);
-	//	Tail = Tail->getNext();
-	//	//Player.setMoney(Player.getMoney() - (Car->getTier(Number - 2) * Car->getObjMoney(Number - 1)));
-	//	Car->Upgrade(Number - 2);
-	//	//}
-	//	/*else {
-	//		Number = 0;//This means not enough money
-	//	}*/
-	//}
-	//else if (Number == 6) {
-	//	Number = Undo(Car);
-	//}
-	//else {
-	//	Number = 5;//This means item does not exists
-	//}
-	//return Number;
-	return 0;
+
+//int Shop::Buy(/*Player Player,*/Car*& Car, int Number)
+//{//4 options: Car, Nitro, Tires, Engine
+//	//if (Number == 1) {
+//	//	//Make the data of the car save if buying new car, be cause of delete
+//	//	//if (Player.getMoney() >= (Player.getCarPrice[Number - 1] * Player.getCarTeir[Number - 1])) {
+//	//	delete Car;//if/switch statement for different cars
+//	//	Car = new Car1;
+//	//	Tail->setObjNo(Number);
+//	//	Tail->setNext();
+//	//	Tail->getNext()->setBack(Tail);
+//	//	Tail = Tail->getNext();
+//	//	//Player.setMoney(Player.getMoney() - (Player.getCarPrice[Number - 1] * Player.getCarTeir[Number - 1]));
+//	//	//}
+//	//	//else{
+//	//		//Number = 0;
+//	//	//}
+//	//}
+//	//else if (Number >= 2 && Number <= 4) {
+//	//	//if (Player.getMoney() >= (Car->getTier(Number - 2) * Car->getObjMoney(Number - 1))) {//&& teir limit not reached
+//	//	Tail->setObjNo(Number);
+//	//	Tail->setNext();
+//	//	Tail->getNext()->setBack(Tail);
+//	//	Tail = Tail->getNext();
+//	//	//Player.setMoney(Player.getMoney() - (Car->getTier(Number - 2) * Car->getObjMoney(Number - 1)));
+//	//	Car->Upgrade(Number - 2);
+//	//	//}
+//	//	/*else {
+//	//		Number = 0;//This means not enough money
+//	//	}*/
+//	//}
+//	//else if (Number == 6) {
+//	//	Number = Undo(Car);
+//	//}
+//	//else {
+//	//	Number = 5;//This means item does not exists
+//	//}
+//	//return Number;
+//	return 0;
+//}
+
+void Shop::buyCar(Player *player, int carSelected)
+{
+	if (carSelected == 2 && player->getMoney() >= 50)
+	{
+		player->unlockCar(carSelected);
+	}
+	if (carSelected == 3 && player->getMoney() >= 100)
+	{
+		player->unlockCar(carSelected);
+	}
+	if (carSelected == 4 && player->getMoney() >= 200)
+	{
+		player->unlockCar(carSelected);
+	}
 }
-int Shop::Undo(/*Player Player,*/Car*& Car) {
+
+void Shop::buyUpgrade(Player *player)
+{
+	//selects type of upgrade
+	//selects whether to upgrade next tier
+	//subtract money for upgrade
+}
+
+int Shop::Undo(Player *player)
+{
 	//if (Tail != Head) {
 	//	if (Tail->getBack()->getObjNo() == 1) {
 	//		//Player.setMoney(Player.getMoney() + (Player.getCarPrice[Number - 1] * Player.getCarTeir[Number - 1]-1));
@@ -75,7 +109,8 @@ int Shop::Undo(/*Player Player,*/Car*& Car) {
 }
 
 
-void Shop::exitShop() {
+void Shop::exitShop()
+{
 	//while (Tail->getBack() != nullptr) {
 	//	Tail = Tail->getBack();
 	//	delete Tail->getNext();
@@ -124,36 +159,3 @@ void Shop::exitShop() {
 //		}
 //	} while (inGame);
 //}
-
-
-shopNode::shopNode() {
-	Next = nullptr;
-	Back = nullptr;
-	objNo = 0;
-}
-shopNode::~shopNode() {
-}
-void shopNode::setNext(shopNode* Current) {
-	Next = Current;
-}
-void shopNode::setNext() {
-	Next = new shopNode;
-}
-void shopNode::setBack(shopNode* Current) {
-	Back = Current;
-}
-void shopNode::setBack() {
-	Back = new shopNode;
-}
-void shopNode::setObjNo(int Number) {
-	objNo = Number;
-}
-shopNode* shopNode::getNext() {
-	return Next;
-}
-shopNode* shopNode::getBack() {
-	return Back;
-}
-int shopNode::getObjNo() {
-	return objNo;
-}

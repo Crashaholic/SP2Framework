@@ -67,15 +67,13 @@ private:
 	ShaderProgram* lit;
 
 	SoLoud::Soloud Engine;
-	SoLoud::Wav Music[6];
+	SoLoud::Wav Music[4];
 
 	enum Sounds
 	{
 		BGM_MAIN,
 		BGM_INGAME,
 		BGM_RACE,
-		SFX_ACCELERATE,
-		SFX_STEERING,
 		SFX_VICTORY
 	};
 

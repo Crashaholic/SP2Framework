@@ -5,6 +5,9 @@
 #include "Mesh.h"
 #include "LightSource.h"
 
+#include "soloud.h"
+#include "soloud_wav.h"
+
 class Car : public Mesh
 {
 public:
@@ -16,8 +19,20 @@ public:
 	void Render(MS& modelStack, MS& viewStack, MS& projectionStack, ShaderProgram* shader);
 
 	void setOccupied(bool isOccupied);
+	void setEngineTier(int newTier);
+	void setNitroTier(int newTier);
+	void setTireTier(int newTier);
 	float currentSteer;
 	float angularVelocity;
+
+	SoLoud::Soloud carEngine;
+	SoLoud::Wav carSounds[2];
+
+	enum soundEffects
+	{
+		SFX_ENTEROREXIT,
+		SFX_DRIVING
+	};
 
 protected:
 	Vector3 updatePosition(float accInput, float steerInput, float dt);
@@ -34,6 +49,7 @@ private:
 	bool start;
 
 	bool isOccupied;
+	bool isSoundEmitted;
 
 	float steerAmount;
 
@@ -42,6 +58,11 @@ private:
 	float kDrag;
 	float kFriction;
 	float steerAngle;
+
+	//Tier range: 1 to 3 (1 is the worst, 3 is the best)
+	int engineTier; //Increase max velocity
+	int nitroTier; //Increase acceleration & unlimit velocity for short duration
+	int tireTier; //Allow sharper turns in shorter durations
 
 
 	float previousInputs[2];

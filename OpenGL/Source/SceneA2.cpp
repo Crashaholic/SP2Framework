@@ -413,20 +413,20 @@ void SceneA2::InitShaderProperties()
 
 void SceneA2::playMusic()
 {
-	if (state_MainMenu)
-	{
-		Engine.play(Music[BGM_MAIN]);
-		state_MainMenu = false;
-	}
-	if (state_InGame)
-	{
-		Engine.play(Music[BGM_INGAME]);
-		state_InGame = false;
-	}
-	if (!state_Race)
-	{
-		Engine.play(Music[BGM_RACE]);
-	}
+	//if (state_MainMenu)
+	//{
+	//	Engine.play(Music[BGM_MAIN]);
+	//	state_MainMenu = false;
+	//}
+	//if (state_InGame)
+	//{
+	//	Engine.play(Music[BGM_INGAME]);
+	//	state_InGame = false;
+	//}
+	//if (!state_Race)
+	//{
+	//	Engine.play(Music[BGM_RACE]);
+	//}
 
 }
 
@@ -508,7 +508,7 @@ void SceneA2::Update(double dt)
 
 void SceneA2::Exit()
 {
-	manager->savePlayerProgress();
+	manager->savePlayerProgress(player);
 	Engine.deinit();
 	delete manager;
 	delete gui;

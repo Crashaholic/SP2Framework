@@ -6,6 +6,7 @@
 #include "Mesh.h"
 #include "FreeLookCamera.h"
 #include "QuadTree.h"
+#include "Player.h"
 #include <map>
 #include <fstream>
 #include <string>
@@ -20,7 +21,7 @@ public:
 
 	void spawnObject(Mesh* mesh);
 	void loadPlayerProgress();
-	void savePlayerProgress();
+	void savePlayerProgress(Player *player);
 
 	Mesh* getObject(std::string name);
 	ShaderProgram* getShader(std::string name);

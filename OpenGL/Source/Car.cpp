@@ -9,7 +9,9 @@ Car::Car(const char* meshName, Primitive* primitive, unsigned int texID, DRAW_MO
 	: Mesh(meshName, primitive, texID, true, drawMode)
 {
 
-
+	carEngine.init();
+	carSounds[SFX_ENTEROREXIT].load("Music//SFX_CarEnter.wav");
+	carSounds[SFX_DRIVING].load("Music//SFX_CarDriving.wav");
 
 	position.Set(0.0f, 100.0f, 5.0f);
 	rotation.Set(0, 0, 0);
@@ -27,6 +29,11 @@ Car::Car(const char* meshName, Primitive* primitive, unsigned int texID, DRAW_MO
 	currentSteer = steerAmount = 0.0f;
 
 	start = false;
+	isSoundEmitted = false;
+
+	engineTier = 1;
+	nitroTier = 1;
+	tireTier = 1;
 
 	previousInputs[0] = previousInputs[1] = 0;
 
@@ -36,16 +43,35 @@ Car::Car(const char* meshName, Primitive* primitive, unsigned int texID, DRAW_MO
 
 Car::Car()
 {
-
+	carEngine.init();
+	carSounds[SFX_ENTEROREXIT].load("Music//SFX_CarEnter.wav");
+	carSounds[SFX_DRIVING].load("Music//SFX_CarDriving.wav");
 }
 
 Car::~Car()
 {
+	carEngine.deinit();
 }
 
 void Car::setOccupied(bool isOccupied)
 {
 	this->isOccupied = isOccupied;
+	carEngine.play(carSounds[SFX_ENTEROREXIT]);
+}
+
+void Car::setEngineTier(int newTier)
+{
+	this->engineTier = newTier;
+}
+
+void Car::setNitroTier(int newTier)
+{
+	this->nitroTier = newTier;
+}
+
+void Car::setTireTier(int newTier)
+{
+	this->engineTier = newTier;
 }
 
 
@@ -75,8 +101,23 @@ void Car::Update(double dt)
 
 		if (Application::IsKeyPressed('K') && !start) start = true;
 
+		if ((velocity.x > 0.15 || velocity.z > 0.15 || velocity.x < -0.15 || velocity.z < -0.15) && isSoundEmitted == false)
+		{
+			isSoundEmitted = true;
+			carSounds[SFX_DRIVING].setLooping(1);
+			carEngine.play(carSounds[SFX_DRIVING], 0.5f, 1);
+			carEngine.seek(carEngine.play(carSounds[SFX_DRIVING], 0.5f, 1), 1.0f);
+			carEngine.setPause(carEngine.play(carSounds[SFX_DRIVING]), 0);
+
+		}
+		else if (velocity.x == 0 && velocity.z == 0)
+		{
+			carSounds[SFX_DRIVING].stop();
+			isSoundEmitted = false;
+		}
 
 		velocity += updatePosition(accInput, steerInput, dt);
+
 
 	}
 

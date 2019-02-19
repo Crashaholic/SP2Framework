@@ -164,7 +164,7 @@ void Manager::loadPlayerProgress()
 	playerProgress.close();
 }
 
-void Manager::savePlayerProgress()
+void Manager::savePlayerProgress(Player *player)
 {
 	std::fstream playerProgress; //input
 	std::string line;
@@ -177,18 +177,22 @@ void Manager::savePlayerProgress()
 	if (playerProgress.is_open())
 	{
 		playerProgress << "Money=" << moneyString << "\n";
-			if (carOneUnlock == true)
+			if (player->getCarsUnlocked(1) == true)
 			{
 				playerProgress << "ID=1\n";
 				playerProgress << "Upgrade=" <<"\n";
 			}
-			if (carTwoUnlock == true)
+			if (player->getCarsUnlocked(2) == true)
 			{
 				playerProgress << "ID=2\n";
 			}
-			if (carThreeUnlock == true)
+			if (player->getCarsUnlocked(3) == true)
 			{
 				playerProgress << "ID=3\n";
+			}
+			if (player->getCarsUnlocked(4) == true)
+			{
+				playerProgress << "ID=4\n";
 			}
 	}
 	playerProgress.close();
