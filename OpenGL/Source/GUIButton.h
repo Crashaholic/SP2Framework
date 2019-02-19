@@ -5,34 +5,24 @@
 class GUIButton
 {
 public:
-	enum buttonFunc
-	{
-		NAME1,
-		NAME2,
-		NAME3,
-		TOTAL
-	};
-
 	GUIButton(Vector3 pos, Vector3 rot, Vector3 scale, 
 		unsigned int normalTextureID, unsigned int hoverTextureID,
-		buttonFunc funcName);
+		std::string name);
 	GUIButton();
 	~GUIButton();
 
 	IRender* getIRender() const;
-	float runFunc(buttonFunc funcName); 
+	bool checkStatus(double cursorX, double cursorY, double winWidth, double winHeight);
+	std::string getName() const;
 	void draw();
-	bool getHover() const;
 	void setPos(Vector3 b);
-	void checkStatus(double cursorX, double cursorY, double winWidth, double winHeight);
 
 private:
-	bool hover;
 	unsigned int normalTextureID;
 	unsigned int hoverTextureID;
 	IRender* render;
 	Vector3 pos, rot, scale;
-	buttonFunc funcName;
+	std::string name;
 };
 
 /*

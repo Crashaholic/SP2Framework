@@ -31,6 +31,7 @@ private:
 	unsigned int VAO;
 	unsigned int RBO;
 	unsigned int textureVBO;
+	unsigned int topdownTexture;
 	static GUIManager* instance;
 	std::vector<Texture*> textures;
 	std::map<std::string, GUIFont*> fonts;

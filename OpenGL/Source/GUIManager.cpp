@@ -12,12 +12,25 @@ GUIManager::GUIManager()
 	fonts["bahnschrift"] = new GUIFont("Fonts//bahnschrift.fnt", "Fonts//bahnschrift.tga");
 	fonts[ "consolas"  ] = new GUIFont("Fonts//consolas.fnt"   , "Fonts//consolas.tga"   );
 	fonts[  "default"  ] = new GUIFont("Fonts//default.fnt"    , "Fonts//default.tga"    );
+	fonts[  "digital"  ] = new GUIFont("Fonts//analogue.fnt"   , "Fonts//analogue.tga"   );
 	GUIButton* button1 = new GUIButton(
-		Vector3(0, 0, 0), Vector3(0, 0, 0), Vector3(128.0f, 128.f, 128.f), 
+		Vector3(10, 30), 
+		Vector3(0, 0, 0), 
+		Vector3(128.0f, 128.f, 128.f), 
 		LoadTGA("Image//rock.tga"), LoadTGA("Image//water.tga"), 
-		GUIButton::NAME1);
+		"name");
 	buttons.push_back(button1);
+	GUITexture* topdown = new GUITexture
+		(
+			Vector3(0.7f, 0.7f),
+			Vector3(),
+			Vector3(1, 1, 1),
+			topdownTexture
+		);
+	//renderables.push_back(topdown->getIRender());
 	renderables.push_back(cursor.getGUITexture()->getIRender());
+
+	InitFBO();
 }
 
 
@@ -34,7 +47,27 @@ GUIManager::~GUIManager()
 
 void GUIManager::InitFBO()
 {
+	//// Reflection FBO
+	//glGenFramebuffers(1, &FBO);
+	//glBindFramebuffer(GL_FRAMEBUFFER, FBO);
 
+	//glGenTextures(1, &topdownTexture);
+	//glBindTexture(GL_TEXTURE_2D, topdownTexture);
+	//glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, (GLsizei) 800.0f, (GLsizei) 600.0f, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	//glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, topdownTexture, 0);
+
+	//// Reflection RBO
+	//glBindRenderbuffer(GL_RENDERBUFFER, RBO);
+	//glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, (GLsizei) Application::winWidth, (GLsizei) Application::winHeight);
+	//glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, RBO);
+	//if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+	//	std::cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << std::endl;
+
+
+	////Unbind
+	//glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 void GUIManager::update(double newX, double newY, double winWidth, double winHeight)
@@ -52,7 +85,11 @@ void GUIManager::cursorUpdate(double newX, double newY, double winWidth, double 
 void GUIManager::buttonStateUpdate(double newX, double newY, double winWidth, double winHeight)
 {
 	for (int i = 0; i < (int)buttons.size(); i++) {
-		buttons[i]->checkStatus(newX, newY, winWidth, winHeight);
+		if (buttons[i]->checkStatus(newX, newY, winWidth, winHeight)) {
+			if (buttons[i]->getName() == "shop") {
+				//...
+			}
+		}
 	}
 }
 
