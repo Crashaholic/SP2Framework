@@ -8,7 +8,7 @@ Player::Player(const char* meshName, Primitive* primitive, unsigned int texID, D
 	: Mesh(meshName, primitive, texID, true, true, drawMode) {
 
 
-	walkSpeed = 5.0f;
+	walkSpeed = 3.0f;
 	isInVehicle = false;
 	cameraMode = FIRST_PERSON;
 
@@ -49,21 +49,20 @@ void Player::Update(double dt) {
 	Vector3 right = firstPerson->getRight();
 	float rad = Math::DegreeToRadian(firstPerson->getYaw());
 	Vector3 forward;
-
+	forward.x = cos(rad);
+	forward.z = sin(rad);
+	forward.Normalize();
 
 	Vector3 deltaRotation = Vector3(0.0f, -firstPerson->getYaw() + 90, 0.0f);
 
 	Vector3 targetRotation = Utility::Lerp(rotation, deltaRotation, 12.0f * dt);
+	
+	// Rotate only if there is no collision
 	if (!isInVehicle && Collision::checkCollisionR(this, deltaRotation, { "ground", "pad1" }).size() == 0) {
 		rotation = targetRotation;
-			
 	}
 
 	if (!isInVehicle) {
-
-		forward.x = cos(rad);
-		forward.z = sin(rad);
-		forward.Normalize();
 
 		Vector3 translation = Vector3(0, 0, 0);
 
@@ -81,56 +80,51 @@ void Player::Update(double dt) {
 			translation += firstPerson->getRight() * walkSpeed * (float)dt;
 		}
 
+		// Only translate if there is no collision
 		std::vector<Mesh*> collided = Collision::checkCollisionT(this, translation, { "ground", "pad1" });
-		if (translation != Vector3(0,0,0) && collided.size() == 0)
+		if (translation != Vector3(0,0,0) && collided.size() == 0) {
 			position += translation;
+		}
 
 	}
 	else if (car != nullptr) {
 		// Update Position of the Player in the car according to the car's rotation
-
 		float rad = Math::DegreeToRadian(90 + car->currentSteer);
 		car->Update(dt);
-		position = car->position + Vector3(cos(rad), 0.0f, sin(rad)) * -0.5f + Vector3(0.0f, 1.2f, 0.0f);
+		position = car->position + forward * -0.5f + Vector3(0.0f, 1.2f, 0.0f);
 		rotation = car->rotation;
 	}
-	
+
 
 	// Set Camera's Position
 	if (cameraMode == FIRST_PERSON) {
-		firstPerson->position = position + Vector3(0.0f, 1.5f, 0.0f) + Vector3(cos(rad), 0.0f, sin(rad)) * 0.3f;
+		firstPerson->position = position + Vector3(0.0f, 1.5f, 0.0f) + forward * 0.3f;
 	}
 	else if (cameraMode == FIXED_CAR) {
+		// Target = Camera's position
+		// Look At Target = Where the Camera is looking at
 		Vector3 target = position;
-		float rad = Math::DegreeToRadian(90 - rotation.y);
+		Vector3 lookAtTarget = position;
+
+		//float rad = Math::DegreeToRadian(90 - rotation.y);
 		if (isInVehicle) {
-			Vector3 lookAtTarget = position;
-			target += Vector3(cos(rad), 0.0f, sin(rad)) * -7.5f + Vector3(0.0f, 3.5f, 0.0f);
-			lookAtTarget += Vector3(cos(rad), 0.5f, sin(rad)) * 2.5f;
-			fixedCar->position = Utility::Lerp(fixedCar->position, target, 0.96f);
-			fixedCar->setTarget(lookAtTarget);
+			target += forward * -7.5f + Vector3(0.0f, 3.5f, 0.0f);
+			lookAtTarget += forward * 2.5f;
 		}
 		else {
-			target += Vector3(cos(rad), 0.0f, sin(rad)) * -5.0f + Vector3(0.0f, 1.5f, 0.0f);
-			fixedCar->position = Utility::Lerp(fixedCar->position, target, 0.1f);
-
-			Vector3 lookAtTarget = position + Vector3(cos(rad), 0.5f, sin(rad)) * 2.5f;
-			fixedCar->setTarget(lookAtTarget);
-			
+			target += forward * -5.0f + Vector3(0.0f, 3.5f, 0.0f);
+			lookAtTarget = position + forward * 2.5f + Vector3(0, 1.5f, 0.0);
 		}
-
-		
-
-
-
+		fixedCar->position = Utility::Lerp(fixedCar->position, target, 0.8f);
+		fixedCar->setTarget(lookAtTarget);
 	}
 
-	//topDown.position = position + Vector3(0.0f, 30.0f, 1.0f);
-	//topDown.setTarget(position);
+	if (!isInVehicle)
+		Mesh::Update(dt);
+
 	getCamera()->Update(dt);
 
-	if(!isInVehicle)
-		Mesh::Update(dt);
+
 }
 
 
