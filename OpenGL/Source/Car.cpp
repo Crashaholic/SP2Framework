@@ -124,18 +124,7 @@ void Car::Update(double dt)
 		}
 
 	
-		if (mode == PHYSICS_PLANE) {
-		//	std::cout << thrusters << std::endl;
-		//	thrust = Utility::Lerp(thrust, Application::IsKeyPressed(VK_SPACE), 10.0 * dt);
-		//	if (Application::IsKeyPressed(VK_SPACE) && thrusters > 0.0f) {
-
-		//		thrusters -= 10.0 * dt;
-		///*		velocity.y += thrust * dt;*/
-		//		velocity.y += 1.0 * dt;
-		//		/*position.y += thrust;*/
-		//	}
-		//	
-		}
+		
 
 	}
 
