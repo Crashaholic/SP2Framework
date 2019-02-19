@@ -80,26 +80,28 @@ void SceneA2::CreateMesh()
 
 void SceneA2::Render()
 {
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	modelStack.LoadIdentity();
-
 	gui = GUIManager::getInstance();
-	glBindFramebuffer(GL_FRAMEBUFFER, gui->FBO);
-	viewStack.LoadMatrix(player->getTopdownCamera()->LookAt());
-	std::vector<LightSource*>* lightSources = manager->getLightSources();
-	for (int i = 0; i < (int)lightSources->size(); i++)
-	{
-		lightSources->at(i)->updateAttributes(viewStack);
-	}
 
-	RenderScene();
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	//modelStack.LoadIdentity();
+
+	//glBindFramebuffer(GL_FRAMEBUFFER, gui->FBO);
+	//viewStack.LoadMatrix(player->getTopdownCamera()->LookAt());
+
+	std::vector<LightSource*>* lightSources = manager->getLightSources();
+	//for (int i = 0; i < (int)lightSources->size(); i++)
+	//{
+	//	lightSources->at(i)->updateAttributes(viewStack);
+	//}
+
+	//RenderScene();
+	//glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	modelStack.LoadIdentity();
 
 	viewStack.LoadMatrix(player->getCamera()->LookAt());
-	//std::vector<LightSource*>*  lightSources = manager->getLightSources();
+
 	for (int i = 0; i < (int)lightSources->size(); i++)
 	{
 		lightSources->at(i)->updateAttributes(viewStack);
@@ -165,20 +167,14 @@ void SceneA2::RenderUI()
 	if (!player->isInVehicle && (player->getCar()->position - player->position).Length() <= 6.0f)
 		gui->renderText("default", 400, 300, "Press F to enter car", 0.4f, Color(0, 1, 0), TEXT_ALIGN_MIDDLE);
 
+	
+	Mesh* ai = manager->getObject("ai");
 
-	gui->renderText("default", 0, 200, "Player Pos: " + std::to_string(player->position.x) + "," + std::to_string(player->position.y) + "," 
-		+ std::to_string(player->position.z), 0.25f, Color(1,0,1));
-	gui->renderText("default", 0, 300, "Car Pos: " + std::to_string(car->position.x) + "," + std::to_string(car->position.y) + ","
-		+ std::to_string(car->position.z), 0.25f, Color(0,1,0));
-	Vector3 col = player->getOBB()->getPos();
-	gui->renderText("default", 0, 400, "Player Collision Pos: " + std::to_string(col.x) + "," + std::to_string(col.y) + ","
-		+ std::to_string(col.z), 0.25f, Color(1, 1, 1));
-	col = car->getOBB()->getPos();
-	gui->renderText("default", 0, 500, "Car Collision Pos: " + std::to_string(col.x) + "," + std::to_string(col.y) + ","
-		+ std::to_string(col.z), 0.25f, Color(1, 1, 1));
+	gui->renderText("default", 0, 550, "AI Pos: " + std::to_string(ai->position.x) + "," + std::to_string(ai->position.y) + ","
+		+ std::to_string(ai->position.z), 0.25f, Color(0, 1, 1));
 
-	gui->renderText("default", 0, 550, "Car Forward: " + std::to_string(car->getOBB()->getZ().x) + "," + std::to_string(car->getOBB()->getZ().y) + ","
-		+ std::to_string(car->getOBB()->getZ().z), 0.25f, Color(0, 1, 1));
+	gui->renderText("default", 0, 500, "AI Vel: " + std::to_string(ai->velocity.x) + "," + std::to_string(ai->velocity.y) + ","
+		+ std::to_string(ai->velocity.z), 0.25f, Color(1, 0, 0));
 
 }
 
@@ -316,8 +312,9 @@ void SceneA2::playMusic()
 
 void SceneA2::Update(double dt)
 {
+	//playMusic();
+
 	// Bounce Time
-	playMusic();
 	if (bounceTimeCounter <= 0.0f) {
 
 		static float LSPEED = 10.0f;
@@ -347,6 +344,7 @@ void SceneA2::Update(double dt)
 			player->switchCameraMode();
 			bounceTimeCounter = 0.3f;
 		}
+		// Board Car
 		else if (Application::IsKeyPressed('F')) {
 			if (!player->isInVehicle && (player->getCar()->position - player->position).Length() <= 6.0f) {
 				player->isInVehicle = true;
@@ -364,6 +362,7 @@ void SceneA2::Update(double dt)
 	
 	}
 
+	// Update logic for all objects
 	std::map<std::string, Mesh*>* objects = manager->getObjects();
 	for (auto const& object : *objects) {
 		object.second->Update(dt);

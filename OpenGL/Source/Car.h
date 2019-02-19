@@ -27,10 +27,13 @@ public:
 	float xDelta;
 	float zDelta;
 protected:
-	Vector3 updatePosition(float accInput, float steerInput, float dt);
 
+	Vector3 calcAcceleration(float accInput, float steerInput, float dt);
+	Vector3 calcFriction(float accInput, float steerInput, float dt);
 
 private:
+
+	float torqueRot;
 
 	float engineAcceleration;
 	float reverseAcceleration;

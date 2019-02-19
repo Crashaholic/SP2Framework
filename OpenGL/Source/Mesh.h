@@ -69,6 +69,8 @@ private:
 
 protected:
 
+	void onGroundCheck(double dt);
+
 	OBB* obb;
 	OBB* defaultObb;
 	std::vector<Mesh*> children;

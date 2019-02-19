@@ -13,8 +13,6 @@ Car::Car(const char* meshName, Primitive* primitive, unsigned int texID, DRAW_MO
 
 
 
-	//position.Set(0.0f, 20.0f, 10.0f);
-	rotation.Set(0, 0, 0);
 	velocity.Set(0, 0, 0);
 	forward.Set(0, 0, 1);
 
@@ -32,15 +30,12 @@ Car::Car(const char* meshName, Primitive* primitive, unsigned int texID, DRAW_MO
 
 	previousInputs[0] = previousInputs[1] = 0;
 
-	//obb->setHalf(Vector3(2.192, 1.2445, 4.289));
-	//defaultObb->setHalf(Vector3(2.192, 1.2445, 4.289));
-	handle.open("waypoints.txt");
 	mode = PHYSICS_CAR;
-
 	xDelta = 0.0f;
 	zDelta = 0.0f;
 	thrusters = 300.0f;
 	thrust = 0.0f;
+	torqueRot = 0.0f;
 }
 
 Car::Car()
@@ -50,7 +45,7 @@ Car::Car()
 
 Car::~Car()
 {
-	handle.close();
+
 }
 
 void Car::setOccupied(bool isOccupied)
@@ -62,39 +57,17 @@ void Car::setOccupied(bool isOccupied)
 void Car::Update(double dt)
 {
 
-	if (name == "ground" || name.substr(0, 4) == "car_") return;
-	Vector3 grav = Vector3(0, -1.0f, 0);
-	std::vector<Mesh*> collided = Collision::checkCollisionT(this, grav, {});
-
-	std::vector<Mesh*> collidePath = Collision::checkCollisionAbove(this, -20.0f, {});
-	bool hasPad = std::find(collidePath.begin(), collidePath.end(), Manager::getInstance()->getObject("pad1")) != collidePath.end();
-
-	if (!hasPad && std::find(collided.begin(), collided.end(), Manager::getInstance()->getObject("ground")) == collided.end()) {
-		velocity += grav * dt;
-	}
-	else {
-
-		if (!hasPad) {
-			Vector3 ground = Manager::getInstance()->getObject("ground")->getOBB()->getPos() + Manager::getInstance()->getObject("ground")->getOBB()->getHalf().y;
-			Vector3 distance = obb->getPos() - obb->getHalf().y - ground;
-			distance.x = 0;
-			distance.z = 0;
-			if (distance.Length() > 0.0f) {
-				position.y = Manager::getInstance()->getObject("ground")->position.y + Manager::getInstance()->getObject("ground")->getOBB()->getHalf().y;
-			}
-		}
-
-		if (velocity.y < 0)
-			velocity.y = 0;
-	}
+	onGroundCheck(dt);
 	position.y += velocity.y;
+
+
+	float accInput = 0.0f;
+	float steerInput = 0.0f;
 
 	if (isOccupied)
 	{
 
 
-		float accInput = 0.0f;
-		float steerInput = 0.0f;
 
 
 		if (Application::IsKeyPressed('W'))
@@ -117,68 +90,91 @@ void Car::Update(double dt)
 			mode = PHYSICS_PLANE;
 		}
 
-		velocity += updatePosition(accInput, steerInput, dt);
-		std::vector<Mesh*> collided = Collision::checkCollisionT(this, velocity, { "ground", "pad1" });
-		if (velocity != Vector3(0, 0, 0) && collided.size() == 0) {
-			position += velocity;
-		}
+		velocity += calcAcceleration(accInput, steerInput, dt);
+		//Vector3 friction = calcFriction(accInput, steerInput, dt);
+		//friction.y = 0;
+		//
+		//Vector3 noY = velocity;
+		//noY.y = 0;
 
-	
-		if (mode == PHYSICS_PLANE) {
-		//	std::cout << thrusters << std::endl;
-		//	thrust = Utility::Lerp(thrust, Application::IsKeyPressed(VK_SPACE), 10.0 * dt);
-		//	if (Application::IsKeyPressed(VK_SPACE) && thrusters > 0.0f) {
+		//if (friction.Length() >= noY.Length())
+		//	velocity.SetZero();
+		//else
+		//	velocity += friction;
 
-		//		thrusters -= 10.0 * dt;
-		///*		velocity.y += thrust * dt;*/
-		//		velocity.y += 1.0 * dt;
-		//		/*position.y += thrust;*/
-		//	}
-		//	
-		}
+
 
 	}
 
-	//std::vector<Mesh*> collided = Collision::checkCollisionT(this, velocity, { "ground", "pad1" });
-	//if (velocity != Vector3(0, 0, 0) && collided.size() == 0) {
-	//	position += velocity;
-	//}
+	velocity += calcFriction(accInput, steerInput, dt);
 
 
-	//std::vector<Mesh*> collided = Collision::checkCollisionType(this, velocity, "ai");
-	//if (velocity != Vector3(0, 0, 0) && collided.size() != 0) {
-	//	for (int i = 0; i < collided.size(); i++) {
-	//		AICar* ai = dynamic_cast<AICar*>(collided[i]);
-	//		//std::cout << "AI's velocity: " << ai->velocity.Length() << std::endl;
-	//		//std::cout << "Car's velocity: " << velocity.Length() << std::endl;
+	std::vector<Mesh*> collided = Collision::checkCollisionType(this, velocity, "ai");
+	if (velocity != Vector3(0, 0, 0) && collided.size() != 0) {
+		for (int i = 0; i < collided.size(); i++) {
+			AICar* ai = dynamic_cast<AICar*>(collided[i]);
+			//std::cout << "AI's velocity: " << ai->velocity.Length() << std::endl;
+			//std::cout << "Car's velocity: " << velocity.Length() << std::endl;
 
-	//		// Find difference in their forward 
-	//		float kForwardDiff = abs(ai->forward.Dot(-forward));
-	//		float finalVelCar = 0.0f;
-	//		float finalVelAI = 0.0f;
-	//		Collision::Collide(velocity.Length(), ai->velocity.Length(), 5, 3, finalVelCar, finalVelAI, 10);
-	//		std::cout << "BEFORE: " << std::endl;
-	//		std::cout << "AI's velocity: " << ai->velocity.Length() << std::endl;
-	//		std::cout << "Car's velocity: " << velocity.Length() << std::endl;
-	//		std::cout << "AFTER: " << std::endl;
-	//		std::cout << "AI's velocity: " << finalVelAI << std::endl;
-	//		std::cout << "Car's velocity: " << finalVelCar << std::endl;
+			// Find difference in their forward 
+			float kForwardDiff = 1.0f - abs(ai->forward.Dot(-forward));
+			float finalVelCar = 0.0f;
+			float finalVelAI = 0.0f;
+			Collision::Collide(velocity.Length() * 10.0, ai->velocity.Length(), 5, 3, finalVelCar, finalVelAI, 10);
 
-	//		//if (ai->velocity.Length() != 0) {
-	//		//	float ratio = finalVelAI / ai->velocity.Length();
-	//		//	std::cout << "Ratio: " << ratio << std::endl;
-	//		//	ai->velocity *= ratio;
-	//		//}
-	//		//else {
-	//		//	velocity = forward * finalVelCar;
-	//		//	ai->position += ai->forward * finalVelAI;
-	//		//}
-	//		
+			//std::cout << "BEFORE: " << std::endl;
+			//std::cout << "AI's velocity: " << ai->velocity.Length() << std::endl;
+			//std::cout << "Car's velocity: " << velocity.Length() * 10.0f << std::endl;
+			//std::cout << "AFTER: " << std::endl;
+			//std::cout << "AI's velocity: " << finalVelAI << std::endl;
+			//std::cout << "Car's velocity: " << finalVelCar << std::endl;
+			Vector3 vectorToCenter = ai->position - position;
+			Vector3 diff = vectorToCenter - forward;
+			//std::cout << "distance to center: " << diff.Length() * Utility::Sign(diff) << std::endl;
+			/*std::cout << kForwardDiff << std::endl;*/
+	/*		std::cout << ai->forward.Dot(-forward) << std::endl;*/
 
-	//	}
-	//}
+			std::cout << diff << std::endl;
+			int t = 0;
+			if (diff.x > 0)
+			{
+				t = (diff.z > 0) ? -1 : 1;
+			}
+			else
+			{
+				t = (diff.z > 0) ? 1 : -1;
+			}
+			
 
+			ai->velocity = forward * finalVelAI * 0.5f;
+			ai->torqueRot = t * velocity.Length() * 10.0;
+			ai->position += ai->velocity;
 
+			//velocity = forward * finalVelCar;
+			//std::cout << ai->torqueRot << std::endl;
+
+			//if (ai->velocity.Length() != 0) {
+			//	float ratio = finalVelAI / ai->velocity.Length();
+			//	std::cout << "Ratio: " << ratio << std::endl;
+			//	ai->velocity *= ratio;
+			//}
+			//else {
+			//	velocity = forward * finalVelCar;
+			//	ai->position += ai->forward * finalVelAI;
+			//}
+			
+
+		}
+	}
+
+	torqueRot = Utility::Lerp(torqueRot, 0, 2.0 * dt);
+	rotation.y += torqueRot;
+
+	collided = Collision::checkCollisionT(this, velocity, { "ground", "pad1" });
+	if (velocity != Vector3(0, 0, 0) && collided.size() == 0)
+	{
+		position += velocity;
+	}
 
 	
 
@@ -186,14 +182,12 @@ void Car::Update(double dt)
 }
 
 
-Vector3 Car::updatePosition(float accInput, float steerInput, float dt)
+Vector3 Car::calcAcceleration(float accInput, float steerInput, float dt)
 {
 
-	Vector3 resultant, rotDrag, drag, friction, braking, acceleration, reverse, engineForward = Vector3(0, 0, 0);
+	Vector3 braking, acceleration, reverse, engineForward;
 
-
-
-	// Steering Car
+	// Steering of Car
 	if (velocity.Length() > 0.01f)
 		steerAngle = steerInput * 30;
 	else if (accInput != -1)
@@ -202,18 +196,22 @@ Vector3 Car::updatePosition(float accInput, float steerInput, float dt)
 	if (accInput < 0.0f)
 		steerAngle = -steerAngle;
 
+	// Linearly interpolate for smooth transitions
 	currentSteer = Utility::Lerp(currentSteer, currentSteer + steerAngle, (float)dt * 0.70f);
 
+	// Determine the steered forward of car
 	float angle = 90.0f + currentSteer;
 	float rad = Math::DegreeToRadian(angle);
 	forward.x = cos(rad);
 	forward.z = sin(rad);
 	forward.Normalized();
 
+	// Rotate the car based on steering
 	rotation.y = -currentSteer;
 
 	float velocityDir = Utility::Sign(velocity);
 
+	// Interpolate forward and brake vectors.
 	if (accInput == 1)
 	{
 		engineAcceleration = Utility::Lerp(engineAcceleration, accInput, 5.0f * dt);
@@ -227,12 +225,6 @@ Vector3 Car::updatePosition(float accInput, float steerInput, float dt)
 	{
 		engineAcceleration = 0.0f;
 	}
-
-
-
-
-	reverseAcceleration = Utility::Lerp(reverseAcceleration, accInput, 2.5f * dt);
-	reverse = reverseAcceleration * forward * 10.0 * dt;
 
 	if (accInput != -1)
 	{
@@ -255,13 +247,33 @@ Vector3 Car::updatePosition(float accInput, float steerInput, float dt)
 				braking = velocityDir * velocity.Normalized() * brakingAcceleration * 18.0f * dt;
 
 		}
-
 	}
-	reverse = forward * reverseAcceleration * 15.0f * dt;
+
+	// Interpolate reverse vector
+	reverseAcceleration = Utility::Lerp(reverseAcceleration, accInput, 2.5f * dt);
+	reverse = reverseAcceleration * forward * 20.0 * dt;
 	if (accInput != -1 && (steerInput == 0 || reverse.Length() < 1.0f))
 		reverse.SetZero();
 
-	if (velocity.Length() != 0.0f)
+
+	// Determine forward acceleration
+	acceleration = engineForward + braking + reverse;
+
+	// Slow down acceleration while steering
+	if (fabs(steerAmount) > 0.05f)
+	{
+		acceleration *= 0.7f;
+	}
+
+	return acceleration * dt;
+}
+
+
+Vector3 Car::calcFriction(float accInput, float steerInput, float dt)
+{
+	Vector3 acceleration, friction, drag;
+
+	if (velocity.Length() > 0.0f && (velocity.x != 0 || velocity.z != 0))
 	{
 		friction = (kFriction * -velocity.Normalized());
 		if (accInput != -1)
@@ -273,33 +285,42 @@ Vector3 Car::updatePosition(float accInput, float steerInput, float dt)
 	}
 
 
-	acceleration = friction + engineForward + braking + drag + reverse;
-	if (fabs(steerAmount) > 0.05f)
-	{
-		acceleration *= 0.7f;
-	}
-
-
-	if (accInput != previousInputs[0] && start)
-	{
-		std::string text = "waypoint=pos:(" + std::to_string(position.x) + " " + std::to_string(position.y) + " " + std::to_string(position.z) + "),rot:" +
-			std::to_string(rotation.y - currentSteer) + ",acc:" + std::to_string(accInput) + ",steer:" + std::to_string(steerInput);
-		handle << text << std::endl;
-		std::cout << "Acc: " << position << ", Rot: " << rotation.y - currentSteer << "-> A: " << accInput << std::endl;
-	}
-	else if (steerInput != previousInputs[1] && start)
-	{
-		std::string text = "waypoint=pos:(" + std::to_string(position.x) + " " + std::to_string(position.y) + " " + std::to_string(position.z) + "),rot:" +
-			std::to_string(rotation.y - currentSteer) + ",acc:" + std::to_string(accInput) + ",steer:" + std::to_string(steerInput);
-		handle << text << std::endl;
-		std::cout << "Steering: " << position << ", Rot: " << rotation.y - currentSteer << " -> S: " << steerInput << std::endl;
-	}
-
-	
-
-	previousInputs[0] = accInput;
-	previousInputs[1] = steerInput;
-	return acceleration * dt;
+	acceleration = (friction + drag) * dt;
+	if (acceleration.Length() > velocity.Length())
+		return -velocity;
+	else
+		return acceleration;
 }
 
+// Friction
 
+	//if (velocity.Length() != 0.0f)
+	//{
+	//	friction = (kFriction * -velocity.Normalized());
+	//	if (accInput != -1)
+	//		drag = kDrag * velocity.Length() * -velocity.Normalized();
+
+	//	if (steerInput != 0)
+	//		drag *= 1.2f;
+
+	//}
+
+
+// AI Waypoints
+//if (accInput != previousInputs[0] && start)
+//{
+//	std::string text = "waypoint=pos:(" + std::to_string(position.x) + " " + std::to_string(position.y) + " " + std::to_string(position.z) + "),rot:" +
+//		std::to_string(rotation.y - currentSteer) + ",acc:" + std::to_string(accInput) + ",steer:" + std::to_string(steerInput);
+//	handle << text << std::endl;
+//	std::cout << "Acc: " << position << ", Rot: " << rotation.y - currentSteer << "-> A: " << accInput << std::endl;
+//}
+//else if (steerInput != previousInputs[1] && start)
+//{
+//	std::string text = "waypoint=pos:(" + std::to_string(position.x) + " " + std::to_string(position.y) + " " + std::to_string(position.z) + "),rot:" +
+//		std::to_string(rotation.y - currentSteer) + ",acc:" + std::to_string(accInput) + ",steer:" + std::to_string(steerInput);
+//	handle << text << std::endl;
+//	std::cout << "Steering: " << position << ", Rot: " << rotation.y - currentSteer << " -> S: " << steerInput << std::endl;
+//}
+
+//previousInputs[0] = accInput;
+//previousInputs[1] = steerInput;

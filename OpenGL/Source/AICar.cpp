@@ -70,7 +70,7 @@ void AICar::Update(double dt) {
 	//	//}
 
 	//}
-	Mesh::Update(dt);
+	Car::Update(dt);
 }
 
 void AICar::getInputs() {
