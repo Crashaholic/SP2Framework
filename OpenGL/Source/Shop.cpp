@@ -72,9 +72,42 @@ void Shop::buyCar(Player *player, int carSelected)
 
 void Shop::buyUpgrade(Player *player)
 {
-	//selects type of upgrade
-	//selects whether to upgrade next tier
-	//subtract money for upgrade
+	int nitroTier = player->getCar()->getNitroTier();
+	int tireTier = player->getCar()->getTireTier();
+	int engineTier = player->getCar()->getEngineTier();
+
+	if (nitroTier == 1 || tireTier == 1 || engineTier == 1 && player->getMoney() >= 50)
+	{
+		player->setMoney(-50);
+		if (nitroTier == 1)
+		{
+			player->getCar()->setNitroTier(2);
+		}
+		else if (tireTier == 1)
+		{
+			player->getCar()->setTireTier(2);
+		}
+		else if (engineTier == 1)
+		{
+			player->getCar()->setEngineTier(2);
+		}
+	}
+	if (nitroTier == 2 || tireTier == 2 || engineTier == 2 && player->getMoney() >= 75)
+	{
+		player->setMoney(-75);
+		if (nitroTier == 2)
+		{
+			player->getCar()->setNitroTier(3);
+		}
+		else if (tireTier == 2)
+		{
+			player->getCar()->setTireTier(3);
+		}
+		else if (engineTier == 2)
+		{
+			player->getCar()->setEngineTier(3);
+		}
+	}
 }
 
 int Shop::Undo(Player *player)

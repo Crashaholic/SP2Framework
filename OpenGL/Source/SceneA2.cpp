@@ -32,7 +32,6 @@ void SceneA2::Init()
 	Music[BGM_INGAME].load("Music//BGM_InGame.wav");
 
 
-	/*manager->loadPlayerProgress();*/
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 	elapsedTimeCounter = bounceTimeCounter = lastTimed = 0.0f;
 	lastFramesPerSecond = framesPerSecond = 1;
@@ -87,6 +86,7 @@ void SceneA2::CreateMesh()
 	car->loadChildren({ "car_steeringwheel" , "car_leftfrontwheel", "car_rightfrontwheel", "car_leftrearwheel", "car_rightrearwheel" });
 
 	player->setCar(car);
+	manager->loadPlayerProgress(player);
 	//manager->spawnObject(new Mesh("car", Primitives::loadModel("Models//car.obj"), LoadTGA("Models//car.tga")));
 
 	manager->spawnObject(new AICar("ai", Primitives::loadModel("Models//car.obj"), LoadTGA("Models//bridge.tga")));

@@ -62,18 +62,67 @@ void Car::setOccupied(bool isOccupied)
 void Car::setEngineTier(int newTier)
 {
 	this->engineTier = newTier;
+	if (engineTier == 1)
+	{
+	}
+	if (engineTier == 2)
+	{
+
+	}
+	if (engineTier == 3)
+	{
+
+	}
 }
 
 void Car::setNitroTier(int newTier)
 {
 	this->nitroTier = newTier;
+	if (nitroTier == 1)
+	{
+		//edit base stats of car obj
+	}
+	if (nitroTier == 2)
+	{
+
+	}
+	if (nitroTier == 3)
+	{
+
+	}
 }
 
 void Car::setTireTier(int newTier)
 {
-	this->engineTier = newTier;
+	this->tireTier = newTier;
+	if (tireTier == 1)
+	{
+		//edit base stats of car obj
+	}
+	if (tireTier == 2)
+	{
+
+	}
+	if (tireTier == 3)
+	{
+
+	}
 }
 
+int Car::getEngineTier()
+{
+	return engineTier;
+}
+
+int Car::getNitroTier()
+{
+	return nitroTier;
+}
+
+int Car::getTireTier()
+{
+	return tireTier;
+}
 
 void Car::Update(double dt)
 {

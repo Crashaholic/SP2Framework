@@ -24,6 +24,7 @@ public:
 	void setCar(Car* car);
 	void unlockCar(int carSelected);
 	void lockCar(int carSelected);
+	void setMoney(int change);
 	Car* getCar();
 	int getMoney();
 	bool getCarsUnlocked(int carID); //for saving player progress

@@ -20,7 +20,7 @@ public:
 	static Manager* getInstance();
 
 	void spawnObject(Mesh* mesh);
-	void loadPlayerProgress();
+	void loadPlayerProgress(Player *player);
 	void savePlayerProgress(Player *player);
 
 	Mesh* getObject(std::string name);

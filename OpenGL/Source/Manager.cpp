@@ -78,7 +78,7 @@ void Manager::spawnObject(Mesh* mesh)
 		tree->Insert(mesh);
 }
 
-void Manager::loadPlayerProgress()
+void Manager::loadPlayerProgress(Player *player)
 {
 	std::fstream playerProgress; //input
 	std::string line;
@@ -100,9 +100,9 @@ void Manager::loadPlayerProgress()
 
 			if (startsWith(line, "ID"))
 			{
-				/*std::cout << "ID has been secured";*/
 				carID = std::stoi(args[1]);
 				std::cout << "Car ID " << carID << std::endl;
+				player->unlockCar(carID);
 			}
 
 			if (startsWith(line, "Upgrade"))
@@ -112,55 +112,21 @@ void Manager::loadPlayerProgress()
 				if (startsWith(upgradeArgs[0], "Nitro"))
 				{
 					std::vector<std::string> upgradeArgsStats = Utility::splitLine(upgradeArgs[0], ':');
-					if (startsWith(upgradeArgsStats[1], "1"))
-					{
-						std::cout << "Nitro has been upgraded by 1\n";
-					}
-					else if (startsWith(upgradeArgsStats[1], "2"))
-					{
-						std::cout << "Nitro has been upgraded by 2\n";
-					}
-					else if (startsWith(upgradeArgsStats[1], "3"))
-					{
-						std::cout << "Nitro has been upgraded by 3\n";
-					}
+					player->getCar()->setNitroTier(std::stoi(upgradeArgsStats[1]));
 				}
 				if (startsWith(upgradeArgs[1], "Tire"))
 				{
 					std::vector<std::string> upgradeArgsStats = Utility::splitLine(upgradeArgs[1], ':');
-					if (startsWith(upgradeArgsStats[1], "1"))
-					{
-						std::cout << "Tire has been upgraded by 1\n";
-					}
-					else if (startsWith(upgradeArgsStats[1], "2"))
-					{
-						std::cout << "Tire has been upgraded by 2\n";
-					}
-					else if (startsWith(upgradeArgsStats[1], "3"))
-					{
-						std::cout << "Tire has been upgraded by 3\n";
-					}
+					player->getCar()->setTireTier(std::stoi(upgradeArgsStats[1]));
 				}
 				if (startsWith(upgradeArgs[2], "Engine"))
 				{
 					std::vector<std::string> upgradeArgsStats = Utility::splitLine(upgradeArgs[2], ':');
-					if (startsWith(upgradeArgsStats[1], "1"))
-					{
-						std::cout << "Engine has been upgraded by 1\n";
-					}
-					else if (startsWith(upgradeArgsStats[1], "2"))
-					{
-						std::cout << "Engine has been upgraded by 2\n";
-					}
-					else if (startsWith(upgradeArgsStats[1], "3"))
-					{
-						std::cout << "Engine has been upgraded by 3\n";
-					}
+					player->getCar()->setEngineTier(std::stoi(upgradeArgsStats[1]));
 				}
 			}
 		}
 	}
-
 	playerProgress.close();
 }
 
@@ -169,8 +135,14 @@ void Manager::savePlayerProgress(Player *player)
 	std::fstream playerProgress; //input
 	std::string line;
 	std::string moneyString;
+	std::string nitroString;
+	std::string tireString;
+	std::string engineString;
 
 	moneyString = std::to_string(money);
+	nitroString = std::to_string(player->getCar()->getNitroTier());
+	tireString = std::to_string(player->getCar()->getTireTier());
+	engineString = std::to_string(player->getCar()->getEngineTier());
 
 	playerProgress.open("playerProgress.txt", std::fstream::out | std::fstream::trunc);
 
@@ -180,7 +152,6 @@ void Manager::savePlayerProgress(Player *player)
 			if (player->getCarsUnlocked(1) == true)
 			{
 				playerProgress << "ID=1\n";
-				playerProgress << "Upgrade=" <<"\n";
 			}
 			if (player->getCarsUnlocked(2) == true)
 			{
@@ -194,6 +165,7 @@ void Manager::savePlayerProgress(Player *player)
 			{
 				playerProgress << "ID=4\n";
 			}
+			playerProgress << "Upgrade=Nitro:" << nitroString << ",Tire:" << tireString << ",Engine:" << engineString << "\n";
 	}
 	playerProgress.close();
 }

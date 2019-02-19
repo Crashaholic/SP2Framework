@@ -19,11 +19,15 @@ public:
 	void Render(MS& modelStack, MS& viewStack, MS& projectionStack, ShaderProgram* shader);
 
 	void setOccupied(bool isOccupied);
+	float currentSteer;
+	float angularVelocity;
+
 	void setEngineTier(int newTier);
 	void setNitroTier(int newTier);
 	void setTireTier(int newTier);
-	float currentSteer;
-	float angularVelocity;
+	int getEngineTier();
+	int getNitroTier();
+	int getTireTier();
 
 	SoLoud::Soloud carEngine;
 	SoLoud::Wav carSounds[2];

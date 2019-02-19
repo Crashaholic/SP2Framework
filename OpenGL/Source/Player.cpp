@@ -133,6 +133,11 @@ void Player::setCar(Car* car)
 	this->car = car;
 }
 
+void Player::setMoney(int change)
+{
+	money = money + change;
+}
+
 void Player::unlockCar(int carSelected)
 {
 	if (carSelected == 2)
