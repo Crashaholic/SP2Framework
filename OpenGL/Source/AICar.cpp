@@ -130,4 +130,8 @@ void AICar::loadWaypoints() {
 	}
 
 	handle.close();
+	//fer reals tho
+	//i <3 you
+	//8=D
+	//thats a smiley face
 }

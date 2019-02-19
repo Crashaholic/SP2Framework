@@ -13,7 +13,9 @@
 
 SceneA2::SceneA2()
 {
-	
+	state_MainMenu = true;
+	state_InGame = true;
+	state_Race = false;
 }
 
 
@@ -25,6 +27,13 @@ void SceneA2::Init()
 {
 
 	manager = Manager::getInstance();
+
+	Engine.init();
+	Music[BGM_MAIN].load("Music//BGM_MainMenu.wav");
+	Music[BGM_INGAME].load("Music//BGM_InGame.wav");
+
+
+	/*manager->loadPlayerProgress();*/
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 	elapsedTimeCounter = bounceTimeCounter = lastTimed = 0.0f;
 	lastFramesPerSecond = framesPerSecond = 1;
@@ -36,10 +45,8 @@ void SceneA2::Init()
 	CreateMesh();
 
 	Mtx44 projection;
-	projection.SetToPerspective(45.0f, Application::winWidth / Application::winHeight, 0.1f, 10000.0f);
+	projection.SetToPerspective(45.0f, (float)Application::winWidth / (float)Application::winHeight, 0.1f, 10000.0f);
 	projectionStack.LoadMatrix(projection);
-
-	testTexture = LoadTGA("Image//rock.tga");
 
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
@@ -76,9 +83,29 @@ void SceneA2::Render()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	modelStack.LoadIdentity();
 
-	viewStack.LoadMatrix(player->getCamera()->LookAt());
-
+	gui = GUIManager::getInstance();
+	glBindFramebuffer(GL_FRAMEBUFFER, gui->FBO);
+	Mtx44 view;
+	view.SetToLookAt(
+		player->position.x, player->position.y + 30.0f, player->position.z,
+		0.0f, -1.0f, 0.0f,
+		0.0f, 1.0f, 0.0f
+	);
+	viewStack.LoadMatrix(view);
 	std::vector<LightSource*>* lightSources = manager->getLightSources();
+	for (int i = 0; i < (int)lightSources->size(); i++)
+	{
+		lightSources->at(i)->updateAttributes(viewStack);
+	}
+
+	RenderScene();
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	modelStack.LoadIdentity();
+
+	viewStack.LoadMatrix(player->getCamera()->LookAt());
+	/*std::vector<LightSource*>* */ lightSources = manager->getLightSources();
 	for (int i = 0; i < (int)lightSources->size(); i++)
 	{
 		lightSources->at(i)->updateAttributes(viewStack);
@@ -134,8 +161,9 @@ void SceneA2::RenderScene()
 
 }
 
-void SceneA2::RenderUI() {
-	gui->cursorUpdate(Application::mouse_x, Application::mouse_y);
+void SceneA2::RenderUI() 
+{
+	gui->update(Application::mouse_x, Application::mouse_y, Application::winWidth, Application::winHeight);
 	gui->renderUI();
 	gui->renderText("bahnschrift", 0, 10, "FPS: " + std::to_string(lastFramesPerSecond), 0.4f, Color(0, 1, 0));
 
@@ -274,18 +302,28 @@ void SceneA2::InitShaderProperties()
 
 void SceneA2::playMusic()
 {
-	if (!musicFlag)
+	if (state_MainMenu)
 	{
-		//PlaySound(TEXT("Source\\BGM.wav"), NULL, SND_ASYNC | SND_LOOP);
-		musicFlag = true;
+		Engine.play(Music[BGM_MAIN]);
+		state_MainMenu = false;
 	}
+	if (state_InGame)
+	{
+		Engine.play(Music[BGM_INGAME]);
+		state_InGame = false;
+	}
+	if (!state_Race)
+	{
+		Engine.play(Music[BGM_RACE]);
+	}
+
 }
 
 
 void SceneA2::Update(double dt)
 {
-	playMusic();
 	// Bounce Time
+	playMusic();
 	if (bounceTimeCounter <= 0.0f) {
 
 		static float LSPEED = 10.0f;
@@ -337,6 +375,10 @@ void SceneA2::Update(double dt)
 		object.second->Update(dt);
 	}
 
+	Mtx44 projection;
+	projection.SetToPerspective(45.0f, (float)Application::winWidth / (float)Application::winHeight, 0.1f, 10000.0f);
+	projectionStack.LoadMatrix(projection);
+
 
 
 	// Bounce Time & Elapsed Time
@@ -356,6 +398,8 @@ void SceneA2::Update(double dt)
 
 void SceneA2::Exit()
 {
+	manager->savePlayerProgress();
+	Engine.deinit();
 	delete manager;
 	delete gui;
 
