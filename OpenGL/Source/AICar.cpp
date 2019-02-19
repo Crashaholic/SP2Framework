@@ -4,7 +4,6 @@
 AICar::AICar(const char* meshName, Primitive* primitive, unsigned int texID, DRAW_MODE drawMode) :
 	Car(meshName, primitive, texID, drawMode){
 
-	type = "ai";
 
 	//loadWaypoints();
 

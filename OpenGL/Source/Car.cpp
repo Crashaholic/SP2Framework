@@ -5,10 +5,10 @@
 #include "Collision.h"
 #include "Manager.h"
 #include "Player.h"
-#include "AICar.h"
+
 
 Car::Car(const char* meshName, Primitive* primitive, unsigned int texID, DRAW_MODE drawMode)
-	: Mesh(meshName, primitive, texID, true, true, "car", drawMode)
+	: Mesh(meshName, primitive, texID, true, true, drawMode)
 {
 
 
@@ -62,32 +62,6 @@ void Car::setOccupied(bool isOccupied)
 void Car::Update(double dt)
 {
 
-	if (name == "ground" || name.substr(0, 4) == "car_") return;
-	Vector3 grav = Vector3(0, -1.0f, 0);
-	std::vector<Mesh*> collided = Collision::checkCollisionT(this, grav, {});
-
-	std::vector<Mesh*> collidePath = Collision::checkCollisionAbove(this, -20.0f, {});
-	bool hasPad = std::find(collidePath.begin(), collidePath.end(), Manager::getInstance()->getObject("pad1")) != collidePath.end();
-
-	if (!hasPad && std::find(collided.begin(), collided.end(), Manager::getInstance()->getObject("ground")) == collided.end()) {
-		velocity += grav * dt;
-	}
-	else {
-
-		if (!hasPad) {
-			Vector3 ground = Manager::getInstance()->getObject("ground")->getOBB()->getPos() + Manager::getInstance()->getObject("ground")->getOBB()->getHalf().y;
-			Vector3 distance = obb->getPos() - obb->getHalf().y - ground;
-			distance.x = 0;
-			distance.z = 0;
-			if (distance.Length() > 0.0f) {
-				position.y = Manager::getInstance()->getObject("ground")->position.y + Manager::getInstance()->getObject("ground")->getOBB()->getHalf().y;
-			}
-		}
-
-		if (velocity.y < 0)
-			velocity.y = 0;
-	}
-	position.y += velocity.y;
 
 	if (isOccupied)
 	{
@@ -118,56 +92,12 @@ void Car::Update(double dt)
 		}
 
 		velocity += updatePosition(accInput, steerInput, dt);
-		std::vector<Mesh*> collided = Collision::checkCollisionT(this, velocity, { "ground", "pad1" });
-		if (velocity != Vector3(0, 0, 0) && collided.size() == 0) {
-			position += velocity;
-		}
-
 	
 		
 
 	}
 
-	//std::vector<Mesh*> collided = Collision::checkCollisionT(this, velocity, { "ground", "pad1" });
-	//if (velocity != Vector3(0, 0, 0) && collided.size() == 0) {
-	//	position += velocity;
-	//}
-
-
-	//std::vector<Mesh*> collided = Collision::checkCollisionType(this, velocity, "ai");
-	//if (velocity != Vector3(0, 0, 0) && collided.size() != 0) {
-	//	for (int i = 0; i < collided.size(); i++) {
-	//		AICar* ai = dynamic_cast<AICar*>(collided[i]);
-	//		//std::cout << "AI's velocity: " << ai->velocity.Length() << std::endl;
-	//		//std::cout << "Car's velocity: " << velocity.Length() << std::endl;
-
-	//		// Find difference in their forward 
-	//		float kForwardDiff = abs(ai->forward.Dot(-forward));
-	//		float finalVelCar = 0.0f;
-	//		float finalVelAI = 0.0f;
-	//		Collision::Collide(velocity.Length(), ai->velocity.Length(), 5, 3, finalVelCar, finalVelAI, 10);
-	//		std::cout << "BEFORE: " << std::endl;
-	//		std::cout << "AI's velocity: " << ai->velocity.Length() << std::endl;
-	//		std::cout << "Car's velocity: " << velocity.Length() << std::endl;
-	//		std::cout << "AFTER: " << std::endl;
-	//		std::cout << "AI's velocity: " << finalVelAI << std::endl;
-	//		std::cout << "Car's velocity: " << finalVelCar << std::endl;
-
-	//		//if (ai->velocity.Length() != 0) {
-	//		//	float ratio = finalVelAI / ai->velocity.Length();
-	//		//	std::cout << "Ratio: " << ratio << std::endl;
-	//		//	ai->velocity *= ratio;
-	//		//}
-	//		//else {
-	//		//	velocity = forward * finalVelCar;
-	//		//	ai->position += ai->forward * finalVelAI;
-	//		//}
-	//		
-
-	//	}
-	//}
-
-
+	Mesh::Update(dt);
 
 	
 

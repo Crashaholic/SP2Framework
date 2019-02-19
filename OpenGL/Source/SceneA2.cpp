@@ -69,8 +69,8 @@ void SceneA2::CreateMesh()
 	manager->spawnObject(new Mesh("skyboxBack", quad, LoadTGA("Image//back.tga")));
 
 	Primitive* axes = Primitives::generateAxes();
-	manager->spawnObject(new Mesh("axes", axes, 0, false, false, "environment", Mesh::DRAW_LINES));
-	manager->spawnObject(new Mesh("playerAxes", axes, 0, false, false, "environment", Mesh::DRAW_LINES));
+	manager->spawnObject(new Mesh("axes", axes, 0, false, false, Mesh::DRAW_LINES));
+	manager->spawnObject(new Mesh("playerAxes", axes, 0, false, false, Mesh::DRAW_LINES));
 
 	player = dynamic_cast<Player*>(manager->getObject("human"));
 	car = dynamic_cast<Car*>(manager->getObject("car"));

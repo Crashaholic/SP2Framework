@@ -31,7 +31,7 @@ public:
 		DRAW_FAN,
 		DRAW_MODE_LAST,
 	};
-	Mesh(const char* meshName, Primitive* primitive, unsigned int texID=0, bool collisionEnabled = false, bool gravityEnabled=true, std::string type="environment", DRAW_MODE drawMode=DRAW_TRIANGLES);
+	Mesh(const char* meshName, Primitive* primitive, unsigned int texID=0, bool collisionEnabled = false, bool gravityEnabled=true, DRAW_MODE drawMode=DRAW_TRIANGLES);
 	Mesh();
 	~Mesh();
 	void loadChildren(std::vector<std::string> names);
@@ -53,7 +53,6 @@ public:
 	std::vector<Mesh*>* getChildren();
 	OBB* getOBB();
 	std::vector<Transformation*> transformations;
-	std::string getType();
 
 	void Render(MS& modelStack, MS& viewStack, MS& projectionStack, ShaderProgram* shader);
 
@@ -72,7 +71,6 @@ protected:
 	OBB* obb;
 	OBB* defaultObb;
 	std::vector<Mesh*> children;
-	std::string type;
 
 };
 

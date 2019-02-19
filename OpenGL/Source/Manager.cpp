@@ -262,7 +262,7 @@ void Manager::loadMap() {
 			m = new AICar(current->Get("name").c_str(), primitive, textureID);
 		}
 		else {
-			m = new Mesh(current->Get("name").c_str(), primitive, textureID, collision, gravity, type);
+			m = new Mesh(current->Get("name").c_str(), primitive, textureID, collision, gravity);
 		}
 		std::vector<std::string> pos = Utility::splitLine(current->Get("position"), ',');
 		std::vector<std::string> rot = Utility::splitLine(current->Get("rotation"), ',');
