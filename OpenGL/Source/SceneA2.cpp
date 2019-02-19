@@ -85,13 +85,7 @@ void SceneA2::Render()
 
 	gui = GUIManager::getInstance();
 	glBindFramebuffer(GL_FRAMEBUFFER, gui->FBO);
-	Mtx44 view;
-	view.SetToLookAt(
-		player->position.x, player->position.y + 30.0f, player->position.z,
-		0.0f, -1.0f, 0.0f,
-		0.0f, 1.0f, 0.0f
-	);
-	viewStack.LoadMatrix(view);
+	viewStack.LoadMatrix(player->getTopdownCamera()->LookAt());
 	std::vector<LightSource*>* lightSources = manager->getLightSources();
 	for (int i = 0; i < (int)lightSources->size(); i++)
 	{
@@ -105,7 +99,7 @@ void SceneA2::Render()
 	modelStack.LoadIdentity();
 
 	viewStack.LoadMatrix(player->getCamera()->LookAt());
-	/*std::vector<LightSource*>* */ lightSources = manager->getLightSources();
+	//std::vector<LightSource*>*  lightSources = manager->getLightSources();
 	for (int i = 0; i < (int)lightSources->size(); i++)
 	{
 		lightSources->at(i)->updateAttributes(viewStack);

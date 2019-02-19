@@ -21,6 +21,7 @@ public:
 	void setCameraMode(CAMERA_MODE mode);
 
 	Camera* getCamera();
+	Camera* getTopdownCamera();
 	void setCar(Car* car);
 	Car* getCar();
 
@@ -32,6 +33,7 @@ private:
 	Car* car;
 	CAMERA_MODE cameraMode;
 	FreeLookCamera* firstPerson;
+	Camera* topdown;
 	Camera* fixedCar;
 	float walkSpeed;
 };

@@ -113,13 +113,17 @@ void Mesh::Update(double dt)
 			}
 			else {
 
+
+
+
 				if (!hasPad) {
-					Vector3 ground = Manager::getInstance()->getObject("ground")->getOBB()->getPos() + Manager::getInstance()->getObject("ground")->getOBB()->getHalf().y;
-					Vector3 distance = obb->getPos() - obb->getHalf().y - ground;
+					Vector3 ground = Manager::getInstance()->getObject("ground")->position + Manager::getInstance()->getObject("ground")->getOBB()->getHalf().y * 2;
+					Vector3 distance = position - ground;
 					distance.x = 0;
 					distance.z = 0;
+
 					if (distance.Length() > 0.0f) {
-						position.y = Manager::getInstance()->getObject("ground")->position.y + Manager::getInstance()->getObject("ground")->getOBB()->getHalf().y;
+						position.y = Manager::getInstance()->getObject("ground")->position.y + 2 * (Manager::getInstance()->getObject("ground")->getOBB()->getHalf().y);
 					}
 				}
 

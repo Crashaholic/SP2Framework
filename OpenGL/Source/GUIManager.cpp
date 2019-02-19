@@ -19,7 +19,7 @@ GUIManager::GUIManager()
 		Vector3(128.0f, 128.f, 1.f), 
 		LoadTGA("Image//rock.tga"), LoadTGA("Image//water.tga"), 
 		"name");
-	buttons.push_back(button1);
+	//buttons.push_back(button1);
 
 	InitFBO();
 	GUITexture* topdown = new GUITexture
@@ -29,8 +29,8 @@ GUIManager::GUIManager()
 			Vector3(130.0f, 130.0f, 1),
 			topdownTexture
 		);
-	renderables.push_back(topdown->getIRender());
-	renderables.push_back(cursor.getGUITexture()->getIRender());
+	//renderables.push_back(topdown->getIRender());
+	//renderables.push_back(cursor.getGUITexture()->getIRender());
 
 
 }

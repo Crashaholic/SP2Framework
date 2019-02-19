@@ -14,7 +14,7 @@ Player::Player(const char* meshName, Primitive* primitive, unsigned int texID, D
 
 	firstPerson = new FreeLookCamera(position - Vector3(0.0f, 0.1f, 0.0f) + Vector3(-0.2f, 0.0f, 0.0f));
 	fixedCar = new Camera(position + Vector3(0.0f, 8.0f, -6.0f));
-
+	topdown = new Camera(position + Vector3(0.0f, 8.0f, -6.0f));
 	//obb->setHalf(Vector3(0.5945f, 1.5505f, 0.378f));
 	//defaultObb->setHalf(Vector3(0.5945f, 1.5505f, 0.378f));
 	
@@ -123,6 +123,9 @@ void Player::Update(double dt) {
 		fixedCar->setTarget(lookAtTarget);
 	}
 
+	topdown->position = position + Vector3(0.1f, 30.0f, 0.0f);
+	topdown->setTarget(position);
+
 	if (!isInVehicle)
 		Mesh::Update(dt);
 
@@ -140,7 +143,9 @@ Car* Player::getCar() {
 	return car;
 }
 
-
+Camera* Player::getTopdownCamera() {
+	return topdown;
+}
 
 Camera* Player::getCamera() {
 	if (cameraMode == FIRST_PERSON)
