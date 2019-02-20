@@ -5,7 +5,7 @@
 class GUIButton
 {
 public:
-	GUIButton(Vector3 pos, Vector3 rot, Vector3 scale, 
+	GUIButton(Vector3 pos, float rot, Vector3 scale, 
 		unsigned int normalTextureID, unsigned int hoverTextureID,
 		std::string name);
 	GUIButton();
@@ -21,7 +21,8 @@ private:
 	unsigned int normalTextureID;
 	unsigned int hoverTextureID;
 	IRender* render;
-	Vector3 pos, rot, scale;
+	Vector3 pos, scale;
+	float rot;
 	std::string name;
 };
 

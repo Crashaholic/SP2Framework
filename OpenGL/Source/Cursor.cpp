@@ -7,7 +7,7 @@ Cursor::Cursor()
 	currX = currY = 0;
 	cursorGUI = new GUITexture(
 		Vector3(0, 0, 0),
-		Vector3(0, 0, 0),
+		0.0f,
 		Vector3(16.f, 16.f, 16.f),
 		LoadTGA("Image//cursor.tga"));
 }

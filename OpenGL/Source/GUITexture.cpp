@@ -4,7 +4,7 @@
 * 
 */
 
-GUITexture::GUITexture(Vector3 pos, Vector3 rot, Vector3 scale, unsigned int textureID)
+GUITexture::GUITexture(Vector3 pos, float rot, Vector3 scale, unsigned int textureID)
 {
 	render = new IRender(pos, rot, scale, textureID);
 }

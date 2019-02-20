@@ -3,7 +3,7 @@
 #include "Application.h"
 #include "Utility.h"
 
-IRender::IRender(Vector3 pos, Vector3 rot, Vector3 scale, unsigned int textureID)
+IRender::IRender(Vector3 pos, float rot, Vector3 scale, unsigned int textureID)
 {
 	glGenBuffers(1, &this->vbo);
 	glGenVertexArrays(1, &this->vao);
@@ -43,7 +43,7 @@ void IRender::draw()
 
 	Mtx44 transformationMat, translate, rotation, scale;
 	translate.SetToTranslation(pos.x, pos.y, 0.0f);
-	rotation.SetToRotation(rot.z, 0, 0, 1);
+	rotation.SetToRotation(rot, 0, 0, 1);
 	scale.SetToScale(this->scale.x, this->scale.y, 1.0f);
 	model = transformationMat =  translate * rotation * scale;
 	view.SetToIdentity();

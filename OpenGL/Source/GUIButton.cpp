@@ -1,6 +1,6 @@
 #include "GUIButton.h"
 
-GUIButton::GUIButton(Vector3 pos, Vector3 rot, Vector3 scale, unsigned int normalTextureID, unsigned int hoverTextureID, std::string name)
+GUIButton::GUIButton(Vector3 pos, float rot, Vector3 scale, unsigned int normalTextureID, unsigned int hoverTextureID, std::string name)
 {
 	this->pos = pos;
 	this->rot = rot;

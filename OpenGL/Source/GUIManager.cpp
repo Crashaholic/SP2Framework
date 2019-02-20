@@ -15,7 +15,7 @@ GUIManager::GUIManager()
 	fonts[  "digital"  ] = new GUIFont("Fonts//analogue.fnt"   , "Fonts//analogue.tga"   );
 	GUIButton* button1 = new GUIButton(
 		Vector3(0, 0), 
-		Vector3(0, 0, 0), 
+		0.0f, 
 		Vector3(128.0f, 128.f, 1.f), 
 		LoadTGA("Image//rock.tga"), LoadTGA("Image//water.tga"), 
 		"name");
@@ -25,7 +25,7 @@ GUIManager::GUIManager()
 	GUITexture* topdown = new GUITexture
 		(
 			Vector3(200, 300),
-			Vector3(),
+			0,
 			Vector3(80.0f, 80.0f, 1),
 			topdownTexture
 		);
