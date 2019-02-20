@@ -349,12 +349,14 @@ void SceneA2::Update(double dt)
 			if (!player->isInVehicle && (player->getCar()->position - player->position).Length() <= 6.0f) {
 				player->isInVehicle = true;
 				player->getCar()->setOccupied(true);
+				player->collisionEnabled = false;
 				player->setCameraMode(FIXED_CAR);
 
 			}
 			else if (player->isInVehicle) {
 				player->isInVehicle = false;
 				player->getCar()->setOccupied(false);
+				player->collisionEnabled = true;
 				player->setCameraMode(FIRST_PERSON);
 			}
 			bounceTimeCounter = 0.3f;

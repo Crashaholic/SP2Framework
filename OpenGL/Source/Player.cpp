@@ -15,8 +15,6 @@ Player::Player(const char* meshName, Primitive* primitive, unsigned int texID, D
 	firstPerson = new FreeLookCamera(position - Vector3(0.0f, 0.1f, 0.0f) + Vector3(-0.2f, 0.0f, 0.0f));
 	fixedCar = new Camera(position + Vector3(0.0f, 8.0f, -6.0f));
 	topdown = new Camera(position + Vector3(0.0f, 8.0f, -6.0f));
-	//obb->setHalf(Vector3(0.5945f, 1.5505f, 0.378f));
-	//defaultObb->setHalf(Vector3(0.5945f, 1.5505f, 0.378f));
 	
 }
 
@@ -30,20 +28,6 @@ Player::~Player()
 {
 }
 
-
-void Player::Render(MS& modelStack, MS& viewStack, MS& projectionStack, ShaderProgram* shader)
-{
-	// Apply Transformations
-	//Translate(modelStack, position.x, position.y, position.z);
-	//Rotate(modelStack, rotation.x, 1, 0, 0);
-	//Rotate(modelStack, rotation.y, 0, 1, 0);
-	//Rotate(modelStack, rotation.z, 0, 0, 1);
-
-	
-	// Render
-	Mesh::Render(modelStack, viewStack, projectionStack, shader);
-}
-
 void Player::Update(double dt) {
 
 	Vector3 right = firstPerson->getRight();
@@ -53,14 +37,7 @@ void Player::Update(double dt) {
 	forward.z = sin(rad);
 	forward.Normalize();
 
-	Vector3 deltaRotation = Vector3(0.0f, -firstPerson->getYaw() + 90, 0.0f);
 
-	Vector3 targetRotation = Utility::Lerp(rotation, deltaRotation, 12.0f * dt);
-	
-	// Rotate only if there is no collision
-	if (!isInVehicle && Collision::checkCollisionR(this, deltaRotation, { "ground", "pad1" }).size() == 0) {
-		rotation = targetRotation;
-	}
 
 	if (!isInVehicle) {
 
@@ -84,6 +61,16 @@ void Player::Update(double dt) {
 		std::vector<Mesh*> collided = Collision::checkCollisionT(this, translation, { "ground", "pad1" });
 		if (translation != Vector3(0,0,0) && collided.size() == 0) {
 			position += translation;
+		}
+
+
+		Vector3 deltaRotation = Vector3(0.0f, -firstPerson->getYaw() + 90, 0.0f);
+
+		Vector3 targetRotation = Utility::Lerp(rotation, deltaRotation, 12.0f * dt);
+
+		// Rotate only if there is no collision
+		if (!isInVehicle && Collision::checkCollisionR(this, deltaRotation, { "ground", "pad1" }).size() == 0) {
+			rotation = targetRotation;
 		}
 
 	}
@@ -164,6 +151,7 @@ void Player::switchCameraMode() {
 
 void Player::setCameraMode(CAMERA_MODE mode)
 {
+
 	cameraMode = mode;
 }
 

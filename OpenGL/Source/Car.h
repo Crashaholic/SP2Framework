@@ -24,8 +24,7 @@ public:
 	float angularVelocity;
 	Vector3 forward;
 	PhysicsMode mode;
-	float xDelta;
-	float zDelta;
+
 protected:
 
 	Vector3 calcAcceleration(float accInput, float steerInput, float dt);

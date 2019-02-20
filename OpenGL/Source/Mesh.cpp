@@ -93,6 +93,11 @@ void Mesh::Update(double dt)
 		if (gravityEnabled)
 			onGroundCheck(dt);
 		position += velocity;
+		//Mesh* ground = Manager::getInstance()->getObject("ground");
+		//float groundY = ground->position.y + ground->getOBB()->getHalf().y * 2;
+	/*	if (position.y <= groundY) {
+			position.y = groundY;
+		}*/
 	}
 }
 
@@ -166,31 +171,43 @@ void Mesh::onGroundCheck(double dt)
 	std::vector<Mesh*> collided = Collision::checkCollisionT(this, grav, {});
 
 	// Check whether player is above a LevitationPad
-	std::vector<Mesh*> collidePad = Collision::checkCollisionAbove(this, -20.0f, {});
+	std::vector<Mesh*> collidePad = Collision::checkCollisionAbove(this, -35.0f, {});
 	bool hasPad = std::find(collidePad.begin(), collidePad.end(), Manager::getInstance()->getObject("pad1")) != collidePad.end();
 
 
 	// Nothing below the player -> Gravity pull
 	if (!hasPad && std::find(collided.begin(), collided.end(), Manager::getInstance()->getObject("ground")) == collided.end())
 	{
+		//Vector3 target = velocity + grav * dt;
+		//Mesh* ground = Manager::getInstance()->getObject("ground");
+		//if (target.y <= ground->position.y) {
+		//	position.y = ground->position.y + ground->getOBB()->getHalf().y * 2;
+		//	velocity.y = 0;
+		//}
+		//else {
+		//	velocity += grav * dt;
+		//}
 		velocity += grav * dt;
 	}
 	else
 	{
 
-		if (!hasPad)
+		if (!hasPad && velocity.y < 0)
 		{
 			// Snap player to the ground if he is hovering slightly above due to inaccuracies in gravity collision
 			float groundY = Manager::getInstance()->getObject("ground")->position.y + Manager::getInstance()->getObject("ground")->getOBB()->getHalf().y * 2;
-			float changeInY = position.y - groundY;
+			//float changeInY = position.y - groundY;
 
-			if (changeInY > 0.0f)
+			//if (changeInY > 0.0f)
 				position.y = groundY;
+
 		}
 
 		if (velocity.y < 0)
 			velocity.y = 0;
+		
 	}
+
 }
 
 void Mesh::loadChildren(std::vector<std::string> names)

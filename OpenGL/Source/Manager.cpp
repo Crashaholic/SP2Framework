@@ -20,7 +20,7 @@ Manager::Manager()
 	money = 0;
 
 
-	tree = new QuadTree(Vector3(-100, 0, -100), Vector3(100, 0, 100));
+	tree = new QuadTree(Vector3(-1000, 0, -1000), Vector3(1000, 0, 1000));
 	//loadPlayerProgress();
 	loadMap();
 }

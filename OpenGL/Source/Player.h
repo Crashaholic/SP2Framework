@@ -17,7 +17,6 @@ public:
 	~Player();
 
 	void Update(double dt);
-	void Render(MS& modelStack, MS& viewStack, MS& projectionStack, ShaderProgram* shader);
 	void setCameraMode(CAMERA_MODE mode);
 
 	Camera* getCamera();

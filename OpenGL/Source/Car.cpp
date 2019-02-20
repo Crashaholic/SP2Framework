@@ -31,8 +31,6 @@ Car::Car(const char* meshName, Primitive* primitive, unsigned int texID, DRAW_MO
 	previousInputs[0] = previousInputs[1] = 0;
 
 	mode = PHYSICS_CAR;
-	xDelta = 0.0f;
-	zDelta = 0.0f;
 	thrusters = 300.0f;
 	thrust = 0.0f;
 	torqueRot = 0.0f;
@@ -58,7 +56,7 @@ void Car::Update(double dt)
 {
 
 	onGroundCheck(dt);
-	position.y += velocity.y;
+
 
 
 	float accInput = 0.0f;
@@ -86,24 +84,25 @@ void Car::Update(double dt)
 
 		if (Application::IsKeyPressed('K') && !start) start = true;
 
-		if (Application::IsKeyPressed('M')) {
-			mode = PHYSICS_PLANE;
+		float thrustInput = 0.0f;
+
+		if (Application::IsKeyPressed('M') && thrusters > 0.0f) {
+			std::cout << thrusters << std::endl;
+			thrustInput = 1.0f;
+			thrust = Utility::Lerp(thrust, 1.0f, 8.0f * dt);
+			thrusters -= thrust * dt * 20.0;
+			velocity.y += thrust * dt;
+			
+		}
+		else {
+			thrust = 0;
+			thrustInput = 0.0f;
 		}
 
+		
+
+		
 		velocity += calcAcceleration(accInput, steerInput, dt);
-		//Vector3 friction = calcFriction(accInput, steerInput, dt);
-		//friction.y = 0;
-		//
-		//Vector3 noY = velocity;
-		//noY.y = 0;
-
-		//if (friction.Length() >= noY.Length())
-		//	velocity.SetZero();
-		//else
-		//	velocity += friction;
-
-
-
 	}
 
 	velocity += calcFriction(accInput, steerInput, dt);
@@ -122,19 +121,15 @@ void Car::Update(double dt)
 			float finalVelAI = 0.0f;
 			Collision::Collide(velocity.Length() * 10.0, ai->velocity.Length(), 5, 3, finalVelCar, finalVelAI, 10);
 
-			//std::cout << "BEFORE: " << std::endl;
-			//std::cout << "AI's velocity: " << ai->velocity.Length() << std::endl;
-			//std::cout << "Car's velocity: " << velocity.Length() * 10.0f << std::endl;
-			//std::cout << "AFTER: " << std::endl;
-			//std::cout << "AI's velocity: " << finalVelAI << std::endl;
-			//std::cout << "Car's velocity: " << finalVelCar << std::endl;
 			Vector3 vectorToCenter = ai->position - position;
 			Vector3 diff = vectorToCenter - forward;
 			//std::cout << "distance to center: " << diff.Length() * Utility::Sign(diff) << std::endl;
 			/*std::cout << kForwardDiff << std::endl;*/
 	/*		std::cout << ai->forward.Dot(-forward) << std::endl;*/
 
-			std::cout << diff << std::endl;
+			//std::cout << diff << std::endl;
+
+
 			int t = 0;
 			if (diff.x > 0)
 			{
@@ -146,8 +141,8 @@ void Car::Update(double dt)
 			}
 			
 
-			ai->velocity = forward * finalVelAI * 0.5f;
-			ai->torqueRot = t * velocity.Length() * 10.0;
+			ai->velocity = forward * finalVelAI * 0.60f;
+			ai->torqueRot = t * velocity.Length() * 12.0;
 			ai->position += ai->velocity;
 
 			//velocity = forward * finalVelCar;
@@ -167,8 +162,16 @@ void Car::Update(double dt)
 		}
 	}
 
-	torqueRot = Utility::Lerp(torqueRot, 0, 2.0 * dt);
-	rotation.y += torqueRot;
+	
+	float deltaRotY = Utility::Lerp(torqueRot, 0, 1.0 * dt);
+	float targetRotY = Utility::Lerp(rotation.y, rotation.y + deltaRotY, 20.0f * dt);
+	Vector3 deltaRotation = Vector3(0, deltaRotY, 0);
+
+	// Rotate only if there is no collision
+	if (Collision::checkCollisionR(this, deltaRotation, { "ground", "pad1" }).size() == 0) {
+		torqueRot = deltaRotY;
+		rotation.y = targetRotY;
+	}
 
 	collided = Collision::checkCollisionT(this, velocity, { "ground", "pad1" });
 	if (velocity != Vector3(0, 0, 0) && collided.size() == 0)
@@ -197,7 +200,15 @@ Vector3 Car::calcAcceleration(float accInput, float steerInput, float dt)
 		steerAngle = -steerAngle;
 
 	// Linearly interpolate for smooth transitions
-	currentSteer = Utility::Lerp(currentSteer, currentSteer + steerAngle, (float)dt * 0.70f);
+	float deltaRotY = Utility::Lerp(currentSteer, currentSteer + steerAngle, (float)dt * 0.70f);
+	float targetRotY = Utility::Lerp(rotation.y, -deltaRotY, 12.0f * dt);
+	Vector3 deltaRotation = Vector3(0, targetRotY, 0);
+
+	// Rotate only if there is no collision
+	if (Collision::checkCollisionR(this, deltaRotation, { "ground", "pad1" }).size() == 0) {
+		currentSteer = deltaRotY;
+		rotation.y = targetRotY;
+	}
 
 	// Determine the steered forward of car
 	float angle = 90.0f + currentSteer;
@@ -206,8 +217,6 @@ Vector3 Car::calcAcceleration(float accInput, float steerInput, float dt)
 	forward.z = sin(rad);
 	forward.Normalized();
 
-	// Rotate the car based on steering
-	rotation.y = -currentSteer;
 
 	float velocityDir = Utility::Sign(velocity);
 
@@ -251,8 +260,8 @@ Vector3 Car::calcAcceleration(float accInput, float steerInput, float dt)
 
 	// Interpolate reverse vector
 	reverseAcceleration = Utility::Lerp(reverseAcceleration, accInput, 2.5f * dt);
-	reverse = reverseAcceleration * forward * 20.0 * dt;
-	if (accInput != -1 && (steerInput == 0 || reverse.Length() < 1.0f))
+	reverse = reverseAcceleration * forward * 18.0 * dt;
+	if (accInput != -1)
 		reverse.SetZero();
 
 
