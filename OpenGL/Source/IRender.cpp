@@ -11,7 +11,21 @@ IRender::IRender(Vector3 pos, float rot, Vector3 scale, unsigned int textureID)
 	this->rot = rot;
 	this->scale = scale;
 	this->textureID = textureID;
+	this->isSolidColor = false;
 }
+
+IRender::IRender(Vector3 pos, float rot, Vector3 scale, Vector3 color, float alpha)
+{
+	glGenBuffers(1, &this->vbo);
+	glGenVertexArrays(1, &this->vao);
+	this->pos = pos;
+	this->rot = rot;
+	this->scale = scale;
+	this->color = color;
+	this->alpha = alpha;
+	this->isSolidColor = true;
+}
+
 
 IRender::~IRender()
 {
@@ -60,12 +74,25 @@ void IRender::draw()
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 2, GL_FLOAT, false, sizeof(float) * 2, (void*)0);
 
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, this->textureID);
 	shader->setUniform("mvp", mvp.a);
-	shader->setUniform("colorTexture", 0);
 	shader->setUniform("Flip", 0);
 	shader->setUniform("transformationMatrix", transformationMat.a);
+	shader->setUniform("colorTexture", 0);
+	if (isSolidColor)
+	{
+		shader->setUniform("elementColor", this->color);
+		shader->setUniform("alpha", this->alpha);
+		shader->setUniform("useSolidColor", this->isSolidColor);
+	}
+	else
+	{
+		shader->setUniform("elementColor", Vector3(1, 1, 1));
+		shader->setUniform("alpha", 1);
+		shader->setUniform("useSolidColor", this->isSolidColor);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, this->textureID);
+	}
+
 	shader->updateUniforms();
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
@@ -88,4 +115,10 @@ void IRender::setTexture(unsigned int existingTexture)
 void IRender::setTexture(const char* newTexture)
 {
 	this->textureID = LoadTGA(newTexture);
+}
+
+void IRender::setColor(Vector3 color, float alpha)
+{
+	this->color = color;
+	this->alpha = alpha;
 }

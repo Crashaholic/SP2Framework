@@ -9,6 +9,11 @@ GUITexture::GUITexture(Vector3 pos, float rot, Vector3 scale, unsigned int textu
 	render = new IRender(pos, rot, scale, textureID);
 }
 
+GUITexture::GUITexture(Vector3 pos, float rot, Vector3 scale, Vector3 color, float alpha)
+{
+	render = new IRender(pos, rot, scale, color, alpha);
+}
+
 GUITexture::~GUITexture()
 {
 
@@ -32,6 +37,11 @@ IRender* GUITexture::getIRender() const
 void GUITexture::draw() 
 {
 	// empty
+}
+
+void GUITexture::setColor(Vector3 color, float alpha)
+{
+	render->setColor(color, alpha);
 }
 
 void GUITexture::setPos(Vector3 b)

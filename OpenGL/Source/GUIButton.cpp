@@ -11,6 +11,19 @@ GUIButton::GUIButton(Vector3 pos, float rot, Vector3 scale, unsigned int normalT
 	render = new IRender(pos, rot, scale, normalTextureID);
 }
 
+GUIButton::GUIButton(Vector3 pos, float rot, Vector3 scale, Vector3 normalColor, float normalAlpha, Vector3 hoverColor, float hoverAlpha, std::string name)
+{
+	this->pos = pos;
+	this->rot = rot;
+	this->scale = scale;
+	this->normalColor = normalColor;
+	this->hoverColor = hoverColor;
+	this->normalAlpha = normalAlpha;
+	this->hoverAlpha = hoverAlpha;
+	this->name = name;
+	render = new IRender(pos, rot, scale, normalColor, normalAlpha);
+}
+
 GUIButton::GUIButton()
 {
 
@@ -48,16 +61,17 @@ bool GUIButton::checkStatus(double cursorX, double cursorY, double winWidth, dou
 		cursorY > yPosN)
 	{
 		render->setTexture(hoverTextureID);
+		render->setColor(hoverColor, hoverAlpha);
 		if (Application::IsKeyPressed(VK_LBUTTON))
 			return true;
 		else
 			return false;
 	}
 	else
+	{
 		render->setTexture(normalTextureID);
-
-	
-
+		render->setColor(normalColor, normalAlpha);
+	}
 }
 
 std::string GUIButton::getName() const

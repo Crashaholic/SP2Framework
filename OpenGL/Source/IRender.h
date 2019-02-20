@@ -16,17 +16,23 @@ private:
 	unsigned int vbo;
 
 	Vector3 pos, scale;
+	Vector3 color;
 	float rot;
+	float alpha;
+	bool isSolidColor;
 
 public:
 	IRender(Vector3 pos, float rot, Vector3 scale,
 		unsigned int textureID);
+	IRender(Vector3 pos, float rot, Vector3 scale,
+		Vector3 color, float alpha);
 	~IRender();
 
 	virtual void draw();
 	virtual void setPos(Vector3 b);
 	virtual void setTexture(unsigned int existingTexture);
 	virtual void setTexture(const char* newTexture);
+	virtual void setColor(Vector3 color, float alpha);
 };
 
 #endif

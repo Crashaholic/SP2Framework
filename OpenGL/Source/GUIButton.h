@@ -8,6 +8,9 @@ public:
 	GUIButton(Vector3 pos, float rot, Vector3 scale, 
 		unsigned int normalTextureID, unsigned int hoverTextureID,
 		std::string name);
+	GUIButton(Vector3 pos, float rot, Vector3 scale,
+		Vector3 normalColor, float normalAlpha, Vector3 hoverColor, float hoverAlpha,
+		std::string name);
 	GUIButton();
 	~GUIButton();
 
@@ -22,7 +25,10 @@ private:
 	unsigned int hoverTextureID;
 	IRender* render;
 	Vector3 pos, scale;
-	float rot;
+	Vector3 normalColor, hoverColor;
+	float normalAlpha;
+	float hoverAlpha;
+	float rot; 
 	std::string name;
 };
 

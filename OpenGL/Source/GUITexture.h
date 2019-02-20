@@ -10,11 +10,13 @@ class GUITexture
 {
 public:
 	GUITexture(Vector3 pos, float rot, Vector3 scale, unsigned int textureID);
+	GUITexture(Vector3 pos, float rot, Vector3 scale, Vector3 color, float alpha);
 	GUITexture() {};
 	~GUITexture();
 
 	void setTexture(unsigned int existingTexture);
 	void setTexture(const char* newTexture);
+	void setColor(Vector3 color, float alpha);
 	IRender* getIRender() const;
 	void draw();
 	void setPos(Vector3 b);

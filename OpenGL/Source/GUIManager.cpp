@@ -30,6 +30,13 @@ GUIManager::GUIManager()
 	//		topdownTexture
 	//	);
 	//renderables.push_back(topdown->getIRender());
+
+	GUITexture * solidColour = new GUITexture(
+		Vector3(0, 0),
+		0.0f,
+		Vector3(128.0f, 128.f, 1.f),
+		Vector3(0, 1, 0)
+	);
 	renderables.push_back(cursor.getGUITexture()->getIRender());
 
 
