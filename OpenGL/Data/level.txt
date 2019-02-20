@@ -1,3 +1,4 @@
+category=objects
 name=track
 collision=false
 gravity=false
@@ -25,7 +26,7 @@ texture=Models//building.tga
 type=pad
 name=human
 collision=true
-gravity=true
+gravity=false
 model=Models//human_body.obj
 position=0,5,0
 rotation=0,0,0
@@ -79,3 +80,13 @@ position=-0.7,0.65,-8.5
 rotation=0,0,0
 texture=Models//vehicleslot.tga
 type=environment
+
+category=ui
+name=waterbutton
+texture=Image//rock.tga
+hovertexture=Models//car.tga
+position=0,0
+rotation=0
+scale=128,128
+action=nothing
+type=button

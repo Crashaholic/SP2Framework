@@ -18,6 +18,7 @@ public:
 	void update(double newX, double newY, double winWidth, double winHeight);
 	void cursorUpdate(double newX, double newY, double winWidth, double winHeight);
 	void buttonStateUpdate(double newX, double newY, double winWidth, double winHeight);
+	void addButton(GUIButton* button);
 private:
 	void InitFBO();
 	GUIManager();

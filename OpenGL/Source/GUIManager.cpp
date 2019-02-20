@@ -13,24 +13,24 @@ GUIManager::GUIManager()
 	fonts[ "consolas"  ] = new GUIFont("Fonts//consolas.fnt"   , "Fonts//consolas.tga"   );
 	fonts[  "default"  ] = new GUIFont("Fonts//default.fnt"    , "Fonts//default.tga"    );
 	fonts[  "digital"  ] = new GUIFont("Fonts//analogue.fnt"   , "Fonts//analogue.tga"   );
-	GUIButton* button1 = new GUIButton(
-		Vector3(0, 0), 
-		0.0f, 
-		Vector3(128.0f, 128.f, 1.f), 
-		LoadTGA("Image//rock.tga"), LoadTGA("Image//water.tga"), 
-		"name");
-	//buttons.push_back(button1);
+	//GUIButton* button1 = new GUIButton(
+	//	Vector3(0, 0), 
+	//	0.0f, 
+	//	Vector3(128.0f, 128.f, 1.f), 
+	//	LoadTGA("Image//rock.tga"), LoadTGA("Image//water.tga"), 
+	//	"name");
+	////buttons.push_back(button1);
 
-	InitFBO();
-	GUITexture* topdown = new GUITexture
-		(
-			Vector3(200, 300),
-			0,
-			Vector3(80.0f, 80.0f, 1),
-			topdownTexture
-		);
+	//InitFBO();
+	//GUITexture* topdown = new GUITexture
+	//	(
+	//		Vector3(200, 300),
+	//		0,
+	//		Vector3(80.0f, 80.0f, 1),
+	//		topdownTexture
+	//	);
 	//renderables.push_back(topdown->getIRender());
-	//renderables.push_back(cursor.getGUITexture()->getIRender());
+	renderables.push_back(cursor.getGUITexture()->getIRender());
 
 
 }
@@ -45,6 +45,11 @@ GUIManager::~GUIManager()
 	for (int i = 0; i < (int) renderables.size(); i++)
 		if(renderables[i] != nullptr)
 			delete renderables[i];
+}
+
+void GUIManager::addButton(GUIButton* button) {
+	buttons.push_back(button);
+	//renderables.push_back(button->getIRender());
 }
 
 void GUIManager::InitFBO()
