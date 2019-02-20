@@ -201,6 +201,7 @@ void Manager::savePlayerProgress()
 }
 
 void Manager::loadMap() {
+	
 	std::ifstream handle("Data//level.txt");
 	if (!handle.is_open()) {
 		std::cout << "[Error] Could not load level.txt!" << std::endl;

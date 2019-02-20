@@ -83,12 +83,12 @@ void SceneA2::Render()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	modelStack.LoadIdentity();
 
-	gui = GUIManager::getInstance();
+	/*gui = GUIManager::getInstance();
 	glBindFramebuffer(GL_FRAMEBUFFER, gui->FBO);
 	Mtx44 view;
 	view.SetToLookAt(
 		player->position.x, player->position.y + 30.0f, player->position.z,
-		0.0f, -1.0f, 0.0f,
+		player->position.x, player->position.y, player->position.z,
 		0.0f, 1.0f, 0.0f
 	);
 	viewStack.LoadMatrix(view);
@@ -99,13 +99,13 @@ void SceneA2::Render()
 	}
 
 	RenderScene();
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);*/
 	
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	modelStack.LoadIdentity();
 
 	viewStack.LoadMatrix(player->getCamera()->LookAt());
-	/*std::vector<LightSource*>* */ lightSources = manager->getLightSources();
+	std::vector<LightSource*>*  lightSources = manager->getLightSources();
 	for (int i = 0; i < (int)lightSources->size(); i++)
 	{
 		lightSources->at(i)->updateAttributes(viewStack);
@@ -135,7 +135,10 @@ void SceneA2::RenderScene()
 
 	std::map<std::string, Mesh*>* objects = manager->getObjects();
 
-	for (auto& obj : *objects) {
+
+	for (auto& obj : *objects)
+	{
+
 		Mesh* m = obj.second;
 
 		std::string key = obj.first;
@@ -378,8 +381,6 @@ void SceneA2::Update(double dt)
 	Mtx44 projection;
 	projection.SetToPerspective(45.0f, (float)Application::winWidth / (float)Application::winHeight, 0.1f, 10000.0f);
 	projectionStack.LoadMatrix(projection);
-
-
 
 	// Bounce Time & Elapsed Time
 	bounceTimeCounter -= (float) dt;
