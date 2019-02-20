@@ -20,6 +20,9 @@ Manager::Manager()
 	carThreeUnlock = false;
 	money = 0;
 
+	currentLevel = "game";
+	levels[currentLevel] = new Level("Data//level.txt");
+
 
 	tree = new QuadTree(Vector3(-1000, 0, -1000), Vector3(1000, 0, 1000));
 	//loadPlayerProgress();

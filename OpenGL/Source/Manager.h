@@ -9,6 +9,7 @@
 #include <map>
 #include <fstream>
 #include <string>
+#include "Level.h"
 
 #include <iostream>
 
@@ -40,6 +41,9 @@ private:
 	bool carTwoUnlock;
 	bool carThreeUnlock;
 	int money;
+
+	std::string currentLevel;
+	std::map<std::string, Level*> levels;
 	std::map<std::string, Mesh*> objects;
 	std::map<std::string, ShaderProgram*> shaders;
 	std::vector<LightSource*> lightSources;

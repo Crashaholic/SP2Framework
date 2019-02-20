@@ -52,6 +52,10 @@ GUIManager::~GUIManager()
 	for (int i = 0; i < (int) renderables.size(); i++)
 		if(renderables[i] != nullptr)
 			delete renderables[i];
+
+	for (int i = 0; i < (int)buttons.size(); i++)
+		if (buttons[i] != nullptr)
+			delete buttons[i];
 }
 
 void GUIManager::addButton(GUIButton* button) {

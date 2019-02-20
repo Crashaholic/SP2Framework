@@ -12,15 +12,16 @@
 class GUIScreen
 {
 public:
+	GUIScreen();
 	~GUIScreen();
 	void render();
-	void pushAsRender(IRender* r);
-	void pushAsText(GUIText* t);
-	void pushAsButton(GUIButton* b);
+	
+	void addButton(GUIButton* button);
+
 private:
-	std::vector<IRender*> iRender;
-	std::vector<GUIText*> guiText;
-	std::vector<GUIButton*> guiButton;
+	std::vector<IRender*> renderables;
+	std::vector<GUIText*> text;
+	std::vector<GUIButton*> buttons;
 };
 
 #endif
