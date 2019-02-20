@@ -131,7 +131,10 @@ void SceneA2::RenderScene()
 
 	std::map<std::string, Mesh*>* objects = manager->getObjects();
 
-	for (auto& obj : *objects) {
+
+	for (auto& obj : *objects)
+	{
+
 		Mesh* m = obj.second;
 
 		std::string key = obj.first;
@@ -373,8 +376,6 @@ void SceneA2::Update(double dt)
 	Mtx44 projection;
 	projection.SetToPerspective(45.0f, (float)Application::winWidth / (float)Application::winHeight, 0.1f, 10000.0f);
 	projectionStack.LoadMatrix(projection);
-
-
 
 	// Bounce Time & Elapsed Time
 	bounceTimeCounter -= (float) dt;

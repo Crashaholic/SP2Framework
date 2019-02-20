@@ -1,12 +1,7 @@
 #ifndef GUIMANAGER_H
 #define GUIMANAGER_H
 
-
-#include "GUIText.h"
-#include "Texture.h"
-#include "IRender.h"
-#include "Cursor.h"
-#include "GUIButton.h"
+#include "GUIScreen.h"
 #include <iostream>
 #include <fstream>
 #include <string>

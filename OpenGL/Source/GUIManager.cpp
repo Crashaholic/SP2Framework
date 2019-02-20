@@ -14,7 +14,7 @@ GUIManager::GUIManager()
 	fonts[  "default"  ] = new GUIFont("Fonts//default.fnt"    , "Fonts//default.tga"    );
 	fonts[  "digital"  ] = new GUIFont("Fonts//analogue.fnt"   , "Fonts//analogue.tga"   );
 	GUIButton* button1 = new GUIButton(
-		Vector3(10, 300), 
+		Vector3(0, 0), 
 		Vector3(0, 0, 0), 
 		Vector3(128.0f, 128.f, 1.f), 
 		LoadTGA("Image//rock.tga"), LoadTGA("Image//water.tga"), 
@@ -24,9 +24,9 @@ GUIManager::GUIManager()
 	InitFBO();
 	GUITexture* topdown = new GUITexture
 		(
-			Vector3(0.7f, 0.7f),
+			Vector3(200, 300),
 			Vector3(),
-			Vector3(130.0f, 130.0f, 1),
+			Vector3(80.0f, 80.0f, 1),
 			topdownTexture
 		);
 	//renderables.push_back(topdown->getIRender());
