@@ -1,51 +1,48 @@
 #include "GUIScreen.h"
 
+GUIScreen::GUIScreen() {
+
+}
+
 GUIScreen::~GUIScreen()
 {
-	for (int i = 0; i < (int)iRender.size(); ++i)
-		if (iRender[i] != nullptr)
-			delete iRender[i];
+	for (int i = 0; i < (int)renderables.size(); ++i)
+		if (renderables[i] != nullptr)
+			delete renderables[i];
 
-	for (int i = 0; i < (int)guiText.size(); ++i)
-		if (guiText[i] != nullptr)
-			delete guiText[i];
+	for (int i = 0; i < (int) text.size(); ++i)
+		if (text[i] != nullptr)
+			delete text[i];
 
-	for (int i = 0; i < (int)guiButton.size(); ++i)
-		if (guiButton[i] != nullptr)
-			delete guiButton[i];
+	for (int i = 0; i < (int)buttons.size(); ++i)
+		if (buttons[i] != nullptr)
+			delete buttons[i];
 }
 
 void GUIScreen::render()
 {
-	for (int i = 0; i < (int)guiText.size(); i++) 
+	for (int i = 0; i < (int) text.size(); i++) 
 	{
-		guiText[i]->render();
-		delete guiText[i];
+		text[i]->render();
+		delete text[i];
 	}
 
-	for (int i = 0; i < (int)guiButton.size(); i++) 
+	for (int i = 0; i < (int)buttons.size(); i++) 
 	{
-		guiButton[i]->getIRender()->draw();
+		buttons[i]->getIRender()->draw();
 	}
 
-	for (int i = 0; i < (int)iRender.size(); i++) 
+	for (int i = 0; i < (int) renderables.size(); i++) 
 	{
-		iRender[i]->draw();
+		renderables[i]->draw();
 	}
-	guiText.clear();
+	text.clear();
 }
 
-void GUIScreen::pushAsRender(IRender* r)
+
+void GUIScreen::addButton(GUIButton* b)
 {
-	this->iRender.push_back(r);
+	buttons.push_back(b);
 }
 
-void GUIScreen::pushAsText(GUIText* t)
-{
-	this->guiText.push_back(t);
-}
 
-void GUIScreen::pushAsButton(GUIButton* b)
-{
-	this->guiButton.push_back(b);
-}

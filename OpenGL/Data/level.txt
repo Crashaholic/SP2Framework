@@ -1,4 +1,12 @@
 category=objects
+name=ramp
+collision=false
+gravity=false
+model=Models//ramp.obj
+texture=Models//ramp.tga
+position=61.914,0.5,-165.421
+rotation=0,0,0
+type=environment
 name=track
 collision=false
 gravity=false
@@ -83,8 +91,9 @@ type=environment
 
 category=ui
 name=waterbutton
+screen=shop
 texture=Image//rock.tga
-hovertexture=Models//car.tga
+hovertexture=Image//water.tga
 position=0,0
 rotation=0
 scale=128,128
