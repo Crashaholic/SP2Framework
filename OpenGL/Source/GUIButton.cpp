@@ -64,14 +64,14 @@ bool GUIButton::checkStatus(double cursorX, double cursorY, double winWidth, dou
 		render->setColor(hoverColor, hoverAlpha);
 		if (Application::IsKeyPressed(VK_LBUTTON))
 			return true;
-		else
-			return false;
 	}
 	else
 	{
 		render->setTexture(normalTextureID);
 		render->setColor(normalColor, normalAlpha);
 	}
+
+	return false;
 }
 
 std::string GUIButton::getName() const

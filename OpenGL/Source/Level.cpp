@@ -3,21 +3,38 @@
 #include "Player.h"
 #include "LevitationPad.h"
 #include "AICar.h"
+#include "Application.h"
 
 
 Level::Level(const char* levelPath)
 {
-	currentScreen = "";
+	currentScreen = "shop";
 	Mtx44 proj;
 	proj.SetToPerspective(45.0f, (float)Application::winWidth / (float)Application::winHeight, 0.1f, 10000.0f);
 	projectionStack.LoadMatrix(proj);
 	Load(levelPath);
+
+	for(int i = 0; i < 2; i++)
+		lightSources.push_back(new LightSource());
 	
+}
+
+Level::~Level()
+{
+	delete tree;
+
+	for (auto const& object : objects)
+		if (object.second != nullptr)
+			delete object.second;
+
+	for (int i = 0; i < (int)lightSources.size(); i++)
+		delete lightSources[i];
 }
 
 void Level::setScreen(std::string screen) {
 	currentScreen = screen;
 }
+
 
 void Level::Load(std::string path) {
 
@@ -37,6 +54,7 @@ void Level::Load(std::string path) {
 
 		std::string Get(std::string key)
 		{
+			if (values.find(key) == values.end()) return "invalid";
 			return values[key];
 		}
 	};
@@ -110,24 +128,47 @@ void Level::Load(std::string path) {
 				current = objs->at(i);
 
 				std::string type = current->Get("type");
+				std::string screen = current->Get("screen");
+
+				if (screens.find(screen) == screens.end()) {
+					screens[screen] = new GUIScreen();
+				}
+
+				std::vector<std::string> pos = Utility::splitLine(current->Get("position"), ',');
+				Vector3 position = Vector3(std::stof(pos[0]), std::stof(pos[1]), 0);
+				float rot = std::stof(current->Get("rotation"));
+				std::vector<std::string> scale = Utility::splitLine(current->Get("scale"), ',');
+				Vector3 scal = Vector3(std::stof(scale[0]), std::stof(scale[1]), 0);
 
 				if (type == "button") {
-					unsigned int textureID = LoadTGA(current->Get("texture").c_str());
-					unsigned int hoverID = LoadTGA(current->Get("hovertexture").c_str());
-					std::vector<std::string> pos = Utility::splitLine(current->Get("position"), ',');
-					Vector3 position = Vector3(std::stof(pos[0]), std::stof(pos[1]), 0);
-					float rot = std::stof(current->Get("rotation"));
-					std::vector<std::string> scale = Utility::splitLine(current->Get("scale"), ',');
-					Vector3 scal = Vector3(std::stof(scale[0]), std::stof(scale[1]), 0);
+
+		
 					std::string action = current->Get("action");
 
-					std::string screen = current->Get("screen");
-
-					if (screens.find(screen) == screens.end()) {
-						screens[screen] = new GUIScreen();
+					if (current->Get("texture") == "invalid")
+					{
+						std::vector<std::string> colors = Utility::splitLine(current->Get("color"), ',');
+						Vector3 color = Vector3(std::stof(colors[0]), std::stof(colors[1]), std::stof(colors[2]));
+						std::vector<std::string> hoverColors = Utility::splitLine(current->Get("hovercolor"), ',');
+						Vector3 hoverColor = Vector3(std::stof(hoverColors[0]), std::stof(hoverColors[1]), std::stof(hoverColors[2]));
+						float normalAlpha = std::stof(colors[3]);
+						float hoverAlpha = std::stof(hoverColors[3]);
+						screens[screen]->addButton(new GUIButton(position, rot, scal, color, normalAlpha, hoverColor, hoverAlpha, action));
+					}
+					else
+					{
+						unsigned int textureID = LoadTGA(current->Get("texture").c_str());
+						unsigned int hoverID = LoadTGA(current->Get("hovertexture").c_str());
+						screens[screen]->addButton(new GUIButton(position, rot, scal, textureID, hoverID, action));
 					}
 
-					screens[screen]->addButton(new GUIButton(position, rot, scal, textureID, hoverID, action));
+				}
+				else if (type == "texture")
+				{
+					std::vector<std::string> colors = Utility::splitLine(current->Get("color"), ',');
+					Vector3 color = Vector3(std::stof(colors[0]), std::stof(colors[1]), std::stof(colors[2]));
+					float normalAlpha = std::stof(colors[3]);
+					screens[screen]->addTexture(new GUITexture(position, rot, scal, color, normalAlpha));
 				}
 
 
@@ -142,9 +183,9 @@ void Level::Load(std::string path) {
 
 }
 
-void Level::renderGui()
+void Level::renderGUI()
 {
-	screens[currentScreen]->render();
+	screens[currentScreen]->Render();
 }
 
 void Level::renderMesh()
@@ -223,11 +264,40 @@ void Level::renderMesh()
 	}
 }
 
-void Level::Render()
+void Level::Update(double dt)
 {
-	glEnable(GL_DEPTH_TEST);
-	renderMesh();
-	glDisable(GL_DEPTH_TEST);
-	renderGui();
-	glEnable(GL_DEPTH_TEST);
+	for (auto& object : objects)
+	{
+		object.second->Update(dt);
+	}
+
+	screens[currentScreen]->Update();
+}
+
+
+void Level::spawnObject(Mesh* m)
+{
+	objects[m->name] = m;
+	if (m->collisionEnabled)
+		tree->Insert(m);
+}
+
+QuadTree* Level::getTree()
+{
+	return tree;
+}
+
+Mesh* Level::getObject(std::string name)
+{
+	return objects[name];
+}
+
+std::vector<LightSource*>* Level::getLightSources()
+{
+	return &lightSources;
+}
+
+std::map<std::string, Mesh*>* Level::getObjects()
+{
+	return &objects;
 }

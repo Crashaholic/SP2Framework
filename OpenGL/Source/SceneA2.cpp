@@ -61,19 +61,19 @@ void SceneA2::CreateMesh()
 {
 	// Skybox Planes
 	Primitive* quad = Primitives::generateQuad(Color(1, 1, 1));
-	manager->spawnObject(new Mesh("skyboxFront", quad, LoadTGA("Image//front.tga")));
-	manager->spawnObject(new Mesh("skyboxTop", quad, LoadTGA("Image//top.tga")));
-	manager->spawnObject(new Mesh("skyboxBottom", quad, LoadTGA("Image//bottom.tga")));
-	manager->spawnObject(new Mesh("skyboxLeft", quad, LoadTGA("Image//left.tga")));
-	manager->spawnObject(new Mesh("skyboxRight", quad, LoadTGA("Image//right.tga")));
-	manager->spawnObject(new Mesh("skyboxBack", quad, LoadTGA("Image//back.tga")));
+	manager->getLevel()->spawnObject(new Mesh("skyboxFront", quad, LoadTGA("Image//front.tga")));
+	manager->getLevel()->spawnObject(new Mesh("skyboxTop", quad, LoadTGA("Image//top.tga")));
+	manager->getLevel()->spawnObject(new Mesh("skyboxBottom", quad, LoadTGA("Image//bottom.tga")));
+	manager->getLevel()->spawnObject(new Mesh("skyboxLeft", quad, LoadTGA("Image//left.tga")));
+	manager->getLevel()->spawnObject(new Mesh("skyboxRight", quad, LoadTGA("Image//right.tga")));
+	manager->getLevel()->spawnObject(new Mesh("skyboxBack", quad, LoadTGA("Image//back.tga")));
 
 	Primitive* axes = Primitives::generateAxes();
-	manager->spawnObject(new Mesh("axes", axes, 0, false, false, "environment", Mesh::DRAW_LINES));
-	manager->spawnObject(new Mesh("playerAxes", axes, 0, false, false, "environment", Mesh::DRAW_LINES));
+	manager->getLevel()->spawnObject(new Mesh("axes", axes, 0, false, false, "environment", Mesh::DRAW_LINES));
+	manager->getLevel()->spawnObject(new Mesh("playerAxes", axes, 0, false, false, "environment", Mesh::DRAW_LINES));
 
-	player = dynamic_cast<Player*>(manager->getObject("human"));
-	car = dynamic_cast<Car*>(manager->getObject("car"));
+	player = dynamic_cast<Player*>(manager->getLevel()->getObject("human"));
+	car = dynamic_cast<Car*>(manager->getLevel()->getObject("car"));
 	player->setCar(car);
 
 }
@@ -88,7 +88,7 @@ void SceneA2::Render()
 	//glBindFramebuffer(GL_FRAMEBUFFER, gui->FBO);
 	//viewStack.LoadMatrix(player->getTopdownCamera()->LookAt());
 
-	std::vector<LightSource*>* lightSources = manager->getLightSources();
+	std::vector<LightSource*>* lightSources = manager->getLevel()->getLightSources();
 	//for (int i = 0; i < (int)lightSources->size(); i++)
 	//{
 	//	lightSources->at(i)->updateAttributes(viewStack);
@@ -121,49 +121,28 @@ void SceneA2::RenderScene()
 	RenderSkybox();
 	lit->use();
 
+
+	Level* level = manager->getLevel();
+
 	modelStack.PushMatrix();
-	manager->getObject("playerAxes")->Translate(modelStack, car->position.x, car->position.y + car->getOBB()->getHalf().y, car->position.z);
-	manager->getObject("playerAxes")->Rotate(modelStack, car->rotation.x, 1, 0, 0);
-	manager->getObject("playerAxes")->Rotate(modelStack, car->rotation.y, 0, 1, 0);
-	manager->getObject("playerAxes")->Rotate(modelStack, car->rotation.z, 0, 0, 1);
-	RenderMesh(manager->getObject("playerAxes"), false);
+	level->getObject("playerAxes")->Translate(modelStack, car->position.x, car->position.y + car->getOBB()->getHalf().y, car->position.z);
+	level->getObject("playerAxes")->Rotate(modelStack, car->rotation.x, 1, 0, 0);
+	level->getObject("playerAxes")->Rotate(modelStack, car->rotation.y, 0, 1, 0);
+	level->getObject("playerAxes")->Rotate(modelStack, car->rotation.z, 0, 0, 1);
+	RenderMesh(level->getObject("playerAxes"), false);
 	modelStack.PopMatrix();
 
-	std::map<std::string, Mesh*>* objects = manager->getObjects();
-
-
-	for (auto& obj : *objects)
-	{
-
-		Mesh* m = obj.second;
-
-		std::string key = obj.first;
-		if (Utility::startsWith(key, "skybox") || key == "axes" || key == "playerAxes") continue;
-
-		if (obj.first == "ai" || obj.first == "car") {
-			glDisable(GL_CULL_FACE);
-		}
-
-		modelStack.PushMatrix();
-		m->ResetOBB();
-		m->Translate(modelStack, m->position.x, m->position.y, m->position.z);
-		m->Rotate(modelStack, m->rotation.x, 1, 0, 0);
-		m->Rotate(modelStack, m->rotation.y, 0, 1, 0);
-		m->Rotate(modelStack, m->rotation.z, 0, 0, 1);
-		RenderMesh(m, true);
-		modelStack.PopMatrix();
-
-		if (obj.first == "ai" || obj.first == "car") {
-			glEnable(GL_CULL_FACE);
-		}
-	}
+	Manager::getInstance()->getLevel()->renderMesh();
 
 }
 
 void SceneA2::RenderUI() 
 {
-	gui->update(Application::mouse_x, Application::mouse_y, Application::winWidth, Application::winHeight);
-	gui->renderUI();
+
+	Manager::getInstance()->getLevel()->renderGUI();
+
+	/*gui->update(Application::mouse_x, Application::mouse_y, Application::winWidth, Application::winHeight);
+	gui->renderUI();*/
 	gui->renderText("bahnschrift", 0, 10, "FPS: " + std::to_string(lastFramesPerSecond), 0.4f, Color(0, 1, 0));
 
 	//gui->renderText("default", 0, 300, "Waypoints: " + std::to_string(dynamic_cast<AICar*>(manager->getObject("ai"))->currentID), 0.4f, Color(0, 1, 0));
@@ -171,7 +150,7 @@ void SceneA2::RenderUI()
 		gui->renderText("default", 400, 300, "Press F to enter car", 0.4f, Color(0, 1, 0), TEXT_ALIGN_MIDDLE);
 
 	
-	Mesh* ai = manager->getObject("ai");
+	Mesh* ai = manager->getLevel()->getObject("ai");
 
 	gui->renderText("default", 0, 550, "AI Pos: " + std::to_string(ai->position.x) + "," + std::to_string(ai->position.y) + ","
 		+ std::to_string(ai->position.z), 0.25f, Color(0, 1, 1));
@@ -240,14 +219,14 @@ void SceneA2::RenderSkybox()
 	modelStack.Rotate(-90.0f, 0, 1, 0);
 	modelStack.Rotate(90.0f, 1, 0, 0);
 	modelStack.Scale(length, length, 1.0f);
-	RenderMesh(manager->getObject("skyboxTop"), false, lit->getID());
+	RenderMesh(manager->getLevel()->getObject("skyboxTop"), false, lit->getID());
 	modelStack.PopMatrix();
 
 	modelStack.PushMatrix();
 	modelStack.Translate(0.0f, -length / 2, 0.0f);
 	modelStack.Rotate(-90.0f, 1, 0, 0);
 	modelStack.Scale(length, length, 1.0f);
-	RenderMesh(manager->getObject("skyboxBottom"), false, lit->getID());
+	RenderMesh(manager->getLevel()->getObject("skyboxBottom"), false, lit->getID());
 	modelStack.PopMatrix();
 
 	modelStack.PushMatrix();
@@ -255,27 +234,27 @@ void SceneA2::RenderSkybox()
 	modelStack.Rotate(180.0f, 1, 1, 0);
 	modelStack.Rotate(-90.0f, 0, 0, 1);
 	modelStack.Scale(length, length, 1.0f);
-	RenderMesh(manager->getObject("skyboxFront"), false, lit->getID());
+	RenderMesh(manager->getLevel()->getObject("skyboxFront"), false, lit->getID());
 	modelStack.PopMatrix();
 
 	modelStack.PushMatrix();
 	modelStack.Translate(0.0f, 0.0f, -length / 2);
 	modelStack.Scale(length, length, 1.0f);
-	RenderMesh(manager->getObject("skyboxBack"), false, lit->getID());
+	RenderMesh(manager->getLevel()->getObject("skyboxBack"), false, lit->getID());
 	modelStack.PopMatrix();
 
 	modelStack.PushMatrix();
 	modelStack.Translate(-length / 2, 0.0f, 0.0f);
 	modelStack.Rotate(90.0f, 0, 1, 0);
 	modelStack.Scale(length, length, 1.0f);
-	RenderMesh(manager->getObject("skyboxLeft"), false, lit->getID());
+	RenderMesh(manager->getLevel()->getObject("skyboxLeft"), false, lit->getID());
 	modelStack.PopMatrix();
 
 	modelStack.PushMatrix();
 	modelStack.Translate(length / 2, 0.0f, 0.0f);
 	modelStack.Rotate(-90.0f, 0, 1, 0);
 	modelStack.Scale(length, length, 1.0f);
-	RenderMesh(manager->getObject("skyboxRight"), false, lit->getID());
+	RenderMesh(manager->getLevel()->getObject("skyboxRight"), false, lit->getID());
 	modelStack.PopMatrix();
 
 	modelStack.PopMatrix();
@@ -285,7 +264,7 @@ void SceneA2::InitShaderProperties()
 {
 	lit = manager->getShader("lit");
 	lit->use();
-	std::vector<LightSource*>* lightSources = manager->getLightSources();
+	std::vector<LightSource*>* lightSources = manager->getLevel()->getLightSources();
 	for (int i = 0; i < (int)lightSources->size(); i++) {
 		lightSources->at(i)->setProperties();
 	}
@@ -368,10 +347,7 @@ void SceneA2::Update(double dt)
 	}
 
 	// Update logic for all objects
-	std::map<std::string, Mesh*>* objects = manager->getObjects();
-	for (auto const& object : *objects) {
-		object.second->Update(dt);
-	}
+	manager->getLevel()->Update(dt);
 
 	Mtx44 projection;
 	projection.SetToPerspective(45.0f, (float)Application::winWidth / (float)Application::winHeight, 0.1f, 10000.0f);

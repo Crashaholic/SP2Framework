@@ -19,24 +19,22 @@ public:
 	~Manager();
 	static Manager* getInstance();
 
-	void spawnObject(Mesh* mesh);
 	void loadMap();
 	void loadPlayerProgress();
 	void savePlayerProgress();
 
-	Mesh* getObject(std::string name);
-	ShaderProgram* getShader(std::string name);
+	//Mesh* getObject(std::string name);
+	//std::vector<LightSource*>* getLightSources();
+	//std::map<std::string, Mesh*>* getObjects();
+	Level* getLevel();
 
-	std::vector<LightSource*>* getLightSources();
-	std::map<std::string, Mesh*>* getObjects();
+	ShaderProgram* getShader(std::string name);
 	std::map<std::string, ShaderProgram*>* getShaders();
-	QuadTree* getTree();
 
 private:
 
 	Manager();
 	static Manager* instance;
-	QuadTree* tree;
 	bool carOneUnlock;
 	bool carTwoUnlock;
 	bool carThreeUnlock;
@@ -46,7 +44,6 @@ private:
 	std::map<std::string, Level*> levels;
 	std::map<std::string, Mesh*> objects;
 	std::map<std::string, ShaderProgram*> shaders;
-	std::vector<LightSource*> lightSources;
 	bool startsWith(std::string input, std::string keyWord);
 };
 

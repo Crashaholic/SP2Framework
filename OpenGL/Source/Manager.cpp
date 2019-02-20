@@ -12,8 +12,7 @@ Manager::Manager()
 	shaders["lit"] = new ShaderProgram("Shader//Texture.vert", "Shader//Blending.frag");
 	shaders["text"] = new ShaderProgram("Shader//Text.vert", "Shader//Text.frag");
 	shaders["overlay"] = new ShaderProgram("Shader//UI.vert", "Shader//UI.frag");
-	for(int i = 0; i < 2; i++)
-		lightSources.push_back(new LightSource());
+
 
 	carOneUnlock = true;
 	carTwoUnlock = false;
@@ -24,27 +23,21 @@ Manager::Manager()
 	levels[currentLevel] = new Level("Data//level.txt");
 
 
-	tree = new QuadTree(Vector3(-1000, 0, -1000), Vector3(1000, 0, 1000));
+	//tree = new QuadTree(Vector3(-1000, 0, -1000), Vector3(1000, 0, 1000));
 	//loadPlayerProgress();
-	loadMap();
+	//loadMap();
 }
 
 
 Manager::~Manager()
 {
 	savePlayerProgress();
-	delete tree;
-
-	for (auto const& object : objects)
-		if (object.second != nullptr)
-			delete object.second;
 
 	for (auto const& shader : shaders)
 		if (shader.second != nullptr)
 			delete shader.second;
 
-	for (int i = 0; i < (int)lightSources.size(); i++)
-		delete lightSources[i];
+
 
 }
 
@@ -56,20 +49,11 @@ Manager* Manager::getInstance()
 	return instance;
 }
 
-Mesh* Manager::getObject(std::string name)
+
+Level* Manager::getLevel()
 {
-	return objects[name];
+	return levels[currentLevel];
 }
-
-std::vector<LightSource*>* Manager::getLightSources() {
-	return &lightSources;
-}
-
-std::map<std::string, Mesh*>* Manager::getObjects()
-{
-	return &objects;
-}
-
 
 ShaderProgram* Manager::getShader(std::string name)
 {
@@ -81,12 +65,7 @@ std::map<std::string, ShaderProgram*>* Manager::getShaders()
 	return &shaders;
 }
 
-void Manager::spawnObject(Mesh* mesh)
-{
-	objects[mesh->name] = mesh;
-	if (mesh->collisionEnabled)
-		tree->Insert(mesh);
-}
+
 
 void Manager::loadPlayerProgress()
 {
@@ -206,114 +185,114 @@ void Manager::savePlayerProgress()
 
 void Manager::loadMap() {
 	
-	std::ifstream handle("Data//level.txt");
-	if (!handle.is_open()) {
-		std::cout << "[Error] Could not load level.txt!" << std::endl;
-	}
+	//std::ifstream handle("Data//level.txt");
+	//if (!handle.is_open()) {
+	//	std::cout << "[Error] Could not load level.txt!" << std::endl;
+	//}
 
-	std::string line;
-	struct Object {
-		std::map<std::string, std::string> values;
-		void Set(std::string key, std::string value)
-		{
-			values[key] = value;
-		}
+	//std::string line;
+	//struct Object {
+	//	std::map<std::string, std::string> values;
+	//	void Set(std::string key, std::string value)
+	//	{
+	//		values[key] = value;
+	//	}
 
-		std::string Get(std::string key)
-		{
-			return values[key];
-		}
-	};
+	//	std::string Get(std::string key)
+	//	{
+	//		return values[key];
+	//	}
+	//};
 
-	std::map<std::string, std::vector<Object*>> collection;
-	std::string category = "";
-	Object* current = nullptr;
-	while (std::getline(handle, line))
-	{
-		std::vector<std::string> args = Utility::splitLine(line, '=');
+	//std::map<std::string, std::vector<Object*>> collection;
+	//std::string category = "";
+	//Object* current = nullptr;
+	//while (std::getline(handle, line))
+	//{
+	//	std::vector<std::string> args = Utility::splitLine(line, '=');
 
-		if (startsWith(line, " ") || line == "")
-		{
-			continue;
-		}
-		else if (startsWith(line, "category")) {
-			category = args[1];
-			current = nullptr;
-			continue;
-		}
-		else if (startsWith(line, "name"))
-		{
-			current = new Object();
-			collection[category].push_back(current);
-		}
-		current->Set(args[0], args[1]);
+	//	if (startsWith(line, " ") || line == "")
+	//	{
+	//		continue;
+	//	}
+	//	else if (startsWith(line, "category")) {
+	//		category = args[1];
+	//		current = nullptr;
+	//		continue;
+	//	}
+	//	else if (startsWith(line, "name"))
+	//	{
+	//		current = new Object();
+	//		collection[category].push_back(current);
+	//	}
+	//	current->Set(args[0], args[1]);
 
-	}
+	//}
 
-	for (auto& c : collection) {
-		
-		if (c.first == "objects") {
-			std::vector<Object*>* objs = &c.second;
-			for (int i = 0; i < (int)objs->size(); i++) {
-				current = objs->at(i);
-				bool collision = (current->Get("collision") == "true" ? true : false);
-				bool gravity = (current->Get("gravity") == "true" ? true : false);
-				unsigned int textureID = LoadTGA(current->Get("texture").c_str());
-				Primitive* primitive = Primitives::loadModel(current->Get("model").c_str());
+	//for (auto& c : collection) {
+	//	
+	//	if (c.first == "objects") {
+	//		std::vector<Object*>* objs = &c.second;
+	//		for (int i = 0; i < (int)objs->size(); i++) {
+	//			current = objs->at(i);
+	//			bool collision = (current->Get("collision") == "true" ? true : false);
+	//			bool gravity = (current->Get("gravity") == "true" ? true : false);
+	//			unsigned int textureID = LoadTGA(current->Get("texture").c_str());
+	//			Primitive* primitive = Primitives::loadModel(current->Get("model").c_str());
 
-				std::string type = current->Get("type");
-				Mesh* m = nullptr;
-				if (type == "player") {
-					m = new Player(current->Get("name").c_str(), primitive, textureID);
-				}
-				else if (type == "car") {
-					m = new Car(current->Get("name").c_str(), primitive, textureID);
-				}
-				else if (type == "pad") {
-					m = new LevitationPad(current->Get("name").c_str(), primitive, textureID, std::stof(current->Get("levitation")));
-				}
-				else if (type == "ai") {
-					m = new AICar(current->Get("name").c_str(), primitive, textureID);
-				}
-				else {
-					m = new Mesh(current->Get("name").c_str(), primitive, textureID, collision, gravity, type);
-				}
-				std::vector<std::string> pos = Utility::splitLine(current->Get("position"), ',');
-				std::vector<std::string> rot = Utility::splitLine(current->Get("rotation"), ',');
-				m->position = Vector3(std::stof(pos[0]), std::stof(pos[1]), std::stof(pos[2]));
-				m->rotation = Vector3(std::stof(rot[0]), std::stof(rot[1]), std::stof(rot[2]));
-				m->Init();
-				spawnObject(m);
-			}
-		}
-		else if (c.first == "ui") {
-			std::vector<Object*>* objs = &c.second;
-			for (int i = 0; i < (int)objs->size(); i++) {
-				current = objs->at(i);
+	//			std::string type = current->Get("type");
+	//			Mesh* m = nullptr;
+	//			if (type == "player") {
+	//				m = new Player(current->Get("name").c_str(), primitive, textureID);
+	//			}
+	//			else if (type == "car") {
+	//				m = new Car(current->Get("name").c_str(), primitive, textureID);
+	//			}
+	//			else if (type == "pad") {
+	//				m = new LevitationPad(current->Get("name").c_str(), primitive, textureID, std::stof(current->Get("levitation")));
+	//			}
+	//			else if (type == "ai") {
+	//				m = new AICar(current->Get("name").c_str(), primitive, textureID);
+	//			}
+	//			else {
+	//				m = new Mesh(current->Get("name").c_str(), primitive, textureID, collision, gravity, type);
+	//			}
+	//			std::vector<std::string> pos = Utility::splitLine(current->Get("position"), ',');
+	//			std::vector<std::string> rot = Utility::splitLine(current->Get("rotation"), ',');
+	//			m->position = Vector3(std::stof(pos[0]), std::stof(pos[1]), std::stof(pos[2]));
+	//			m->rotation = Vector3(std::stof(rot[0]), std::stof(rot[1]), std::stof(rot[2]));
+	//			m->Init();
+	//			spawnObject(m);
+	//		}
+	//	}
+	//	else if (c.first == "ui") {
+	//		std::vector<Object*>* objs = &c.second;
+	//		for (int i = 0; i < (int)objs->size(); i++) {
+	//			current = objs->at(i);
 
-				std::string type = current->Get("type");
+	//			std::string type = current->Get("type");
 
-				if (type == "button") {
-					unsigned int textureID = LoadTGA(current->Get("texture").c_str());
-					unsigned int hoverID = LoadTGA(current->Get("hovertexture").c_str());
-					std::vector<std::string> pos = Utility::splitLine(current->Get("position"), ',');
-					Vector3 position = Vector3(std::stof(pos[0]), std::stof(pos[1]), 0);
-					float rot = std::stof(current->Get("rotation"));
-					std::vector<std::string> scale = Utility::splitLine(current->Get("scale"), ',');
-					Vector3 scal = Vector3(std::stof(scale[0]), std::stof(scale[1]), 0);
-					std::string action = current->Get("action");
+	//			if (type == "button") {
+	//				unsigned int textureID = LoadTGA(current->Get("texture").c_str());
+	//				unsigned int hoverID = LoadTGA(current->Get("hovertexture").c_str());
+	//				std::vector<std::string> pos = Utility::splitLine(current->Get("position"), ',');
+	//				Vector3 position = Vector3(std::stof(pos[0]), std::stof(pos[1]), 0);
+	//				float rot = std::stof(current->Get("rotation"));
+	//				std::vector<std::string> scale = Utility::splitLine(current->Get("scale"), ',');
+	//				Vector3 scal = Vector3(std::stof(scale[0]), std::stof(scale[1]), 0);
+	//				std::string action = current->Get("action");
 
-					GUIManager::getInstance()->addButton(new GUIButton(position, rot, scal, textureID, hoverID, action));
-				}
+	//				GUIManager::getInstance()->addButton(new GUIButton(position, rot, scal, textureID, hoverID, action));
+	//			}
 
-				
-				
-				
-			}
-		}
-	}
+	//			
+	//			
+	//			
+	//		}
+	//	}
+	//}
 
-	handle.close();
+	//handle.close();
 }
 
 bool Manager::startsWith(std::string input, std::string keyWord)
@@ -321,7 +300,3 @@ bool Manager::startsWith(std::string input, std::string keyWord)
 	return input.substr(0, keyWord.length()) == keyWord;
 }
 
-QuadTree* Manager::getTree()
-{
-	return tree;
-}
