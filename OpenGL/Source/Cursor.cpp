@@ -55,7 +55,7 @@ void Cursor::updateVars(double newX, double newY, double winWidth, double winHei
 
 void Cursor::updateTexture()
 {
-	cursorGUI->setPos(Vector3(currX, currY));
+	cursorGUI->setPos(Vector3(currX + 16.0f, currY - 16.0f));
 }
 
 GUITexture* Cursor::getGUITexture() const

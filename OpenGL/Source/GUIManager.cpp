@@ -20,9 +20,6 @@ GUIManager::GUIManager()
 		Vector3(128.0f, 128.f, 1.f),
 		Vector3(0, 1, 0), 1.0
 	);
-
-
-
 }
 
 
