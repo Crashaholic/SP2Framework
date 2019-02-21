@@ -55,6 +55,55 @@ bool QuadTree::Insert(Mesh* mesh) {
 	return false;
 }
 
+bool QuadTree::Delete(Mesh* mesh) {
+
+	if(std::find(meshes.begin(), meshes.end(), mesh) != meshes.end()){
+		meshes.erase(std::find(meshes.begin(), meshes.end(), mesh));
+		//if (meshes.size() == 0) {
+		//	if (topRight != nullptr) delete topRight;
+		//	if (topLeft != nullptr) delete topLeft;
+		//	if (bottomLeft != nullptr) delete bottomLeft;
+		//	if (bottomRight != nullptr) delete bottomRight;
+		//}
+		return true;
+	}
+
+
+	if(topRight != nullptr)
+		if (topRight->Delete(mesh)) return true;
+
+	if(topLeft != nullptr)
+		if (topLeft->Delete(mesh)) return true;
+
+	if(bottomLeft != nullptr)
+		if (bottomLeft->Delete(mesh)) return true;
+
+	if(bottomRight != nullptr)
+		if (bottomRight->Delete(mesh)) return true;
+
+	return false;
+}
+
+void QuadTree::Update(Mesh* m) {
+	
+	Delete(m);
+	Insert(m);
+
+	//bool QuadTree::update(Collidable *obj) {
+	//	if (!remove(obj)) return false;
+
+	//	// Not contained in this node -- insert into parent
+	//	if (parent != nullptr && !bounds.contains(obj->bound))
+	//		return parent->insert(obj);
+	//	if (!isLeaf) {
+	//		// Still within current node -- insert into leaf
+	//		if (QuadTree *child = getChild(obj->bound))
+	//			return child->insert(obj);
+	//	}
+	//	return insert(obj);
+	//}
+}
+
 bool QuadTree::placeOverlap(Vector3 minA, Vector3 maxA, Vector3 minB, Vector3 maxB) {
 	if (maxA.x < minB.x || minA.x > maxB.x || maxA.z < minB.z || minA.z > maxB.z)
 		return false;

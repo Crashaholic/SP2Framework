@@ -99,7 +99,7 @@ void Car::Update(double dt)
 			thrustInput = 0.0f;
 		}
 
-		
+
 
 		
 		velocity += calcAcceleration(accInput, steerInput, dt);
@@ -179,9 +179,7 @@ void Car::Update(double dt)
 		position += velocity;
 	}
 
-	
-
-
+	Manager::getInstance()->getLevel()->getTree()->Update(this);
 }
 
 

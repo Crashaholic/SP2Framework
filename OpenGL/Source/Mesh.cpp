@@ -95,9 +95,10 @@ void Mesh::Update(double dt)
 		position += velocity;
 		//Mesh* ground = Manager::getInstance()->getObject("ground");
 		//float groundY = ground->position.y + ground->getOBB()->getHalf().y * 2;
-	/*	if (position.y <= groundY) {
+	/*	if (position.y <= groundY) 
 			position.y = groundY;
 		}*/
+		Manager::getInstance()->getLevel()->getTree()->Update(this);
 	}
 }
 

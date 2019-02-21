@@ -21,6 +21,8 @@ public:
 	QuadTree* bottomRight = NULL;
 
 	bool Insert(Mesh* mesh);
+	bool Delete(Mesh* mesh);
+	void Update(Mesh* mesh);
 	void Subdivide();
 	bool withinBounds(Vector3 point);
 	bool withinBounds(Vector3 point, Vector3 min, Vector3 max);

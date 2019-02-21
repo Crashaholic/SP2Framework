@@ -57,6 +57,8 @@ void Player::Update(double dt) {
 			translation += firstPerson->getRight() * walkSpeed * (float)dt;
 		}
 
+
+
 		// Only translate if there is no collision
 		std::vector<Mesh*> collided = Collision::checkCollisionT(this, translation, { "ground", "pad1" });
 		if (translation != Vector3(0,0,0) && collided.size() == 0) {
@@ -117,6 +119,7 @@ void Player::Update(double dt) {
 		Mesh::Update(dt);
 
 	getCamera()->Update(dt);
+
 
 
 }

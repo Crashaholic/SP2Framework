@@ -1,5 +1,6 @@
 #include "AICar.h"
 #include "Utility.h"
+#include "Manager.h"
 
 AICar::AICar(const char* meshName, Primitive* primitive, unsigned int texID, DRAW_MODE drawMode) :
 	Car(meshName, primitive, texID, drawMode){
@@ -71,6 +72,7 @@ void AICar::Update(double dt) {
 
 	//}
 	Car::Update(dt);
+	Manager::getInstance()->getLevel()->getTree()->Update(this);
 }
 
 void AICar::getInputs() {

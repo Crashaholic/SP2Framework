@@ -13,8 +13,9 @@ Level::Level(const char* levelPath)
 	projectionStack.LoadMatrix(proj);
 	Load(levelPath);
 
-	for(int i = 0; i < 2; i++)
-		lightSources.push_back(new LightSource());
+	for (int i = 0; i < 2; i++)
+		if(lightSources.size() < 2)
+			lightSources.push_back(new LightSource());
 	
 }
 
@@ -39,7 +40,7 @@ void Level::setScreen(std::string screen) {
 
 void Level::Load(std::string path) {
 
-	tree = new QuadTree(Vector3(-1000, 0, -1000), Vector3(1000, 0, 1000));
+	tree = new QuadTree(Vector3(-1500, 0, -1500), Vector3(1500, 0, 1500));
 	std::ifstream handle(path);
 	if (!handle.is_open()) {
 		std::cout << "[Error] Could not load level.txt!" << std::endl;
