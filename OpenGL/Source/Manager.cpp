@@ -19,8 +19,6 @@ Manager::Manager()
 	carThreeUnlock = false;
 	money = 0;
 
-	currentLevel = "game";
-
 	std::string path = "Data//Level";
 	for (const auto & entry : std::experimental::filesystem::directory_iterator(path)) {
 		currentLevel = Utility::splitLine(entry.path().filename().string(), '.')[0];
@@ -28,6 +26,8 @@ Manager::Manager()
 		levels[currentLevel] = new Level(entry.path().string().c_str());
 	}
 
+
+	currentLevel = "pregame";
 	mainmenu = new Camera(Vector3(1, 1, 1));
 }
 
