@@ -7,10 +7,12 @@
 #include "GUIButton.h"
 #include "IRender.h"
 #include "Cursor.h"
+#include <string>
 
 class GUIScreen
 {
 public:
+	GUIScreen(std::string name);
 	GUIScreen();
 	~GUIScreen();
 	void Render();
@@ -18,6 +20,7 @@ public:
 	void addButton(GUIButton* button);
 	void addTexture(GUITexture* texture);
 private:
+	std::string name;
 	Cursor* cursor;
 	std::vector<IRender*> renderables;
 	std::vector<GUIText*> text;

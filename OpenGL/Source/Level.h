@@ -14,7 +14,7 @@ public:
 	Level(const char* levelPath);
 	~Level();
 
-	void Load(std::string path);
+	void Load(std::string levelPath);
 	void setScreen(std::string screen);
 	void spawnObject(Mesh* m);
 
@@ -31,7 +31,6 @@ public:
 private:
 
 	QuadTree* tree;
-
 	std::string currentScreen;
 	std::vector<LightSource*> lightSources;
 	std::map<std::string, GUIScreen*> screens;

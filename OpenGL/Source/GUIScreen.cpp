@@ -1,8 +1,14 @@
 #include "GUIScreen.h"
+#include "Manager.h"
 
-GUIScreen::GUIScreen() {
+GUIScreen::GUIScreen(std::string name) {
+	this->name = name;
 	cursor = new Cursor();
 	renderables.push_back(cursor->getGUITexture()->getIRender());
+}
+
+GUIScreen::GUIScreen() {
+
 }
 
 GUIScreen::~GUIScreen()
@@ -29,10 +35,10 @@ void GUIScreen::Render()
 	}
 
 
-	for (int i = 0; i < (int) renderables.size(); i++) 
-	{
+	for (int i = renderables.size() - 1; i >= 0; i--) {
 		renderables[i]->draw();
 	}
+
 	text.clear();
 }
 
@@ -47,9 +53,13 @@ void GUIScreen::Update()
 		{
 			if (buttons[i]->checkStatus(cursor->getX(), cursor->getY(), Application::winWidth, Application::winHeight))
 			{
-				if (buttons[i]->getName() == "playgame")
-				{
-					
+				if (name == "mainmenu") {
+
+					if (buttons[i]->getName() == "playgame")
+					{
+						Manager::getInstance()->setLevel("game");
+					}
+
 				}
 			}
 		}

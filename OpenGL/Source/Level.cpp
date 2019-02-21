@@ -8,7 +8,6 @@
 
 Level::Level(const char* levelPath)
 {
-	currentScreen = "shop";
 	Mtx44 proj;
 	proj.SetToPerspective(45.0f, (float)Application::winWidth / (float)Application::winHeight, 0.1f, 10000.0f);
 	projectionStack.LoadMatrix(proj);
@@ -18,6 +17,8 @@ Level::Level(const char* levelPath)
 		lightSources.push_back(new LightSource());
 	
 }
+
+
 
 Level::~Level()
 {
@@ -73,6 +74,10 @@ void Level::Load(std::string path) {
 		else if (Utility::startsWith(line, "category")) {
 			category = args[1];
 			current = nullptr;
+			continue;
+		}
+		else if (Utility::startsWith(line, "defaultscreen")) {
+			currentScreen = args[1];
 			continue;
 		}
 		else if (Utility::startsWith(line, "name"))
@@ -131,7 +136,7 @@ void Level::Load(std::string path) {
 				std::string screen = current->Get("screen");
 
 				if (screens.find(screen) == screens.end()) {
-					screens[screen] = new GUIScreen();
+					screens[screen] = new GUIScreen(screen);
 				}
 
 				std::vector<std::string> pos = Utility::splitLine(current->Get("position"), ',');
@@ -165,10 +170,20 @@ void Level::Load(std::string path) {
 				}
 				else if (type == "texture")
 				{
-					std::vector<std::string> colors = Utility::splitLine(current->Get("color"), ',');
-					Vector3 color = Vector3(std::stof(colors[0]), std::stof(colors[1]), std::stof(colors[2]));
-					float normalAlpha = std::stof(colors[3]);
-					screens[screen]->addTexture(new GUITexture(position, rot, scal, color, normalAlpha));
+
+
+					if (current->Get("texture") == "invalid")
+					{
+						std::vector<std::string> colors = Utility::splitLine(current->Get("color"), ',');
+						Vector3 color = Vector3(std::stof(colors[0]), std::stof(colors[1]), std::stof(colors[2]));
+						float normalAlpha = std::stof(colors[3]);
+						screens[screen]->addTexture(new GUITexture(position, rot, scal, color, normalAlpha));
+					}
+					else
+					{
+						unsigned int textureID = LoadTGA(current->Get("texture").c_str());
+						screens[screen]->addTexture(new GUITexture(position, rot, scal, textureID));
+					}
 				}
 
 
@@ -183,6 +198,8 @@ void Level::Load(std::string path) {
 
 }
 
+
+
 void Level::renderGUI()
 {
 	screens[currentScreen]->Render();
@@ -193,8 +210,8 @@ void Level::renderMesh()
 	ShaderProgram* lit = Manager::getInstance()->getShader("lit");
 	modelStack.LoadIdentity();
 
-	Player* player = dynamic_cast<Player*>(objects["human"]);
-	viewStack.LoadMatrix(player->getCamera()->LookAt());
+
+	viewStack.LoadMatrix(Manager::getInstance()->getCamera()->LookAt());
 
 
 	for (auto& obj : objects)
@@ -221,7 +238,7 @@ void Level::renderMesh()
 		lit->use();
 
 		bool enableLight = true;
-		if (enableLight)
+		if (enableLight)	
 		{
 			modelView_inverse_tranpose = modelView.GetInverse().GetTranspose();
 			lit->setUniform("lightEnabled", 1);
