@@ -172,7 +172,6 @@ void Level::Load(std::string path) {
 				else if (type == "texture")
 				{
 
-
 					if (current->Get("texture") == "invalid")
 					{
 						std::vector<std::string> colors = Utility::splitLine(current->Get("color"), ',');
@@ -206,14 +205,144 @@ void Level::renderGUI()
 	screens[currentScreen]->Render();
 }
 
-void Level::renderMesh()
+void Level::renderSkybox()
+{
+	if (Manager::getInstance()->getLevelName() != "game") return;
+
+	ShaderProgram* lit = Manager::getInstance()->getShader("lit");
+	lit->use();
+	float length = 1000.0f;
+	modelStack.PushMatrix();
+
+	modelStack.PushMatrix();
+	modelStack.Translate(0.0f, length / 2, 0.0f);
+	modelStack.Rotate(-90.0f, 0, 1, 0);
+	modelStack.Rotate(90.0f, 1, 0, 0);
+	modelStack.Scale(length, length, 1.0f);
+	renderMesh(objects["skyboxTop"]);
+	modelStack.PopMatrix();
+
+	modelStack.PushMatrix();
+	modelStack.Translate(0.0f, -length / 2, 0.0f);
+	modelStack.Rotate(-90.0f, 1, 0, 0);
+	modelStack.Scale(length, length, 1.0f);
+	renderMesh(objects["skyboxBottom"]);
+	modelStack.PopMatrix();
+
+	modelStack.PushMatrix();
+	modelStack.Translate(0.0f, 0.0f, length / 2);
+	modelStack.Rotate(180.0f, 1, 1, 0);
+	modelStack.Rotate(-90.0f, 0, 0, 1);
+	modelStack.Scale(length, length, 1.0f);
+	renderMesh(objects["skyboxFront"]);
+	modelStack.PopMatrix();
+
+	modelStack.PushMatrix();
+	modelStack.Translate(0.0f, 0.0f, -length / 2);
+	modelStack.Scale(length, length, 1.0f);
+	renderMesh(objects["skyboxBack"]);
+	modelStack.PopMatrix();
+
+	modelStack.PushMatrix();
+	modelStack.Translate(-length / 2, 0.0f, 0.0f);
+	modelStack.Rotate(90.0f, 0, 1, 0);
+	modelStack.Scale(length, length, 1.0f);
+	renderMesh(objects["skyboxLeft"]);
+	modelStack.PopMatrix();
+
+	modelStack.PushMatrix();
+	modelStack.Translate(length / 2, 0.0f, 0.0f);
+	modelStack.Rotate(-90.0f, 0, 1, 0);
+	modelStack.Scale(length, length, 1.0f);
+	renderMesh(objects["skyboxRight"]);
+	modelStack.PopMatrix();
+
+	modelStack.PopMatrix();
+}
+
+void Level::renderMesh(Mesh* mesh)
+{
+	Mtx44 MVP, modelView, modelView_inverse_tranpose;
+	MVP = projectionStack.Top() * viewStack.Top() * modelStack.Top();
+	modelView = viewStack.Top() * modelStack.Top();
+	ShaderProgram* lit = Manager::getInstance()->getShader("lit");
+	lit->use();
+
+	bool enableLight = true;
+	if (enableLight)
+	{
+		modelView_inverse_tranpose = modelView.GetInverse().GetTranspose();
+		lit->setUniform("lightEnabled", 1);
+		lit->setUniform("MV_inverse_transpose", modelView_inverse_tranpose.a);
+		lit->setUniform("material.kAmbient", mesh->material.kAmbient.r, mesh->material.kAmbient.g, mesh->material.kAmbient.b);
+		lit->setUniform("material.kDiffuse", mesh->material.kDiffuse.r, mesh->material.kDiffuse.g, mesh->material.kDiffuse.b);
+		lit->setUniform("material.kSpecular", mesh->material.kSpecular.r, mesh->material.kSpecular.g, mesh->material.kSpecular.b);
+		lit->setUniform("material.kShininess", mesh->material.kShininess);
+
+	}
+	else
+	{
+		lit->setUniform("lightEnabled", 0);
+	}
+
+	// Do normal one texture per mesh bind
+	if (mesh->textureID > 0)
+	{
+		lit->setUniform("colorTextureEnabled", 1);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, mesh->textureID);
+		lit->setUniform("colorTexture", 0);
+	}
+	else
+	{
+		lit->setUniform("colorTextureEnabled", 0);
+	}
+
+	lit->updateUniforms();
+
+	mesh->Render(modelStack, viewStack, projectionStack, lit);
+}
+
+void Level::Render()
 {
 	ShaderProgram* lit = Manager::getInstance()->getShader("lit");
 	modelStack.LoadIdentity();
 
+	std::string levelName = Manager::getInstance()->getLevelName();
 
-	viewStack.LoadMatrix(Manager::getInstance()->getCamera()->LookAt());
+	glEnable(GL_DEPTH_TEST);
+	if (levelName == "game")
+	{
+		modelStack.LoadIdentity();
+		glViewport(0, 0, Application::winWidth, Application::winHeight / 2.0f);
+		viewStack.LoadMatrix(dynamic_cast<Player*>(objects["player2"])->getCamera()->LookAt());
 
+		for (int i = 0; i < (int)lightSources.size(); i++)
+			lightSources.at(i)->updateAttributes(viewStack);
+
+		renderObjects();
+
+		modelStack.LoadIdentity();
+		glViewport(0, Application::winHeight / 2.0f, Application::winWidth, Application::winHeight / 2.0f);
+		viewStack.LoadMatrix(dynamic_cast<Player*>(objects["player"])->getCamera()->LookAt());
+
+		for (int i = 0; i < (int)lightSources.size(); i++)
+			lightSources.at(i)->updateAttributes(viewStack);
+
+		renderObjects();
+	}
+
+	glViewport(0, 0, Application::winWidth, Application::winHeight);
+
+	glDisable(GL_DEPTH_TEST);
+	renderGUI();
+	glEnable(GL_DEPTH_TEST);
+}
+
+void Level::renderObjects()
+{
+	
+	renderSkybox();
 
 	for (auto& obj : objects)
 	{
@@ -232,45 +361,9 @@ void Level::renderMesh()
 		m->Rotate(modelStack, m->rotation.x, 1, 0, 0);
 		m->Rotate(modelStack, m->rotation.y, 0, 1, 0);
 		m->Rotate(modelStack, m->rotation.z, 0, 0, 1);
-		Mtx44 MVP, modelView, modelView_inverse_tranpose;
-		MVP = projectionStack.Top() * viewStack.Top() * modelStack.Top();
-		modelView = viewStack.Top() * modelStack.Top();
 
-		lit->use();
 
-		bool enableLight = true;
-		if (enableLight)	
-		{
-			modelView_inverse_tranpose = modelView.GetInverse().GetTranspose();
-			lit->setUniform("lightEnabled", 1);
-			lit->setUniform("MV_inverse_transpose", modelView_inverse_tranpose.a);
-			lit->setUniform("material.kAmbient", m->material.kAmbient.r, m->material.kAmbient.g, m->material.kAmbient.b);
-			lit->setUniform("material.kDiffuse", m->material.kDiffuse.r, m->material.kDiffuse.g, m->material.kDiffuse.b);
-			lit->setUniform("material.kSpecular", m->material.kSpecular.r, m->material.kSpecular.g, m->material.kSpecular.b);
-			lit->setUniform("material.kShininess", m->material.kShininess);
-
-		}
-		else
-		{
-			lit->setUniform("lightEnabled", 0);
-		}
-
-		// Do normal one texture per mesh bind
-		if (m->textureID > 0)
-		{
-			lit->setUniform("colorTextureEnabled", 1);
-			glActiveTexture(GL_TEXTURE0);
-			glBindTexture(GL_TEXTURE_2D, m->textureID);
-			lit->setUniform("colorTexture", 0);
-		}
-		else
-		{
-			lit->setUniform("colorTextureEnabled", 0);
-		}
-
-		lit->updateUniforms();
-
-		m->Render(modelStack, viewStack, projectionStack, lit);
+		renderMesh(m);
 
 		if (m->textureID > 0)
 			glBindTexture(GL_TEXTURE_2D, 0);
@@ -298,6 +391,12 @@ void Level::spawnObject(Mesh* m)
 	objects[m->name] = m;
 	if (m->collisionEnabled)
 		tree->Insert(m);
+}
+
+GUIScreen* Level::getScreen()
+{
+	if (screens.size() == 0) screens[currentScreen] = new GUIScreen(std::to_string(screens.size()));
+	return screens[currentScreen];
 }
 
 QuadTree* Level::getTree()

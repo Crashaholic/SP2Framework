@@ -12,18 +12,23 @@ class GUIManager
 public:
 	static GUIManager* getInstance();
 	~GUIManager();
-	void renderText(std::string font, float xPos, float yPos, std::string text, float fontSize=1.0f, Color color=Color(1,1,1), TextAlignment align=TEXT_ALIGN_LEFT);
+
+	GUIText* renderText(std::string font, float xPos, float yPos, std::string text, float fontSize=1.0f, Color color=Color(1,1,1), TextAlignment align=TEXT_ALIGN_LEFT);
+
 	unsigned int FBO;
 
 private:
-	void InitFBO();
+
+	static GUIManager* instance;
 	GUIManager();
+
+	void InitFBO();
 
 	unsigned int VAO;
 	unsigned int RBO;
 	unsigned int textureVBO;
 	unsigned int topdownTexture;
-	static GUIManager* instance;
+
 	std::map<std::string, GUIFont*> fonts;
 };
 

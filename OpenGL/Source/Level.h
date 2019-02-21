@@ -18,17 +18,21 @@ public:
 	void setScreen(std::string screen);
 	void spawnObject(Mesh* m);
 
-
+	void Render();
 	void Update(double dt);
 	void renderGUI();
-	void renderMesh();
+	void renderObjects();
 
 	Mesh* getObject(std::string name);
 	std::vector<LightSource*>* getLightSources();
 	std::map<std::string, Mesh*>* getObjects();
 	QuadTree* getTree();
+	GUIScreen* getScreen();
 
 private:
+
+	void renderSkybox();
+	void renderMesh(Mesh* mesh);
 
 	QuadTree* tree;
 	std::string currentScreen;

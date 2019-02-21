@@ -39,11 +39,9 @@ private:
 
 	void RenderMesh(Mesh* mesh, bool enableLight, unsigned int shader = 0);
 	void RenderScene();
-	void RenderUI();
-	void RenderSkybox();
+	void GenerateText();
 	void InitShaderProperties();
 	void playMusic();
-	void CreateMesh();
 
 
 	MS modelStack, viewStack, projectionStack;

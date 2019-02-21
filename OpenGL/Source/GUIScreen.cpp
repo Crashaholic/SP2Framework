@@ -1,5 +1,7 @@
 #include "GUIScreen.h"
 #include "Manager.h"
+#include "GUIManager.h"
+
 
 GUIScreen::GUIScreen(std::string name) {
 	this->name = name;
@@ -17,9 +19,9 @@ GUIScreen::~GUIScreen()
 		if (renderables[i] != nullptr)
 			delete renderables[i];
 
-	for (int i = 0; i < (int) text.size(); i++)
-		if (text[i] != nullptr)
-			delete text[i];
+	for (int i = 0; i < (int) texts.size(); i++)
+		if (texts[i] != nullptr)
+			delete texts[i];
 
 	for (int i = 0; i < (int)buttons.size(); i++)
 		if (buttons[i] != nullptr)
@@ -28,18 +30,19 @@ GUIScreen::~GUIScreen()
 
 void GUIScreen::Render()
 {
-	for (int i = 0; i < (int) text.size(); i++) 
+	for (int i = 0; i < (int) texts.size(); i++) 
 	{
-		text[i]->render();
-		delete text[i];
+		texts[i]->render();
+		delete texts[i];
 	}
 
+	texts.clear();
 
 	for (int i = renderables.size() - 1; i >= 0; i--) {
 		renderables[i]->draw();
 	}
 
-	text.clear();
+
 }
 
 void GUIScreen::Update()
@@ -78,3 +81,7 @@ void GUIScreen::addTexture(GUITexture* texture)
 	renderables.push_back(texture->getIRender());
 }
 
+void GUIScreen::addText(GUIText* text)
+{
+	texts.push_back(text);
+}

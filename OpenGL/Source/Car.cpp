@@ -69,10 +69,11 @@ void Car::Update(double dt)
 
 
 
-		// Input 0 - W
-		// Input 1 - A
-		// Input 2 - S
-		// Input 3 - D
+		// Input 0 - W / I
+		// Input 1 - A / J
+		// Input 2 - S / K
+		// Input 3 - D / L
+
 		if (Application::IsKeyPressed(input[0]))
 			accInput = 1.0f;
 		else if (Application::IsKeyPressed(input[2]))
@@ -91,7 +92,8 @@ void Car::Update(double dt)
 
 		float thrustInput = 0.0f;
 
-		if (Application::IsKeyPressed(VK_SPACE) && thrusters > 0.0f) {
+		// Modify
+		if (Application::IsKeyPressed(input[4]) /*&& thrusters > 0.0f*/) {
 			std::cout << thrusters << std::endl;
 			thrustInput = 1.0f;
 			thrust = Utility::Lerp(thrust, 1.0f, 8.0f * dt);
@@ -113,20 +115,22 @@ void Car::Update(double dt)
 	velocity += calcFriction(accInput, steerInput, dt);
 
 
-	std::vector<Mesh*> collided = Collision::checkCollisionType(this, velocity, "ai");
+	std::vector<Mesh*> collided = Collision::checkCollisionTypes(this, velocity, { "car", "ai"});
+
 	if (velocity != Vector3(0, 0, 0) && collided.size() != 0) {
 		for (int i = 0; i < collided.size(); i++) {
-			AICar* ai = dynamic_cast<AICar*>(collided[i]);
+			Car* car = dynamic_cast<Car*>(collided[i]);
 			//std::cout << "AI's velocity: " << ai->velocity.Length() << std::endl;
 			//std::cout << "Car's velocity: " << velocity.Length() << std::endl;
 
 			// Find difference in their forward 
-			float kForwardDiff = 1.0f - abs(ai->forward.Dot(-forward));
+			float kForwardDiff = 1.0f - abs(car->forward.Dot(-forward));
 			float finalVelCar = 0.0f;
-			float finalVelAI = 0.0f;
-			Collision::Collide(velocity.Length() * 10.0, ai->velocity.Length(), 5, 3, finalVelCar, finalVelAI, 10);
+			float finalVelCar2 = 0.0f;
 
-			Vector3 vectorToCenter = ai->position - position;
+			Collision::Collide(velocity.Length() * 8.0, car->velocity.Length(), 5, 3, finalVelCar, finalVelCar2, 10);
+
+			Vector3 vectorToCenter = car->position - position;
 			Vector3 diff = vectorToCenter - forward;
 			//std::cout << "distance to center: " << diff.Length() * Utility::Sign(diff) << std::endl;
 			/*std::cout << kForwardDiff << std::endl;*/
@@ -146,23 +150,9 @@ void Car::Update(double dt)
 			}
 			
 
-			ai->velocity = forward * finalVelAI * 0.60f;
-			ai->torqueRot = t * velocity.Length() * 12.0;
-			ai->position += ai->velocity;
-
-			//velocity = forward * finalVelCar;
-			//std::cout << ai->torqueRot << std::endl;
-
-			//if (ai->velocity.Length() != 0) {
-			//	float ratio = finalVelAI / ai->velocity.Length();
-			//	std::cout << "Ratio: " << ratio << std::endl;
-			//	ai->velocity *= ratio;
-			//}
-			//else {
-			//	velocity = forward * finalVelCar;
-			//	ai->position += ai->forward * finalVelAI;
-			//}
-			
+			car->velocity = forward * finalVelCar2 * 0.60f;
+			car->torqueRot = t * velocity.Length() * 12.0;
+			car->position += car->velocity;
 
 		}
 	}
@@ -284,12 +274,14 @@ Vector3 Car::calcAcceleration(float accInput, float steerInput, float dt)
 Vector3 Car::calcFriction(float accInput, float steerInput, float dt)
 {
 	Vector3 acceleration, friction, drag;
+	Vector3 velNoY = velocity;
+	velNoY.y = 0;
 
-	if (velocity.Length() > 0.0f && (velocity.x != 0 || velocity.z != 0))
+	if (velNoY.Length() > 0.0f && (velNoY.x != 0 || velNoY.z != 0))
 	{
-		friction = (kFriction * -velocity.Normalized());
+		friction = (kFriction * -velNoY.Normalized());
 		if (accInput != -1)
-			drag = kDrag * velocity.Length() * -velocity.Normalized();
+			drag = kDrag * velNoY.Length() * -velNoY.Normalized();
 
 		if (steerInput != 0)
 			drag *= 1.2f;
@@ -298,7 +290,7 @@ Vector3 Car::calcFriction(float accInput, float steerInput, float dt)
 
 
 	acceleration = (friction + drag) * dt;
-	if (acceleration.Length() > velocity.Length())
+	if (acceleration.Length() > velNoY.Length())
 		return -velocity;
 	else
 		return acceleration;

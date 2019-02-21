@@ -10,7 +10,7 @@ GUIText::GUIText(std::vector<GUIGlyph> glyphs, float xPos, float yPos, unsigned 
 	this->color = color;
 	this->glyphs = glyphs;
 	this->fontTexture = fontTexture;
-	glGenVertexArrays(1, &VAO);
+	//glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
 }
 
@@ -25,14 +25,14 @@ GUIText::GUIText()
 GUIText::~GUIText()
 {
 	glDeleteBuffers(1, &VBO);
-	glDeleteVertexArrays(1, &VAO);
+	//glDeleteVertexArrays(1, &VAO);
 }
 
 void GUIText::render() {
 
 	if (glyphs.size() == 0) return;
 
-	glBindVertexArray(VAO);
+	//glBindVertexArray(VAO);
 
 	// Buffer VBO data and layout inputs
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
@@ -63,7 +63,7 @@ void GUIText::render() {
 	glDisableVertexAttribArray(1);
 	glDisableVertexAttribArray(0);
 
-	glBindVertexArray(0);
+	//glBindVertexArray(0);
 
 }
 

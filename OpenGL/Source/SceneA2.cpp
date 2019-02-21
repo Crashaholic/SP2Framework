@@ -42,7 +42,6 @@ void SceneA2::Init()
 	glBindVertexArray(m_vertexArrayID);
 
 	InitShaderProperties();
-	CreateMesh();
 
 	Mtx44 projection;
 	projection.SetToPerspective(45.0f, (float)Application::winWidth / (float)Application::winHeight, 0.1f, 10000.0f);
@@ -56,115 +55,83 @@ void SceneA2::Init()
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 
-}
-
-void SceneA2::CreateMesh()
-{
-	
-
-	// Skybox Planes
-	//Primitive* quad = Primitives::generateQuad(Color(1, 1, 1));
-	//manager->getLevel()->spawnObject(new Mesh("skyboxFront", quad, LoadTGA("Image//front.tga")));
-	//manager->getLevel()->spawnObject(new Mesh("skyboxTop", quad, LoadTGA("Image//top.tga")));
-	//manager->getLevel()->spawnObject(new Mesh("skyboxBottom", quad, LoadTGA("Image//bottom.tga")));
-	//manager->getLevel()->spawnObject(new Mesh("skyboxLeft", quad, LoadTGA("Image//left.tga")));
-	//manager->getLevel()->spawnObject(new Mesh("skyboxRight", quad, LoadTGA("Image//right.tga")));
-	//manager->getLevel()->spawnObject(new Mesh("skyboxBack", quad, LoadTGA("Image//back.tga")));
-
-	//Primitive* axes = Primitives::generateAxes();
-	//manager->getLevel()->spawnObject(new Mesh("axes", axes, 0, false, false, "environment", Mesh::DRAW_LINES));
-	//manager->getLevel()->spawnObject(new Mesh("playerAxes", axes, 0, false, false, "environment", Mesh::DRAW_LINES));
-
-	//player = dynamic_cast<Player*>(manager->getLevel()->getObject("human"));
-	//car = dynamic_cast<Car*>(manager->getLevel()->getObject("car"));
-	//player->setCar(car);
 
 }
+
 
 void SceneA2::Render()
 {
 	gui = GUIManager::getInstance();
-
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	//modelStack.LoadIdentity();
-
-	//glBindFramebuffer(GL_FRAMEBUFFER, gui->FBO);
-	//viewStack.LoadMatrix(player->getTopdownCamera()->LookAt());
-
-	std::vector<LightSource*>* lightSources = manager->getLevel()->getLightSources();
-	//for (int i = 0; i < (int)lightSources->size(); i++)
-	//{
-	//	lightSources->at(i)->updateAttributes(viewStack);
-	//}
-
-	//RenderScene();
-	//glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	modelStack.LoadIdentity();
+	std::vector<LightSource*>* lightSources = manager->getLevel()->getLightSources();
 
+	modelStack.LoadIdentity();
 	viewStack.LoadMatrix(manager->getCamera()->LookAt());
 
 	for (int i = 0; i < (int)lightSources->size(); i++)
-	{
 		lightSources->at(i)->updateAttributes(viewStack);
-	}
 
-	gui = GUIManager::getInstance();
-	RenderScene();
-	glDisable(GL_DEPTH_TEST);
-	RenderUI();
-	glEnable(GL_DEPTH_TEST);
+	glBindVertexArray(m_vertexArrayID);
+	GenerateText();
+	Manager::getInstance()->getLevel()->Render();
+
+
+
+
+	
+
 }
 
 void SceneA2::RenderScene()
 {
-	glBindVertexArray(m_vertexArrayID);
-
-
-
-	if (manager->getLevelName() == "game") {
-		Level* level = manager->getLevel();
-		RenderSkybox();
-		lit->use();
-
-		car = dynamic_cast<Car*>(level->getObject("car"));
-
-		modelStack.PushMatrix();
-		level->getObject("playerAxes")->Translate(modelStack, car->position.x, car->position.y + car->getOBB()->getHalf().y, car->position.z);
-		level->getObject("playerAxes")->Rotate(modelStack, car->rotation.x, 1, 0, 0);
-		level->getObject("playerAxes")->Rotate(modelStack, car->rotation.y, 0, 1, 0);
-		level->getObject("playerAxes")->Rotate(modelStack, car->rotation.z, 0, 0, 1);
-		RenderMesh(level->getObject("playerAxes"), false);
-		modelStack.PopMatrix();
-
-	}
-
-	Manager::getInstance()->getLevel()->renderMesh();
 
 }
 
-void SceneA2::RenderUI() 
+void SceneA2::GenerateText() 
 {
 
-	Manager::getInstance()->getLevel()->renderGUI();
-	gui->renderText("bahnschrift", 0, 10, "FPS: " + std::to_string(lastFramesPerSecond), 0.4f, Color(0, 1, 0));
+	
+	GUIText* fps = gui->renderText("bahnschrift", 0, 10, "FPS: " + std::to_string(lastFramesPerSecond), 0.4f, Color(0, 1, 0));
+	Manager::getInstance()->getLevel()->getScreen()->addText(fps);
+
+	if (manager->getLevelName() == "game")
+	{
+		Vector3 vel = 170.0f * manager->getLevel()->getObject("car")->velocity;
+		if (Utility::Sign(vel) == -1) vel.SetZero();
+		vel.y = 0;
+		std::string velocity = std::to_string(vel.Length());
+		velocity = velocity.substr(0, 5);
+
+		Color drawColor;
+
+		float ratioGreen = vel.Length() / 70.0f;
+		int ratioWhite = vel.Length() / 20.0f;
+		int ratioYellow = vel.Length() / 40.0f;
+		int ratioRed = vel.Length() / 70.0f;
+		
+		if (ratioRed == 0)
+		{
+			if (ratioWhite == 0)
+			{
+				drawColor.Set(1 - ratioWhite, 1 - ratioWhite, 1 - ratioWhite);
+			}
+			else
+			{
+				drawColor.Set((ratioYellow == 0 ? 0 : ratioGreen), ratioGreen, 0);
+			}
+		}
+		else
+		{
+			drawColor.Set(1, 0, 0);
+		}
 
 
 
-	//gui->renderText("default", 0, 300, "Waypoints: " + std::to_string(dynamic_cast<AICar*>(manager->getObject("ai"))->currentID), 0.4f, Color(0, 1, 0));
-	//if (!player->isInVehicle && (player->getCar()->position - player->position).Length() <= 6.0f)
-	//	gui->renderText("default", 400, 300, "Press F to enter car", 0.4f, Color(0, 1, 0), TEXT_ALIGN_MIDDLE);
+		GUIText* speed = gui->renderText("digital", 60, Application::winHeight / 2.0f - 20, velocity, 0.4f, drawColor, TEXT_ALIGN_BOTTOM);
+		Manager::getInstance()->getLevel()->getScreen()->addText(speed);
 
-	//
-	//Mesh* ai = manager->getLevel()->getObject("ai");
-
-	//gui->renderText("default", 0, 550, "AI Pos: " + std::to_string(ai->position.x) + "," + std::to_string(ai->position.y) + ","
-	//	+ std::to_string(ai->position.z), 0.25f, Color(0, 1, 1));
-
-	//gui->renderText("default", 0, 500, "AI Vel: " + std::to_string(ai->velocity.x) + "," + std::to_string(ai->velocity.y) + ","
-	//	+ std::to_string(ai->velocity.z), 0.25f, Color(1, 0, 0));
-
+	}
 }
 
 void SceneA2::RenderMesh(Mesh* mesh, bool enableLight, unsigned int shader)
@@ -215,57 +182,7 @@ void SceneA2::RenderMesh(Mesh* mesh, bool enableLight, unsigned int shader)
 
 
 
-void SceneA2::RenderSkybox()
-{
-	lit->use();
-	float length = 1000.0f;
-	modelStack.PushMatrix();
 
-	modelStack.PushMatrix();
-	modelStack.Translate(0.0f, length / 2, 0.0f);
-	modelStack.Rotate(-90.0f, 0, 1, 0);
-	modelStack.Rotate(90.0f, 1, 0, 0);
-	modelStack.Scale(length, length, 1.0f);
-	RenderMesh(manager->getLevel()->getObject("skyboxTop"), false, lit->getID());
-	modelStack.PopMatrix();
-
-	modelStack.PushMatrix();
-	modelStack.Translate(0.0f, -length / 2, 0.0f);
-	modelStack.Rotate(-90.0f, 1, 0, 0);
-	modelStack.Scale(length, length, 1.0f);
-	RenderMesh(manager->getLevel()->getObject("skyboxBottom"), false, lit->getID());
-	modelStack.PopMatrix();
-
-	modelStack.PushMatrix();
-	modelStack.Translate(0.0f, 0.0f, length / 2);
-	modelStack.Rotate(180.0f, 1, 1, 0);
-	modelStack.Rotate(-90.0f, 0, 0, 1);
-	modelStack.Scale(length, length, 1.0f);
-	RenderMesh(manager->getLevel()->getObject("skyboxFront"), false, lit->getID());
-	modelStack.PopMatrix();
-
-	modelStack.PushMatrix();
-	modelStack.Translate(0.0f, 0.0f, -length / 2);
-	modelStack.Scale(length, length, 1.0f);
-	RenderMesh(manager->getLevel()->getObject("skyboxBack"), false, lit->getID());
-	modelStack.PopMatrix();
-
-	modelStack.PushMatrix();
-	modelStack.Translate(-length / 2, 0.0f, 0.0f);
-	modelStack.Rotate(90.0f, 0, 1, 0);
-	modelStack.Scale(length, length, 1.0f);
-	RenderMesh(manager->getLevel()->getObject("skyboxLeft"), false, lit->getID());
-	modelStack.PopMatrix();
-
-	modelStack.PushMatrix();
-	modelStack.Translate(length / 2, 0.0f, 0.0f);
-	modelStack.Rotate(-90.0f, 0, 1, 0);
-	modelStack.Scale(length, length, 1.0f);
-	RenderMesh(manager->getLevel()->getObject("skyboxRight"), false, lit->getID());
-	modelStack.PopMatrix();
-
-	modelStack.PopMatrix();
-}
 
 void SceneA2::InitShaderProperties()
 {
@@ -336,25 +253,25 @@ void SceneA2::Update(double dt)
 				bounceTimeCounter = 0.3f;
 			}
 			// Board Car
-			//else if (Application::IsKeyPressed('F')) {
+			/*else if (Application::IsKeyPressed('F')) {
 
-			//	Car* car = dynamic_cast<Car*>(Collision::getNearestObjectType("car", player->position, 6.0f));
-			//	if (!player->isInVehicle) {
-			//		player->isInVehicle = true;
-			//		car->setOccupied(true);
-			//		player->collisionEnabled = false;
-			//		player->setCameraMode(FIXED_CAR);
-			//		player->setCar(car);
+				Car* car = dynamic_cast<Car*>(Collision::getNearestObjectType("car", player->position, 6.0f));
+				if (!player->isInVehicle) {
+					player->isInVehicle = true;
+					car->setOccupied(true);
+					player->collisionEnabled = false;
+					player->setCameraMode(FIXED_CAR);
+					player->setCar(car);
 
-			//	}/*
-			//	else if (player->isInVehicle) {
-			//		player->isInVehicle = false;
-			//		car->setOccupied(false);
-			//		player->collisionEnabled = true;
-			//		player->setCameraMode(FIRST_PERSON);
-			//	}*/
-			//	bounceTimeCounter = 0.3f;
-			//}
+				}
+				else if (player->isInVehicle) {
+					player->isInVehicle = false;
+					car->setOccupied(false);
+					player->collisionEnabled = true;
+					player->setCameraMode(FIRST_PERSON);
+				}
+				bounceTimeCounter = 0.3f;
+			}*/
 
 		}
 	
@@ -419,4 +336,21 @@ player->setCar(car);
 
 manager->spawnObject(new AICar("ai", Primitives::loadModel("Models//car.obj"), LoadTGA("Models//bridge.tga")));
 
+*/
+
+/*
+
+
+	//gui->renderText("default", 0, 300, "Waypoints: " + std::to_string(dynamic_cast<AICar*>(manager->getObject("ai"))->currentID), 0.4f, Color(0, 1, 0));
+	//if (!player->isInVehicle && (player->getCar()->position - player->position).Length() <= 6.0f)
+	//	gui->renderText("default", 400, 300, "Press F to enter car", 0.4f, Color(0, 1, 0), TEXT_ALIGN_MIDDLE);
+
+	//
+	//Mesh* ai = manager->getLevel()->getObject("ai");
+
+	//gui->renderText("default", 0, 550, "AI Pos: " + std::to_string(ai->position.x) + "," + std::to_string(ai->position.y) + ","
+	//	+ std::to_string(ai->position.z), 0.25f, Color(0, 1, 1));
+
+	//gui->renderText("default", 0, 500, "AI Vel: " + std::to_string(ai->velocity.x) + "," + std::to_string(ai->velocity.y) + ","
+	//	+ std::to_string(ai->velocity.z), 0.25f, Color(1, 0, 0));
 */
