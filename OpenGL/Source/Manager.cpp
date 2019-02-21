@@ -73,7 +73,8 @@ void Manager::setLevel(std::string name) {
 		levels[currentLevel]->spawnObject(new Mesh("axes", axes, 0, false, false, "environment", Mesh::DRAW_LINES));
 		levels[currentLevel]->spawnObject(new Mesh("playerAxes", axes, 0, false, false, "environment", Mesh::DRAW_LINES));
 
-		dynamic_cast<Player*>(levels[currentLevel]->getObject("human"))->setCar(dynamic_cast<Car*>(levels[currentLevel]->getObject("car")));
+		dynamic_cast<Player*>(levels[currentLevel]->getObject("player"))->setCar(dynamic_cast<Car*>(levels[currentLevel]->getObject("car")));
+		dynamic_cast<Player*>(levels[currentLevel]->getObject("player2"))->setCar(dynamic_cast<Car*>(levels[currentLevel]->getObject("car2")));
 	}
 }
 
@@ -95,7 +96,7 @@ std::map<std::string, ShaderProgram*>* Manager::getShaders()
 
 Camera* Manager::getCamera() {
 	if (currentLevel == "game") {
-		return dynamic_cast<Player*>(levels[currentLevel]->getObject("human"))->getCamera();
+		return dynamic_cast<Player*>(levels[currentLevel]->getObject("player"))->getCamera();
 	}
 	else if (currentLevel == "pregame") {
 		return mainmenu;

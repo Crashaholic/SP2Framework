@@ -14,7 +14,7 @@ enum PhysicsMode {
 class Car : public Mesh
 {
 public:
-	Car(const char* meshName, Primitive* primitive, unsigned int texID = 0, DRAW_MODE drawMode = DRAW_TRIANGLES);
+	Car(const char* meshName, Primitive* primitive, std::string input, unsigned int texID = 0, DRAW_MODE drawMode = DRAW_TRIANGLES);
 	Car();
 	~Car();
 
@@ -32,6 +32,7 @@ protected:
 
 private:
 
+	std::string input;
 	float torqueRot;
 
 	float engineAcceleration;

@@ -7,11 +7,12 @@
 #include "Player.h"
 #include "AICar.h"
 
-Car::Car(const char* meshName, Primitive* primitive, unsigned int texID, DRAW_MODE drawMode)
+Car::Car(const char* meshName, Primitive* primitive, std::string input, unsigned int texID, DRAW_MODE drawMode)
 	: Mesh(meshName, primitive, texID, true, true, "car", drawMode)
 {
 
 
+	this->input = input;
 
 	velocity.Set(0, 0, 0);
 	forward.Set(0, 0, 1);
@@ -24,7 +25,8 @@ Car::Car(const char* meshName, Primitive* primitive, unsigned int texID, DRAW_MO
 
 	engineAcceleration = brakingAcceleration = reverseAcceleration = 0.0f;
 	isOccupied = false;
-	currentSteer = steerAmount = 0.0f;
+	steerAmount = 0.0f;
+	currentSteer = -90.0f;
 
 	start = false;
 
@@ -67,26 +69,29 @@ void Car::Update(double dt)
 
 
 
-
-		if (Application::IsKeyPressed('W'))
+		// Input 0 - W
+		// Input 1 - A
+		// Input 2 - S
+		// Input 3 - D
+		if (Application::IsKeyPressed(input[0]))
 			accInput = 1.0f;
-		else if (Application::IsKeyPressed('S'))
+		else if (Application::IsKeyPressed(input[2]))
 			accInput = -1.0f;
 		else
 			accInput = 0.0f;
 
-		if (Application::IsKeyPressed('A'))
+		if (Application::IsKeyPressed(input[1]))
 			steerInput = -1;
-		else if (Application::IsKeyPressed('D'))
+		else if (Application::IsKeyPressed(input[3]))
 			steerInput = 1;
 		else
 			steerInput = 0;
 
-		if (Application::IsKeyPressed('K') && !start) start = true;
+		//if (Application::IsKeyPressed('K') && !start) start = true;
 
 		float thrustInput = 0.0f;
 
-		if (Application::IsKeyPressed('M') && thrusters > 0.0f) {
+		if (Application::IsKeyPressed(VK_SPACE) && thrusters > 0.0f) {
 			std::cout << thrusters << std::endl;
 			thrustInput = 1.0f;
 			thrust = Utility::Lerp(thrust, 1.0f, 8.0f * dt);

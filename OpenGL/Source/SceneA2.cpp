@@ -55,6 +55,7 @@ void SceneA2::Init()
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+
 }
 
 void SceneA2::CreateMesh()
@@ -329,28 +330,31 @@ void SceneA2::Update(double dt)
 		}
 
 		if (manager->getLevelName() == "game") {
-			player = dynamic_cast<Player*>(manager->getLevel()->getObject("human"));
+			player = dynamic_cast<Player*>(manager->getLevel()->getObject("player"));
 			if (Application::IsKeyPressed(VK_F5)) {
 				player->switchCameraMode();
 				bounceTimeCounter = 0.3f;
 			}
 			// Board Car
-			else if (Application::IsKeyPressed('F')) {
-				if (!player->isInVehicle && (player->getCar()->position - player->position).Length() <= 6.0f) {
-					player->isInVehicle = true;
-					player->getCar()->setOccupied(true);
-					player->collisionEnabled = false;
-					player->setCameraMode(FIXED_CAR);
+			//else if (Application::IsKeyPressed('F')) {
 
-				}
-				else if (player->isInVehicle) {
-					player->isInVehicle = false;
-					player->getCar()->setOccupied(false);
-					player->collisionEnabled = true;
-					player->setCameraMode(FIRST_PERSON);
-				}
-				bounceTimeCounter = 0.3f;
-			}
+			//	Car* car = dynamic_cast<Car*>(Collision::getNearestObjectType("car", player->position, 6.0f));
+			//	if (!player->isInVehicle) {
+			//		player->isInVehicle = true;
+			//		car->setOccupied(true);
+			//		player->collisionEnabled = false;
+			//		player->setCameraMode(FIXED_CAR);
+			//		player->setCar(car);
+
+			//	}/*
+			//	else if (player->isInVehicle) {
+			//		player->isInVehicle = false;
+			//		car->setOccupied(false);
+			//		player->collisionEnabled = true;
+			//		player->setCameraMode(FIRST_PERSON);
+			//	}*/
+			//	bounceTimeCounter = 0.3f;
+			//}
 
 		}
 	

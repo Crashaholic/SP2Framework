@@ -127,6 +127,10 @@ void Player::Update(double dt) {
 
 void Player::setCar(Car* car) {
 	this->car = car;
+	isInVehicle = true;
+	car->setOccupied(true);
+	collisionEnabled = false;
+	setCameraMode(FIXED_CAR);
 }
 
 Car* Player::getCar() {

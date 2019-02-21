@@ -107,7 +107,7 @@ void Level::Load(std::string path) {
 					m = new Player(current->Get("name").c_str(), primitive, textureID);
 				}
 				else if (type == "car") {
-					m = new Car(current->Get("name").c_str(), primitive, textureID);
+					m = new Car(current->Get("name").c_str(), primitive, current->Get("input"), textureID);
 				}
 				else if (type == "pad") {
 					m = new LevitationPad(current->Get("name").c_str(), primitive, textureID, std::stof(current->Get("levitation")));

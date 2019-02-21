@@ -209,3 +209,26 @@ void Collision::Collide(float initialVelA, float initialVelB, float massA, float
 	finalVelA = (-b + sqrt(b * b - 4 * a * c)) / (2.0f * a);
 	finalVelB = (z - massA * finalVelA) / massB;
 }
+
+Mesh* Collision::getNearestObjectType(std::string type, Vector3 position, float distance) {
+
+	std::map<std::string, Mesh*>* objects = Manager::getInstance()->getLevel()->getObjects();
+	std::vector<Mesh*> target;
+	
+	float min = distance;
+	Mesh* nearest = nullptr;
+
+	for (auto& object : *objects) {
+		if (object.second->getType() == type) {
+			float d = (object.second->position - position).Length();
+			if (d <= distance) {
+				if (d < min) {
+					nearest = object.second;
+					min = d;
+				}
+			}
+		}
+	}
+
+	return nearest;
+}
