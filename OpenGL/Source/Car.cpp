@@ -190,6 +190,23 @@ void Car::Update(double dt)
 
 	velocity += calcFriction(accInput, steerInput, dt);
 
+	Vector3 horizontalVel = 170.0f * velocity;
+	horizontalVel.y = 0;
+
+	if (horizontalVel.Length() <= -10.f || horizontalVel.Length() >= 10.f && isSoundEmitted == false)
+	{
+		isSoundEmitted = true;
+		carSounds[SFX_DRIVING].setLooping(1);
+		carEngine.play(carSounds[SFX_DRIVING], 0.5f, 1);
+		carEngine.seek(carEngine.play(carSounds[SFX_DRIVING], 0.5f, 1), 1.0f);
+		carEngine.setPause(carEngine.play(carSounds[SFX_DRIVING]), 0);
+
+	}
+	else if ((horizontalVel.Length() > -10.f && horizontalVel.Length() < 10.f) && isSoundEmitted == true)
+	{
+		carSounds[SFX_DRIVING].stop();
+		isSoundEmitted = false;
+	}
 
 	std::vector<Mesh*> collided = Collision::checkCollisionTypes(this, velocity, { "car", "ai"});
 
@@ -227,22 +244,8 @@ void Car::Update(double dt)
 			
 		if (Application::IsKeyPressed('K') && !start) start = true;
 
-		if ((velocity.x > 0.15 || velocity.z > 0.15 || velocity.x < -0.15 || velocity.z < -0.15) && isSoundEmitted == false)
-		{
-			isSoundEmitted = true;
-			carSounds[SFX_DRIVING].setLooping(1);
-			carEngine.play(carSounds[SFX_DRIVING], 0.5f, 1);
-			carEngine.seek(carEngine.play(carSounds[SFX_DRIVING], 0.5f, 1), 1.0f);
-			carEngine.setPause(carEngine.play(carSounds[SFX_DRIVING]), 0);
 
-		}
-		else if (velocity.x == 0 && velocity.z == 0)
-		{
-			carSounds[SFX_DRIVING].stop();
-			isSoundEmitted = false;
-		}
-
-		velocity += updatePosition(accInput, steerInput, dt);
+		velocity += calcAcceleration(accInput, steerInput, dt);
 			car->velocity = forward * finalVelCar2 * 0.60f;
 			car->torqueRot = t * velocity.Length() * 12.0;
 			//car->position += car->velocity;

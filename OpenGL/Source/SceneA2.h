@@ -54,9 +54,7 @@ private:
 	int lastFramesPerSecond = 0;
 	float elapsedTimeCounter = 0.0f;
 
-	bool state_MainMenu;
-	bool state_InGame;
-	bool state_Race;
+	int BGMFlag;
 
 	Manager *manager;
 	Player* player;

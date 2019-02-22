@@ -13,9 +13,6 @@
 
 SceneA2::SceneA2()
 {
-	state_MainMenu = true;
-	state_InGame = true;
-	state_Race = false;
 }
 
 
@@ -32,6 +29,7 @@ void SceneA2::Init()
 	Music[BGM_MAIN].load("Music//BGM_MainMenu.wav");
 	Music[BGM_INGAME].load("Music//BGM_InGame.wav");
 
+	BGMFlag = 0;
 
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 	elapsedTimeCounter = bounceTimeCounter = lastTimed = 0.0f;
@@ -105,6 +103,17 @@ void SceneA2::GenerateText()
 		dynamic_cast<Car*>(manager->getLevel()->getObject("car2"))->getVelocity(velocity, color);
 		speed = gui->renderText("digital", 40, Application::winHeight / 2.0f + 20, velocity, 0.4f, color, TEXT_ALIGN_TOP);
 		Manager::getInstance()->getLevel()->getScreen()->addText(speed);
+		
+		if (manager->getLevel()->getScreenName() == "shop") {
+		GUIText* text = gui->renderText("default", 196, 150, "buy", 0.35f, Color(1, 1, 1), TEXT_ALIGN_MIDDLE);
+		Manager::getInstance()->getLevel()->getScreen()->addText(text);
+
+		text = gui->renderText("default", 196, 315, "undo", 0.35f, Color(1, 1, 1), TEXT_ALIGN_MIDDLE);
+		Manager::getInstance()->getLevel()->getScreen()->addText(text);
+
+		text = gui->renderText("default", 196, 480, "exit", 0.35f, Color(1, 1, 1), TEXT_ALIGN_MIDDLE);
+		Manager::getInstance()->getLevel()->getScreen()->addText(text);
+	}
 	}
 	else if (manager->getLevelName() == "pregame") {
 
@@ -196,27 +205,29 @@ void SceneA2::InitShaderProperties()
 
 void SceneA2::playMusic()
 {
-	//if (state_MainMenu)
-	//{
-	//	Engine.play(Music[BGM_MAIN]);
-	//	state_MainMenu = false;
-	//}
-	//if (state_InGame)
-	//{
-	//	Engine.play(Music[BGM_INGAME]);
-	//	state_InGame = false;
-	//}
-	//if (!state_Race)
-	//{
-	//	Engine.play(Music[BGM_RACE]);
-	//}
+	if (manager->getLevelName() == "pregame" && BGMFlag == 0)
+	{
+		Engine.play(Music[BGM_MAIN]);
+		BGMFlag = 1;
+	}
+	if (manager->getLevelName() == "game" && BGMFlag == 1)
+	{
+		Music[BGM_MAIN].stop();
+		Engine.play(Music[BGM_INGAME]);
+		BGMFlag = 2;
+	}
+	if (manager->getLevel()->getScreenName() == "race" && BGMFlag == 2)
+	{
+		Engine.play(Music[BGM_RACE]);
+		BGMFlag = 3;
+	}
 
 }
 
 
 void SceneA2::Update(double dt)
 {
-	//playMusic();
+	playMusic();
 
 	// Bounce Time
 	if (bounceTimeCounter <= 0.0f) {

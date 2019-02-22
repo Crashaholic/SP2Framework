@@ -37,7 +37,7 @@ Manager::~Manager()
 
 	delete mainmenu;
 
-	savePlayerProgress();
+	savePlayerProgress(dynamic_cast<Player*>(getLevel()->getObject("player")));
 
 	for (auto const& shader : shaders)
 		if (shader.second != nullptr)
@@ -143,12 +143,12 @@ void Manager::loadPlayerProgress(Player *player)
 					std::vector<std::string> upgradeArgsStats = Utility::splitLine(upgradeArgs[0], ':');
 					player->getCar()->setNitroTier(std::stoi(upgradeArgsStats[1]));
 				}
-				if (startsWith(upgradeArgs[1], "Tire"))
+				if (Utility::startsWith(upgradeArgs[1], "Tire"))
 				{
 					std::vector<std::string> upgradeArgsStats = Utility::splitLine(upgradeArgs[1], ':');
 					player->getCar()->setTireTier(std::stoi(upgradeArgsStats[1]));
 				}
-				if (startsWith(upgradeArgs[2], "Engine"))
+				if (Utility::startsWith(upgradeArgs[2], "Engine"))
 				{
 					std::vector<std::string> upgradeArgsStats = Utility::splitLine(upgradeArgs[2], ':');
 					player->getCar()->setEngineTier(std::stoi(upgradeArgsStats[1]));

@@ -18,6 +18,11 @@ Player::Player(const char* meshName, Primitive* primitive, std::string input, un
 	fixedCar = new Camera(position + Vector3(0.0f, 8.0f, -6.0f));
 	topdown = new Camera(position + Vector3(0.0f, 8.0f, -6.0f));
 	
+	carOneUnlock = true;
+	carTwoUnlock = false;
+	carThreeUnlock = false;
+	carFourUnlock = false;
+
 }
 
 Player::Player()

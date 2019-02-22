@@ -17,7 +17,7 @@ collision=true
 gravity=false
 model=Models//human_body.obj
 position=210,5,0
-raceposition=170,5,117
+raceposition=190,5,117
 rotation=0,0,0
 input=IJKL
 texture=Models//human.tga
@@ -39,7 +39,7 @@ name=innerbarrier
 collision=true
 gravity=false
 model=Models//innerbarrier.obj
-position=0,0.5,-0.049
+position=0,0,-0.049
 rotation=0,0,0
 texture=Models//barrier.tga
 type=environment
@@ -49,7 +49,7 @@ name=rightbarrier
 collision=true
 gravity=false
 model=Models//rightbarrier.obj
-position=-0.131,-0.321,147.977
+position=-0.131,-0.321,143.977
 rotation=0,0,0
 texture=Models//barrier.tga
 type=environment
@@ -177,4 +177,40 @@ rotation=0,0,0
 texture=Models//ramp.tga
 type=environment
 
+category=ui
 
+name=title
+screen=shop
+texture=Image//title.tga
+position=172,128
+rotation=0
+scale=258,159
+type=texture
+
+
+name=Buy
+screen=shop
+texture=Image//buy.tga
+hovertexture=Image//buyhover.tga
+position=-316,234
+rotation=0
+scale=111,36
+type=button
+
+name=undo
+screen=shop
+texture=Image//undo.tga
+hovertexture=Image//undohover.tga
+position=-316,69
+rotation=0
+scale=111,36
+type=button
+
+name=exitshop
+screen=shop
+texture=Image//exitshop.tga
+hovertexture=Image//exitshophover.tga
+position=-316,-96
+rotation=0
+scale=111,36
+type=button
