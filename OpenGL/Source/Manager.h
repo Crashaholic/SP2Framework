@@ -10,7 +10,8 @@
 #include <map>
 #include <fstream>
 #include <string>
-
+#include "Level.h"
+#include <experimental/filesystem>
 #include <iostream>
 
 class Manager
@@ -23,27 +24,26 @@ public:
 	void loadPlayerProgress(Player *player);
 	void savePlayerProgress(Player *player);
 
-	Mesh* getObject(std::string name);
+	Level* getLevel();
+	void setLevel(std::string name);
+	std::string& getLevelName();
+	Camera* getCamera();
 	ShaderProgram* getShader(std::string name);
-
-	std::vector<LightSource*>* getLightSources();
-	std::map<std::string, Mesh*>* getObjects();
 	std::map<std::string, ShaderProgram*>* getShaders();
-	QuadTree* getTree();
 
 private:
 
 	Manager();
 	static Manager* instance;
-	QuadTree* tree;
+	Camera* mainmenu;
 	bool carOneUnlock;
 	bool carTwoUnlock;
 	bool carThreeUnlock;
 	int money;
-	std::map<std::string, Mesh*> objects;
+
+	std::string currentLevel;
+	std::map<std::string, Level*> levels;
 	std::map<std::string, ShaderProgram*> shaders;
-	std::vector<LightSource*> lightSources;
-	bool startsWith(std::string input, std::string keyWord);
 };
 
 #endif

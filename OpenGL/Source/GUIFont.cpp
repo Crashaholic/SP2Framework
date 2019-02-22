@@ -83,14 +83,17 @@ void GUIFont::createDataFromText(std::vector<GUIGlyph>& glyphs, float xPos, floa
 		if ((c->height * fontSize) > textHeight) textHeight = c->height * fontSize;
 	}
 
-	if (align == TEXT_ALIGN_LEFT || align == TEXT_ALIGN_MIDDLE || align == TEXT_ALIGN_RIGHT || align == TEXT_ALIGN_BOTTOMLEFT)
+
+
+	if (align == TEXT_ALIGN_LEFT || align == TEXT_ALIGN_MIDDLE || align == TEXT_ALIGN_RIGHT || align == TEXT_ALIGN_BOTTOM || align == TEXT_ALIGN_BOTTOMLEFT)
 		cursorY -= textHeight / 2.0f;
 
 	if (align == TEXT_ALIGN_TOP || align == TEXT_ALIGN_MIDDLE || align == TEXT_ALIGN_BOTTOM)
 		cursorX -= textWidth / 2.0f;
 
-	if(align == TEXT_ALIGN_BOTTOMLEFT)
+	if(align == TEXT_ALIGN_BOTTOM || align == TEXT_ALIGN_BOTTOMLEFT)
 		cursorY -= textHeight / 2.0f;
+
 
 	GUIGlyph glyph;
 

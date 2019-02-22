@@ -6,6 +6,7 @@
 #include "Utility.h"
 #include "Manager.h"
 #include "Collision.h"
+#include "LevitationPad.h"
 #include "GUIManager.h"
 
 
@@ -17,13 +18,13 @@ Default constructor - generate VBO/IBO here
 \param meshName - name of mesh
 */
 /******************************************************************************/
-Mesh::Mesh(const char* meshName, Primitive* primitive, unsigned int texID, bool collisionEnabled, DRAW_MODE drawMode)
+Mesh::Mesh(const char* meshName, Primitive* primitive, unsigned int texID, bool collisionEnabled, bool gravityEnabled, std::string type, DRAW_MODE drawMode)
 	: name(meshName)
-	, mode(drawMode) , textureID(texID)
+	, mode(drawMode), textureID(texID), collisionEnabled(collisionEnabled), gravityEnabled(gravityEnabled), type(type)
 {
 	// Generate Buffers
-	glGenBuffers(1, &vertexBuffer); 
-	glGenBuffers(1, &indexBuffer); 
+	glGenBuffers(1, &vertexBuffer);
+	glGenBuffers(1, &indexBuffer);
 
 	// Bind & Buffer
 	glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
@@ -34,12 +35,19 @@ Mesh::Mesh(const char* meshName, Primitive* primitive, unsigned int texID, bool 
 
 	obb = new OBB(Vector3(primitive->getWidth() * 0.5f, primitive->getHeight() * 0.5f, primitive->getDepth() * 0.5f));
 	defaultObb = new OBB(Vector3(primitive->getWidth() * 0.5f, primitive->getHeight() * 0.5f, primitive->getDepth() * 0.5f));
-	velocity.SetZero();
-	this->collisionEnabled = collisionEnabled;
+
 }
 
-Mesh::Mesh() {
+Mesh::Mesh()
+{
 
+}
+
+void Mesh::Init()
+{
+	velocity.SetZero();
+	obb->setPos(position + Vector3(0, obb->getHalf().y, 0));
+	defaultObb->setPos(position + Vector3(0, obb->getHalf().y, 0));
 }
 
 void Mesh::InitTexture()
@@ -77,38 +85,21 @@ Mesh::~Mesh()
 
 }
 
-void Mesh::Update(double dt) {
+void Mesh::Update(double dt)
+{
 
-	if (collisionEnabled) {
-		if (name == "ground" || name.substr(0,4) == "car_") return;
-		Vector3 grav = Vector3(0, -1.0f, 0);
-		std::vector<Mesh*> collided = Collision::checkCollisionT(this, grav, {});
-
-		if (name == "human") {
-			if (collided.size() != 0)
-				GUIManager::getInstance()->renderText("default", 400, 400, "Collisions: " + std::to_string(collided.size()), 0.35f, Color(1, 0, 1), TEXT_ALIGN_BOTTOMLEFT);
-			else
-				GUIManager::getInstance()->renderText("default", 400, 400, "Collision: None", 0.35f, Color(1, 0, 1), TEXT_ALIGN_BOTTOMLEFT);
-
-		}
-
-		bool ground = false;
-		for (int i = 0; i < collided.size(); i++) {
-			if (collided[i]->name == "ground") {
-				ground = true;
-				break;
-			}
-		}
-
-		if (!ground) {
-			velocity += grav * dt;
-		}
-		else {
-			velocity.y = 0;
-		}
+	if (collisionEnabled)
+	{
+		if (gravityEnabled)
+			onGroundCheck(dt);
 		position += velocity;
+		//Mesh* ground = Manager::getInstance()->getObject("ground");
+		//float groundY = ground->position.y + ground->getOBB()->getHalf().y * 2;
+	/*	if (position.y <= groundY) 
+			position.y = groundY;
+		}*/
+		Manager::getInstance()->getLevel()->getTree()->Update(this);
 	}
-	//position += velocity;
 }
 
 /******************************************************************************/
@@ -144,7 +135,7 @@ void Mesh::Render(MS& modelStack, MS& viewStack, MS& projectionStack, ShaderProg
 
 
 	InitTexture();
-	obb->setPos(position);
+	obb->setPos(position + Vector3(0, obb->getHalf().y, 0));
 
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
@@ -174,6 +165,52 @@ std::vector<Mesh*>* Mesh::getChildren()
 	return &children;
 }
 
+void Mesh::onGroundCheck(double dt)
+{
+	// Check whether position below the player collides with any object
+	Vector3 grav = Vector3(0, -1.0f, 0);
+	std::vector<Mesh*> collided = Collision::checkCollisionT(this, grav, {});
+
+	// Check whether player is above a LevitationPad
+	std::vector<Mesh*> collidePad = Collision::checkCollisionAbove(this, -35.0f, {});
+	bool hasPad = std::find(collidePad.begin(), collidePad.end(), Manager::getInstance()->getLevel()->getObject("pad1")) != collidePad.end();
+
+
+	// Nothing below the player -> Gravity pull
+	if (!hasPad && std::find(collided.begin(), collided.end(), Manager::getInstance()->getLevel()->getObject("ground")) == collided.end())
+	{
+		//Vector3 target = velocity + grav * dt;
+		//Mesh* ground = Manager::getInstance()->getObject("ground");
+		//if (target.y <= ground->position.y) {
+		//	position.y = ground->position.y + ground->getOBB()->getHalf().y * 2;
+		//	velocity.y = 0;
+		//}
+		//else {
+		//	velocity += grav * dt;
+		//}
+		velocity += grav * dt;
+	}
+	else
+	{
+
+		if (!hasPad && velocity.y < 0)
+		{
+			// Snap player to the ground if he is hovering slightly above due to inaccuracies in gravity collision
+			float groundY = Manager::getInstance()->getLevel()->getObject("ground")->position.y + Manager::getInstance()->getLevel()->getObject("ground")->getOBB()->getHalf().y * 2;
+			//float changeInY = position.y - groundY;
+
+			//if (changeInY > 0.0f)
+				position.y = groundY;
+
+		}
+
+		if (velocity.y < 0)
+			velocity.y = 0;
+		
+	}
+
+}
+
 void Mesh::loadChildren(std::vector<std::string> names)
 {
 
@@ -195,25 +232,26 @@ OBB* Mesh::getOBB() {
 
 void Mesh::Translate(MS& modelStack, float x, float y, float z) {
 	position.Set(x, y, z);
-	obb->setPosAxis(position, obb->getX(), obb->getY(), obb->getZ());
-	modelStack.Translate(x, y, z);
+	obb->setPosAxis(position + Vector3(0, obb->getHalf().y, 0), obb->getX(), obb->getY(), obb->getZ());
+	modelStack.Translate(x, obb->getPos().y, z);
 }
 
 void Mesh::Rotate(MS& modelStack, float angle, float x, float y, float z) {
 
+	
 
 	if (x == 1) {
-		obb->setPosAxis(position, Utility::rotatePointByX(obb->getX(), angle),
+		obb->setPosAxis(position + Vector3(0, defaultObb->getHalf().y, 0), Utility::rotatePointByX(obb->getX(), angle),
 			Utility::rotatePointByX(obb->getY(), angle),
 			Utility::rotatePointByX(obb->getZ(), angle));
 	}
 	else if (y == 1) {
-		obb->setPosAxis(position, Utility::rotatePointByY(obb->getX(), angle),
+		obb->setPosAxis(position + Vector3(0, defaultObb->getHalf().y, 0), Utility::rotatePointByY(obb->getX(), angle),
 			Utility::rotatePointByY(obb->getY(), angle),
 			Utility::rotatePointByY(obb->getZ(), angle));
 	}
 	else if (z == 1) {
-		obb->setPosAxis(position, Utility::rotatePointByZ(obb->getX(), angle),
+		obb->setPosAxis(position + Vector3(0, defaultObb->getHalf().y, 0), Utility::rotatePointByZ(obb->getX(), angle),
 			Utility::rotatePointByZ(obb->getY(), angle),
 			Utility::rotatePointByZ(obb->getZ(), angle));
 	}
@@ -223,6 +261,10 @@ void Mesh::Rotate(MS& modelStack, float angle, float x, float y, float z) {
 }
 
 void Mesh::ResetOBB() {
-	obb->setPosAxis(position, defaultObb->getX(), defaultObb->getY(), defaultObb->getZ());
+	obb->setPosAxis(position + Vector3(0, defaultObb->getHalf().y, 0), defaultObb->getX(), defaultObb->getY(), defaultObb->getZ());
 
+}
+
+std::string Mesh::getType() {
+	return type;
 }

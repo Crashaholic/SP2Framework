@@ -23,7 +23,7 @@ void FreeLookCamera::Init(const Vector3& pos)
 	lastY = 300.0f;
 	yaw = -89.0f;
 	pitch = 0.0f;
-	sensitivity = 0.123591f;
+	sensitivity = 0.08f;
 
 	front = Vector3(0.0f, 0.0f, 1.0f);
 	up = Vector3(0.0f, 1.0f, 0.0f);
@@ -106,7 +106,6 @@ Mtx44 FreeLookCamera::LookAt()
 			s.y, u.y, -f.y, 0,
 			s.z, u.z, -f.z, 0,
 			-s.Dot(target), -u.Dot(target), f.Dot(target), 1);
-
 	}
 
 

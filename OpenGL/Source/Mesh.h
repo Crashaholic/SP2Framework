@@ -31,7 +31,7 @@ public:
 		DRAW_FAN,
 		DRAW_MODE_LAST,
 	};
-	Mesh(const char* meshName, Primitive* primitive, unsigned int texID=0, bool collisionEnabled = false, DRAW_MODE drawMode=DRAW_TRIANGLES);
+	Mesh(const char* meshName, Primitive* primitive, unsigned int texID=0, bool collisionEnabled = false, bool gravityEnabled=true, std::string type="environment", DRAW_MODE drawMode=DRAW_TRIANGLES);
 	Mesh();
 	~Mesh();
 	void loadChildren(std::vector<std::string> names);
@@ -44,6 +44,7 @@ public:
 	unsigned int textureID;
 	bool hasResetCollider;
 	bool collisionEnabled;
+	bool gravityEnabled;
 	Vector3 position;
 	Vector3 rotation;
 	Vector3 velocity;
@@ -52,25 +53,28 @@ public:
 	std::vector<Mesh*>* getChildren();
 	OBB* getOBB();
 	std::vector<Transformation*> transformations;
+	std::string getType();
 
 	void Render(MS& modelStack, MS& viewStack, MS& projectionStack, ShaderProgram* shader);
 
 	virtual void Translate(MS& modelStack, float x, float y, float z);
-	void Scale(MS& modelStack, float x, float y, float z);
 	virtual void Rotate(MS& modelStack, float angle, float x, float y, float z);
 	void ResetOBB();
 
 	virtual void Update(double dt);
-
+	void Init();
 
 private:
 	virtual void InitTexture();
 
 protected:
 
+	void onGroundCheck(double dt);
+
 	OBB* obb;
 	OBB* defaultObb;
 	std::vector<Mesh*> children;
+	std::string type;
 
 };
 

@@ -12,15 +12,16 @@ enum CAMERA_MODE {
 class Player : public Mesh
 {
 public:
-	Player(const char* meshName, Primitive* primitive, unsigned int texID = 0, DRAW_MODE drawMode = DRAW_TRIANGLES);
+	Player(const char* meshName, Primitive* primitive, std::string input,
+		unsigned int texID = 0, DRAW_MODE drawMode = DRAW_TRIANGLES);
 	Player();
 	~Player();
 
 	void Update(double dt);
-	void Render(MS& modelStack, MS& viewStack, MS& projectionStack, ShaderProgram* shader);
 	void setCameraMode(CAMERA_MODE mode);
 
 	Camera* getCamera();
+	Camera* getTopdownCamera();
 	void setCar(Car* car);
 	void unlockCar(int carSelected);
 	void lockCar(int carSelected);
@@ -33,10 +34,14 @@ public:
 	bool isInVehicle;
 
 
+
 private:
+	std::string input;
+	Vector3 racePosition;
 	Car* car;
 	CAMERA_MODE cameraMode;
 	FreeLookCamera* firstPerson;
+	Camera* topdown;
 	Camera* fixedCar;
 	float walkSpeed;
 	int money;

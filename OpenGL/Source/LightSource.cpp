@@ -25,7 +25,7 @@ void LightSource::setProperties() {
 
 	if (UID == 0) {
 
-		light.type = Light::LIGHT_DIRECTIONAL;
+		light.type = Light::LIGHT_POINT;
 		light.position.Set(1.0f, 1.0f, 1.0f);
 		light.color.Set(1, 1, 1);
 		light.power = 1.0f;

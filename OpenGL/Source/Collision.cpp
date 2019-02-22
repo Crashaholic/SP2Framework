@@ -70,26 +70,11 @@ bool Collision::checkCollision(OBB& box, OBB& other, Vector3& translation) {
 
 
 
-//Mesh* Collision::checkCollision(Mesh* mesh, Vector3& translation) {
-//	Manager* manager = Manager::getInstance();
-//	Vector3 target = mesh->getOBB()->getPos() + translation;
-//	std::cout << "Target: " << target << std::endl;
-//	std::map<std::string, Mesh*>* objects = manager->getObjects();
-//	for (auto const& object : *objects) {
-//		// Skip self and collision-disabled objects
-//		if (object.second == mesh || !object.second->collisionEnabled) continue;
-//
-//		bool doesCollide = checkCollision(*mesh->getOBB(), *object.second->getOBB(), target);
-//		if (doesCollide)
-//			return object.second;
-//	}
-//	return nullptr;
-//}
 
 std::vector<Mesh*> Collision::checkCollision(Mesh* mesh) {
 	Manager* manager = Manager::getInstance();
-	std::vector<Mesh*> objects = manager->getTree()->queryMesh(mesh->position, 50.0f, 50.0f);
-	objects.push_back(manager->getObject("ground"));
+	std::vector<Mesh*> objects = manager->getLevel()->getTree()->queryMesh(mesh->position, 50.0f, 50.0f);
+	objects.push_back(manager->getLevel()->getObject("ground"));
 	//std::map<std::string, Mesh*>* objects = manager->getObjects();
 	
 	std::vector<Mesh*> collided;
@@ -109,15 +94,14 @@ std::vector<Mesh*> Collision::checkCollision(Mesh* mesh) {
 std::vector<Mesh*> Collision::checkCollisionT(Mesh* mesh, Vector3& translation, std::vector<std::string> exceptions)
 {
 	Manager* manager = Manager::getInstance();
-	std::vector<Mesh*> objects = manager->getTree()->queryMesh(mesh->position, 50.0f, 50.0f);
-	objects.push_back(manager->getObject("ground"));
+	std::vector<Mesh*> objects = manager->getLevel()->getTree()->queryMesh(mesh->position, 50.0f, 50.0f);
+	objects.push_back(manager->getLevel()->getObject("ground"));
 	//std::map<std::string, Mesh*>* objects = manager->getObjects();
 
 	std::vector<Mesh*> collided;
 
-
-
-	for (int i = 0; i < objects.size(); i++)
+	for(int i = 0; i < objects.size(); i++)
+	//for (auto& object : *objects)
 	{
 		Mesh* obj = objects[i];
 		// Skip self and collision-disabled objects
@@ -135,8 +119,8 @@ std::vector<Mesh*> Collision::checkCollisionT(Mesh* mesh, Vector3& translation, 
 std::vector<Mesh*> Collision::checkCollisionR(Mesh* mesh, Vector3& rotation, std::vector<std::string> exceptions)
 {
 	Manager* manager = Manager::getInstance();
-	std::vector<Mesh*> objects = manager->getTree()->queryMesh(mesh->position, 50.0f, 50.0f);
-	objects.push_back(manager->getObject("ground"));
+	std::vector<Mesh*> objects = manager->getLevel()->getTree()->queryMesh(mesh->position, 50.0f, 50.0f);
+	objects.push_back(manager->getLevel()->getObject("ground"));
 	//std::map<std::string, Mesh*>* objects = manager->getObjects();
 
 	std::vector<Mesh*> collided;
@@ -156,4 +140,110 @@ std::vector<Mesh*> Collision::checkCollisionR(Mesh* mesh, Vector3& rotation, std
 			collided.push_back(obj);
 	}
 	return collided;
+}
+
+
+std::vector<Mesh*> Collision::checkCollisionAbove(Mesh* mesh, float distance, std::vector<std::string> exceptions)
+{
+	Manager* manager = Manager::getInstance();
+	std::vector<Mesh*> objects = manager->getLevel()->getTree()->queryMesh(mesh->position, 50.0f, 50.0f);
+	objects.push_back(manager->getLevel()->getObject("ground"));
+
+
+	std::vector<Mesh*> collided;
+
+	OBB current = *mesh->getOBB();
+	Vector3 pos = current.getPos();
+	current.setPos(Vector3(pos.x, pos.y + distance/2.0f, pos.z));
+	Vector3 half = current.getHalf();
+	current.setHalf(Vector3(half.x, distance/2.0f, half.z));
+
+	for (int i = 0; i < objects.size(); i++)
+	{
+		Mesh* obj = objects[i];
+		// Skip self and collision-disabled objects
+		if (obj == mesh || !obj->collisionEnabled ||
+			std::find(exceptions.begin(), exceptions.end(), obj->name) != exceptions.end()) continue;
+
+		bool doesCollide = checkCollision(current, *obj->getOBB());
+		if (doesCollide)
+			collided.push_back(obj);
+	}
+	return collided;
+}
+
+std::vector<Mesh*> Collision::checkCollisionType(Mesh* mesh, Vector3& translation, std::string type) {
+
+	return checkCollisionTypes(mesh, translation, { type });
+}
+
+std::vector<Mesh*> Collision::checkCollisionTypes(Mesh* mesh, Vector3& translation, std::vector<std::string> types)
+{
+
+	Manager* manager = Manager::getInstance();
+	std::vector<Mesh*> objects = manager->getLevel()->getTree()->queryMesh(mesh->position, 50.0f, 50.0f);
+	objects.push_back(manager->getLevel()->getObject("ground"));
+	//std::map<std::string, Mesh*>* objects = manager->getObjects();
+
+	std::vector<Mesh*> collided;
+
+	for (int i = 0; i < objects.size(); i++)
+		//for (auto& object : *objects)
+	{
+		Mesh* obj = objects[i];
+		// Skip self and collision-disabled objects
+		if (obj == mesh || !obj->collisionEnabled | std::find(types.begin(), types.end(), obj->getType()) == types.end()) continue;
+
+		bool doesCollide = checkCollision(*mesh->getOBB(), *obj->getOBB(), translation);
+		if (doesCollide)
+			collided.push_back(obj);
+	}
+	return collided;
+}
+
+void Collision::Collide(float initialVelA, float initialVelB, float massA, float massB, float& finalVelA, float& finalVelB, float percentageLost) {
+
+	float percentageRemaining = (100.0f - percentageLost) / 100.0f;
+
+	float y = percentageRemaining * (massA * initialVelA * initialVelA + massB * initialVelB * initialVelB);
+	float z = massA * initialVelA + massB * initialVelB;
+
+	float a = massA + massB * pow(massA/massB, 2);
+	float b = -2.0f * massB * (z / massB) * (massA / massB);
+	float c = massB * pow(z/massB, 2) - y;
+
+	float discriminant = b * b - (4 * a * c);
+
+	if (discriminant <= 0.0f)
+	{
+		finalVelA =	finalVelB = 0.0;
+
+	}else{
+		finalVelA = (-b + sqrt(discriminant)) / (2.0f * a);
+		finalVelB = (z - massA * finalVelA) / massB;
+	}
+
+}
+
+Mesh* Collision::getNearestObjectType(std::string type, Vector3 position, float distance) {
+
+	std::map<std::string, Mesh*>* objects = Manager::getInstance()->getLevel()->getObjects();
+	std::vector<Mesh*> target;
+	
+	float min = distance;
+	Mesh* nearest = nullptr;
+
+	for (auto& object : *objects) {
+		if (object.second->getType() == type) {
+			float d = (object.second->position - position).Length();
+			if (d <= distance) {
+				if (d < min) {
+					nearest = object.second;
+					min = d;
+				}
+			}
+		}
+	}
+
+	return nearest;
 }

@@ -6,6 +6,7 @@
 #include "LoadTGA.h"
 #include "Primitive.h"
 #include "Primitives.h"
+#include "Application.h"
 
 class IRender
 {
@@ -14,20 +15,24 @@ private:
 	unsigned int vao;
 	unsigned int vbo;
 
-	Vector3 pos, rot, scale;
-	std::vector<Vertex> vertices;
-	std::vector<unsigned int> indices;
+	Vector3 pos, scale;
+	Vector3 color;
+	float rot;
+	float alpha;
+	bool isSolidColor;
 
 public:
-	IRender(Vector3 pos, Vector3 rot, Vector3 scale,
-		std::vector<Vertex> vertices, std::vector<unsigned> indices,
+	IRender(Vector3 pos, float rot, Vector3 scale,
 		unsigned int textureID);
+	IRender(Vector3 pos, float rot, Vector3 scale,
+		Vector3 color, float alpha);
 	~IRender();
 
 	virtual void draw();
-	virtual void SetPos(Vector3 b);
+	virtual void setPos(Vector3 b);
 	virtual void setTexture(unsigned int existingTexture);
 	virtual void setTexture(const char* newTexture);
+	virtual void setColor(Vector3 color, float alpha);
 };
 
 #endif

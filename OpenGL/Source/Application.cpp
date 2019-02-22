@@ -20,8 +20,8 @@ void resize_callback(GLFWwindow* window, int w, int h);
 double Application::mouse_x = 0.0;
 double Application::mouse_y = 0.0;
 
-int Application::winWidth = 800;
-int Application::winHeight = 600;
+int Application::winWidth = 1024;
+int Application::winHeight = 768;
 
 //Define an error callback
 static void error_callback(int error, const char* description)
@@ -76,7 +76,7 @@ void Application::Init()
 
 
 	//Create a window and create its OpenGL context
-	m_window = glfwCreateWindow(800, 600, "Test Window", NULL, NULL);
+	m_window = glfwCreateWindow(Application::winWidth, Application::winHeight, "Test Window", NULL, NULL);
 
 	//If the window couldn't be created
 	if (!m_window)

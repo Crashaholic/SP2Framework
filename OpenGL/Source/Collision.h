@@ -12,7 +12,11 @@ public:
 	static std::vector<Mesh*> checkCollision(Mesh* mesh);
 	static std::vector<Mesh*> checkCollisionT(Mesh* mesh, Vector3& translation, std::vector<std::string> exceptions);
 	static std::vector<Mesh*> checkCollisionR(Mesh* mesh, Vector3& rotation, std::vector<std::string> exceptions);
-
+	static std::vector<Mesh*> checkCollisionAbove(Mesh* mesh, float distance, std::vector<std::string> exceptions);
+	static std::vector<Mesh*> checkCollisionType(Mesh* mesh, Vector3& translation, std::string type);
+	static std::vector<Mesh*> checkCollisionTypes(Mesh* mesh, Vector3& translation, std::vector<std::string> types);
+	static Mesh* getNearestObjectType(std::string type, Vector3 position, float distance);
+	static void Collide(float initialVelA, float initialVelB, float massA, float massB, float& finalVelA, float& finalVelB, float percentageLost);
 private:
 	static bool checkCollision(OBB& box, OBB& other);
 	static bool checkCollision(OBB& box, OBB& other, Vector3& translation);

@@ -1,4 +1,9 @@
 #include "Manager.h"
+#include "LoadTGA.h"
+#include "Player.h"
+#include "AICar.h"
+#include "LevitationPad.h"
+#include "GUIManager.h"
 
 Manager* Manager::instance = nullptr;
 
@@ -7,34 +12,40 @@ Manager::Manager()
 	shaders["lit"] = new ShaderProgram("Shader//Texture.vert", "Shader//Blending.frag");
 	shaders["text"] = new ShaderProgram("Shader//Text.vert", "Shader//Text.frag");
 	shaders["overlay"] = new ShaderProgram("Shader//UI.vert", "Shader//UI.frag");
-	for(int i = 0; i < 2; i++)
-		lightSources.push_back(new LightSource());
+
 
 	carOneUnlock = true;
 	carTwoUnlock = false;
 	carThreeUnlock = false;
 	money = 0;
 
+	std::string path = "Data//Level";
+	for (const auto & entry : std::experimental::filesystem::directory_iterator(path)) {
+		currentLevel = Utility::splitLine(entry.path().filename().string(), '.')[0];
+		std::cout << currentLevel << std::endl;
+		levels[currentLevel] = new Level(entry.path().string().c_str());
+	}
 
-	tree = new QuadTree(Vector3(0, 0, 0), Vector3(100, 0, 100));
 
+	currentLevel = "pregame";
+	mainmenu = new Camera(Vector3(1, 1, 1));
 }
 
 
 Manager::~Manager()
 {
-	delete tree;
 
-	for (auto const& object : objects)
-		if (object.second != nullptr)
-			delete object.second;
+	delete mainmenu;
+
+	savePlayerProgress();
 
 	for (auto const& shader : shaders)
 		if (shader.second != nullptr)
 			delete shader.second;
 
-	for (int i = 0; i < (int)lightSources.size(); i++)
-		delete lightSources[i];
+	for (auto const& level : levels)
+		if (level.second != nullptr)
+			delete level.second;
 
 }
 
@@ -46,20 +57,32 @@ Manager* Manager::getInstance()
 	return instance;
 }
 
-Mesh* Manager::getObject(std::string name)
+void Manager::setLevel(std::string name) {
+	currentLevel = name;
+
+	if (name == "game") {
+		Primitive* quad = Primitives::generateQuad(Color(1, 1, 1));
+		levels[currentLevel]->spawnObject(new Mesh("skyboxFront", quad, LoadTGA("Image//front.tga")));
+		levels[currentLevel]->spawnObject(new Mesh("skyboxTop", quad, LoadTGA("Image//top.tga")));
+		levels[currentLevel]->spawnObject(new Mesh("skyboxBottom", quad, LoadTGA("Image//bottom.tga")));
+		levels[currentLevel]->spawnObject(new Mesh("skyboxLeft", quad, LoadTGA("Image//left.tga")));
+		levels[currentLevel]->spawnObject(new Mesh("skyboxRight", quad, LoadTGA("Image//right.tga")));
+		levels[currentLevel]->spawnObject(new Mesh("skyboxBack", quad, LoadTGA("Image//back.tga")));
+
+		Primitive* axes = Primitives::generateAxes();
+		levels[currentLevel]->spawnObject(new Mesh("axes", axes, 0, false, false, "environment", Mesh::DRAW_LINES));
+		levels[currentLevel]->spawnObject(new Mesh("playerAxes", axes, 0, false, false, "environment", Mesh::DRAW_LINES));
+
+		dynamic_cast<Player*>(levels[currentLevel]->getObject("player"))->setCar(dynamic_cast<Car*>(levels[currentLevel]->getObject("car")));
+		dynamic_cast<Player*>(levels[currentLevel]->getObject("player2"))->setCar(dynamic_cast<Car*>(levels[currentLevel]->getObject("car2")));
+	}
+}
+
+
+Level* Manager::getLevel()
 {
-	return objects[name];
+	return levels[currentLevel];
 }
-
-std::vector<LightSource*>* Manager::getLightSources() {
-	return &lightSources;
-}
-
-std::map<std::string, Mesh*>* Manager::getObjects()
-{
-	return &objects;
-}
-
 
 ShaderProgram* Manager::getShader(std::string name)
 {
@@ -71,11 +94,17 @@ std::map<std::string, ShaderProgram*>* Manager::getShaders()
 	return &shaders;
 }
 
-void Manager::spawnObject(Mesh* mesh)
-{
-	objects[mesh->name] = mesh;
-	if (mesh->collisionEnabled)
-		tree->Insert(mesh);
+Camera* Manager::getCamera() {
+	if (currentLevel == "game") {
+		return dynamic_cast<Player*>(levels[currentLevel]->getObject("player"))->getCamera();
+	}
+	else if (currentLevel == "pregame") {
+		return mainmenu;
+	}
+}
+
+std::string& Manager::getLevelName() {
+	return currentLevel;
 }
 
 void Manager::loadPlayerProgress(Player *player)
@@ -91,25 +120,25 @@ void Manager::loadPlayerProgress(Player *player)
 		{
 			std::vector<std::string> args = Utility::splitLine(line, '=');
 
-			if (startsWith(line, "Money"))
+			if (Utility::startsWith(line, "Money"))
 			{
 				/*std::cout << "ID has been secured";*/
 				money = std::stoi(args[1]);
 				std::cout << "Money: " << money << std::endl;
 			}
 
-			if (startsWith(line, "ID"))
+			if (Utility::startsWith(line, "ID"))
 			{
 				carID = std::stoi(args[1]);
 				std::cout << "Car ID " << carID << std::endl;
 				player->unlockCar(carID);
 			}
 
-			if (startsWith(line, "Upgrade"))
+			if (Utility::startsWith(line, "Upgrade"))
 			{
 				std::cout << "Car has been upgraded \n";
 				std::vector<std::string> upgradeArgs = Utility::splitLine(args[1], ',');
-				if (startsWith(upgradeArgs[0], "Nitro"))
+				if (Utility::startsWith(upgradeArgs[0], "Nitro"))
 				{
 					std::vector<std::string> upgradeArgsStats = Utility::splitLine(upgradeArgs[0], ':');
 					player->getCar()->setNitroTier(std::stoi(upgradeArgsStats[1]));
@@ -170,12 +199,3 @@ void Manager::savePlayerProgress(Player *player)
 	playerProgress.close();
 }
 
-bool Manager::startsWith(std::string input, std::string keyWord)
-{
-	return input.substr(0, keyWord.length()) == keyWord;
-}
-
-QuadTree* Manager::getTree()
-{
-	return tree;
-}

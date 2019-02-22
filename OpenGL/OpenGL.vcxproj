@@ -15,7 +15,7 @@
     <ProjectGuid>{891EB2B3-9CB0-4755-B12E-B322FB46E398}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>OpenGL</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -84,6 +84,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Source\Level.cpp" />
+    <ClCompile Include="Source\GUIButton.cpp" />
+    <ClCompile Include="Source\GUIScreen.cpp" />
+    <ClCompile Include="Source\LevitationPad.cpp" />
     <ClCompile Include="Source\AICar.cpp" />
     <ClCompile Include="Source\AIWaypoint.cpp" />
     <ClCompile Include="Source\QuadNode.cpp" />
@@ -119,7 +123,11 @@
     <ClCompile Include="Source\Transformation.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Source\Level.h" />
+    <ClInclude Include="Source\GUIScreen.h" />
+    <ClInclude Include="Source\LevitationPad.h" />
     <ClInclude Include="Source\Cursor.h" />
+    <ClInclude Include="Source\GUIButton.h" />
     <ClInclude Include="Source\GUITexture.h" />
     <ClInclude Include="Source\IRender.h" />
     <ClInclude Include="Source\AICar.h" />

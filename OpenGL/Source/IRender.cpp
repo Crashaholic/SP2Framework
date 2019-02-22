@@ -3,18 +3,38 @@
 #include "Application.h"
 #include "Utility.h"
 
-IRender::IRender(Vector3 pos, Vector3 rot, Vector3 scale, 
-	std::vector<Vertex> vertices, std::vector<unsigned> indices, unsigned int textureID)
+
+float quadVertices[] =
+{
+	-1.0f,  1.0f,
+	-1.0f, -1.0f,
+	1.0f,  1.0f,
+	1.0f, -1.0f,
+};
+
+IRender::IRender(Vector3 pos, float rot, Vector3 scale, unsigned int textureID)
 {
 	glGenBuffers(1, &this->vbo);
 	glGenVertexArrays(1, &this->vao);
 	this->pos = pos;
 	this->rot = rot;
 	this->scale = scale;
-	this->vertices = vertices;
-	this->indices = indices;
 	this->textureID = textureID;
+	this->isSolidColor = false;
 }
+
+IRender::IRender(Vector3 pos, float rot, Vector3 scale, Vector3 color, float alpha)
+{
+	glGenBuffers(1, &this->vbo);
+	glGenVertexArrays(1, &this->vao);
+	this->pos = pos;
+	this->rot = rot;
+	this->scale = scale;
+	this->color = color;
+	this->alpha = alpha;
+	this->isSolidColor = true;
+}
+
 
 IRender::~IRender()
 {
@@ -24,45 +44,29 @@ IRender::~IRender()
 
 void IRender::draw()
 {
-	glDisable(GL_DEPTH_TEST);
 
-	glBindVertexArray(this->vao);
+	/*glBindVertexArray(this->vao);*/
 
-	float SCRWIDTH = Application::winWidth;
-	float SCRHEIGHT = Application::winHeight;
+	float SCRWIDTH = (float)Application::winWidth;
+	float SCRHEIGHT = (float)Application::winHeight;
 
-	float quadVertices[] = {
-		-1.0f,  1.0f,
-		-1.0f, -1.0f,
-		 1.0f,  1.0f,
-		 1.0f, -1.0f,
-	};
+
 
 	Mtx44 model, view, proj;
 
 	ShaderProgram* shader = Manager::getInstance()->getShader("overlay");
 	shader->use();
 
-	float mouseSensX = 1.5f;
-	float mouseSensY = 1.25f;
-
 	Mtx44 transformationMat, translate, rotation, scale;
-	float newX = ((pos.x * 100.0f / SCRWIDTH / 2.0f) + 1.0f) * 0.1f * mouseSensX;
-	float newY = ((pos.y * 100.0f / SCRHEIGHT / 2.0f) + 1.0f) * 0.1f * mouseSensY;
-	translate.SetToTranslation(newX, newY, 0.0f);
-	rotation.SetToRotation(rot.z, 0, 0, 1);
+	translate.SetToTranslation(pos.x, pos.y, 0.0f);
+	rotation.SetToRotation(rot, 0, 0, 1);
 	scale.SetToScale(this->scale.x, this->scale.y, 1.0f);
 	model = transformationMat =  translate * rotation * scale;
 	view.SetToIdentity();
-	double aspectRatio = (double)SCRWIDTH / (double)SCRHEIGHT;
-	unsigned int percentageIncreaseX = (SCRWIDTH - 20) / 20;
-	unsigned int percentageIncreaseY = (SCRHEIGHT - 20) / 20;
-
 	proj.SetToOrtho(
-		-SCRWIDTH / 2 / 100, SCRWIDTH / 2 / 100,
-		-SCRHEIGHT /2 / 100, SCRHEIGHT/ 2 / 100,
+		-SCRWIDTH / 2 , SCRWIDTH / 2 ,
+		-SCRHEIGHT /2 , SCRHEIGHT/ 2 ,
 		-10.0f, 10.0f);
-
 
 	Mtx44 mvp = proj * view * model;
 
@@ -72,22 +76,34 @@ void IRender::draw()
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 2, GL_FLOAT, false, sizeof(float) * 2, (void*)0);
 
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, this->textureID);
 	shader->setUniform("mvp", mvp.a);
-	shader->setUniform("colorTexture", 0);
 	shader->setUniform("Flip", 0);
 	shader->setUniform("transformationMatrix", transformationMat.a);
+	shader->setUniform("colorTexture", 0);
+	if (isSolidColor)
+	{
+		shader->setUniform("elementColor", this->color);
+		shader->setUniform("alpha", this->alpha);
+		shader->setUniform("useSolidColor", this->isSolidColor);
+	}
+	else
+	{
+		shader->setUniform("elementColor", Vector3(1, 1, 1));
+		shader->setUniform("alpha", 1);
+		shader->setUniform("useSolidColor", this->isSolidColor);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, this->textureID);
+	}
+
 	shader->updateUniforms();
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
-	glBindVertexArray(0);
+	/*glBindVertexArray(0);*/
 	glDisableVertexAttribArray(0);
-	glEnable(GL_DEPTH_TEST);
 
 }
 
-void IRender::SetPos(Vector3 b)
+void IRender::setPos(Vector3 b)
 {
 	this->pos = b;
 }
@@ -100,4 +116,10 @@ void IRender::setTexture(unsigned int existingTexture)
 void IRender::setTexture(const char* newTexture)
 {
 	this->textureID = LoadTGA(newTexture);
+}
+
+void IRender::setColor(Vector3 color, float alpha)
+{
+	this->color = color;
+	this->alpha = alpha;
 }

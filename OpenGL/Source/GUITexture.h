@@ -9,19 +9,21 @@
 class GUITexture
 {
 public:
-	GUITexture(Vector3 pos, Vector3 rot, Vector3 scale, unsigned int textureID);
+	GUITexture(Vector3 pos, float rot, Vector3 scale, unsigned int textureID);
+	GUITexture(Vector3 pos, float rot, Vector3 scale, Vector3 color, float alpha);
 	GUITexture() {};
 	~GUITexture();
 
 	void setTexture(unsigned int existingTexture);
 	void setTexture(const char* newTexture);
+	void setColor(Vector3 color, float alpha);
 	IRender* getIRender() const;
 	void draw();
-	void SetPos(Vector3 b);
+	void setPos(Vector3 b);
 private:
 	IRender* render;
-	Primitive* quad;
-	Vector3 pos, rot, scale;
+	Vector3 pos, scale;
+	float rot;
 };
 
 #endif
