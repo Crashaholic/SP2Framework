@@ -104,7 +104,7 @@ void Level::Load(std::string path) {
 				std::string type = current->Get("type");
 				Mesh* m = nullptr;
 				if (type == "player") {
-					m = new Player(current->Get("name").c_str(), primitive, textureID);
+					m = new Player(current->Get("name").c_str(), primitive, current->Get("input"), textureID);
 				}
 				else if (type == "car") {
 					m = new Car(current->Get("name").c_str(), primitive, current->Get("input"), textureID);
@@ -124,8 +124,17 @@ void Level::Load(std::string path) {
 				m->rotation = Vector3(std::stof(rot[0]), std::stof(rot[1]), std::stof(rot[2]));
 				m->Init();
 				objects[current->Get("name")] = m;
-				if(collision)
+				if (collision) {
 					tree->Insert(m);
+					Vector3 currentMin = m->position + Vector3(-m->getOBB()->getHalf().x, 0, -m->getOBB()->getHalf().z);
+					Vector3 currentMax = m->position + Vector3(m->getOBB()->getHalf().x, 0, m->getOBB()->getHalf().z);
+					currentMin = Utility::rotatePointByY(currentMin, m->rotation.y);
+					currentMax = Utility::rotatePointByY(currentMax, m->rotation.y);
+					if (tree->withinBounds(currentMax))
+						tree->Insert(m, currentMax);
+					if (tree->withinBounds(currentMin))
+						tree->Insert(m, currentMin);
+				}
 			}
 		}
 		else if (c.first == "ui") {
@@ -417,4 +426,9 @@ std::vector<LightSource*>* Level::getLightSources()
 std::map<std::string, Mesh*>* Level::getObjects()
 {
 	return &objects;
+}
+
+
+std::string Level::getScreenName() {
+	return currentScreen;
 }

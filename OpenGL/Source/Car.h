@@ -24,6 +24,7 @@ public:
 	float angularVelocity;
 	Vector3 forward;
 	PhysicsMode mode;
+	void getVelocity(std::string& vel, Color& color);
 
 protected:
 

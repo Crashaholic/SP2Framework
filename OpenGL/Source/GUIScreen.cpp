@@ -30,6 +30,12 @@ GUIScreen::~GUIScreen()
 
 void GUIScreen::Render()
 {
+
+
+	for (int i = renderables.size() - 1; i >= 0; i--) {
+		renderables[i]->draw();
+	}
+
 	for (int i = 0; i < (int) texts.size(); i++) 
 	{
 		texts[i]->render();
@@ -38,9 +44,6 @@ void GUIScreen::Render()
 
 	texts.clear();
 
-	for (int i = renderables.size() - 1; i >= 0; i--) {
-		renderables[i]->draw();
-	}
 
 
 }
@@ -60,9 +63,18 @@ void GUIScreen::Update()
 
 					if (buttons[i]->getName() == "playgame")
 					{
-						Manager::getInstance()->setLevel("game");
+						Manager::getInstance()->getLevel()->setScreen("playermode");
 					}
 
+				}
+				else if (name == "playermode") {
+
+					if (buttons[i]->getName() == "singleplayer") {
+
+					}
+					else if (buttons[i]->getName() == "multiplayer") {
+						Manager::getInstance()->setLevel("game");
+					}
 				}
 			}
 		}

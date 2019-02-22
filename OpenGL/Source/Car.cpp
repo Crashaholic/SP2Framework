@@ -7,6 +7,7 @@
 #include "Player.h"
 #include "AICar.h"
 
+
 Car::Car(const char* meshName, Primitive* primitive, std::string input, unsigned int texID, DRAW_MODE drawMode)
 	: Mesh(meshName, primitive, texID, true, true, "car", drawMode)
 {
@@ -152,7 +153,7 @@ void Car::Update(double dt)
 
 			car->velocity = forward * finalVelCar2 * 0.60f;
 			car->torqueRot = t * velocity.Length() * 12.0;
-			car->position += car->velocity;
+			//car->position += car->velocity;
 
 		}
 	}
@@ -291,9 +292,41 @@ Vector3 Car::calcFriction(float accInput, float steerInput, float dt)
 
 	acceleration = (friction + drag) * dt;
 	if (acceleration.Length() > velNoY.Length())
-		return -velocity;
+		return Vector3(0,0,0);
 	else
 		return acceleration;
+}
+
+
+void Car::getVelocity(std::string& vel, Color& color) {
+
+	Vector3 v = velocity * 170.0f;
+	v.y = 0;
+	vel = std::to_string(v.Length());
+	vel = vel.substr(0, 2);
+	if (vel[1] == '.')
+		vel = vel[0];
+
+	float ratioGreen = v.Length() / 70.0f;
+	int ratioWhite = v.Length() / 20.0f;
+	int ratioYellow = v.Length() / 40.0f;
+	int ratioRed = v.Length() / 70.0f;
+
+	if (ratioRed == 0)
+	{
+		if (ratioWhite == 0)
+		{
+			color.Set(1 - ratioWhite, 1 - ratioWhite, 1 - ratioWhite);
+		}
+		else
+		{
+			color.Set((ratioYellow == 0 ? 0 : ratioGreen), ratioGreen, 0);
+		}
+	}
+	else
+	{
+		color.Set(1, 0, 0);
+	}
 }
 
 // Friction

@@ -4,9 +4,11 @@
 #include "Manager.h"
 #include "Collision.h"
 
-Player::Player(const char* meshName, Primitive* primitive, unsigned int texID, DRAW_MODE drawMode)
+Player::Player(const char* meshName, Primitive* primitive, std::string input, unsigned int texID, DRAW_MODE drawMode)
 	: Mesh(meshName, primitive, texID, true, true, "player", drawMode) {
 
+
+	this->input = input;
 
 	walkSpeed = 3.0f;
 	isInVehicle = false;
@@ -43,17 +45,23 @@ void Player::Update(double dt) {
 
 		Vector3 translation = Vector3(0, 0, 0);
 
+		// Input 0 - W / I
+		// Input 1 - A / J
+		// Input 2 - S / K
+		// Input 3 - D / L
+
+
 		// Move Player in the forward direction based on first person camera's rotation
-		if (Application::IsKeyPressed('W')) {
+		if (Application::IsKeyPressed(input[0])) {
 			translation += forward * walkSpeed * (float)dt;
 		}
-		if (Application::IsKeyPressed('A')) {
+		if (Application::IsKeyPressed(input[1])) {
 			translation -=  firstPerson->getRight() * walkSpeed * (float)dt;
 		}
-		if (Application::IsKeyPressed('S')) {
+		if (Application::IsKeyPressed(input[2])) {
 			translation -= forward * walkSpeed * (float)dt;
 		}
-		if (Application::IsKeyPressed('D')) {
+		if (Application::IsKeyPressed(input[3])) {
 			translation += firstPerson->getRight() * walkSpeed * (float)dt;
 		}
 
@@ -101,8 +109,8 @@ void Player::Update(double dt) {
 		anotherForward.z = sin(rad);
 
 		if (isInVehicle) {
-			target += anotherForward * -7.5f + Vector3(0.0f, 3.5f, 0.0f);
-			lookAtTarget += anotherForward * 2.5f;
+			target += anotherForward * -7.5f + Vector3(0.0f, 2.5f, 0.0f);
+			lookAtTarget += anotherForward * 2.5f + Vector3(0.0f, 1.5f, 0.0);
 		}
 		else {
 			target += anotherForward * -5.0f + Vector3(0.0f, 3.5f, 0.0f);
@@ -120,7 +128,7 @@ void Player::Update(double dt) {
 
 	getCamera()->Update(dt);
 
-
+	Manager::getInstance()->getLevel()->getTree()->Update(this);
 
 }
 

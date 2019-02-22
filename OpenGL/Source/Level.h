@@ -28,6 +28,7 @@ public:
 	std::map<std::string, Mesh*>* getObjects();
 	QuadTree* getTree();
 	GUIScreen* getScreen();
+	std::string getScreenName();
 
 private:
 

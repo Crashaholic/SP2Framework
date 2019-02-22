@@ -97,40 +97,39 @@ void SceneA2::GenerateText()
 
 	if (manager->getLevelName() == "game")
 	{
-		Vector3 vel = 170.0f * manager->getLevel()->getObject("car")->velocity;
-		if (Utility::Sign(vel) == -1) vel.SetZero();
-		vel.y = 0;
-		std::string velocity = std::to_string(vel.Length());
-		velocity = velocity.substr(0, 5);
-
-		Color drawColor;
-
-		float ratioGreen = vel.Length() / 70.0f;
-		int ratioWhite = vel.Length() / 20.0f;
-		int ratioYellow = vel.Length() / 40.0f;
-		int ratioRed = vel.Length() / 70.0f;
-		
-		if (ratioRed == 0)
-		{
-			if (ratioWhite == 0)
-			{
-				drawColor.Set(1 - ratioWhite, 1 - ratioWhite, 1 - ratioWhite);
-			}
-			else
-			{
-				drawColor.Set((ratioYellow == 0 ? 0 : ratioGreen), ratioGreen, 0);
-			}
-		}
-		else
-		{
-			drawColor.Set(1, 0, 0);
-		}
-
-
-
-		GUIText* speed = gui->renderText("digital", 60, Application::winHeight / 2.0f - 20, velocity, 0.4f, drawColor, TEXT_ALIGN_BOTTOM);
+		std::string velocity;
+		Color color;
+		dynamic_cast<Car*>(manager->getLevel()->getObject("car"))->getVelocity(velocity, color);
+		GUIText* speed = gui->renderText("digital", 40, Application::winHeight / 2.0f - 20, velocity, 0.4f, color, TEXT_ALIGN_BOTTOM);
 		Manager::getInstance()->getLevel()->getScreen()->addText(speed);
 
+		dynamic_cast<Car*>(manager->getLevel()->getObject("car2"))->getVelocity(velocity, color);
+		speed = gui->renderText("digital", 40, Application::winHeight / 2.0f + 20, velocity, 0.4f, color, TEXT_ALIGN_TOP);
+		Manager::getInstance()->getLevel()->getScreen()->addText(speed);
+	}
+	else if (manager->getLevelName() == "pregame") {
+
+		if (manager->getLevel()->getScreenName() == "mainmenu") {
+
+			GUIText* text = gui->renderText("default", 196, 150, "Play", 0.4f, Color(1, 1, 1), TEXT_ALIGN_MIDDLE);
+			Manager::getInstance()->getLevel()->getScreen()->addText(text);
+
+			text = gui->renderText("default", 196, 315, "Tutorial", 0.35f, Color(1, 1, 1), TEXT_ALIGN_MIDDLE);
+			Manager::getInstance()->getLevel()->getScreen()->addText(text);
+
+			text = gui->renderText("default", 196, 480, "Options", 0.35f, Color(1, 1, 1), TEXT_ALIGN_MIDDLE);
+			Manager::getInstance()->getLevel()->getScreen()->addText(text);
+
+			text = gui->renderText("default", 196, 645, "Exit", 0.4f, Color(1, 1, 1), TEXT_ALIGN_MIDDLE);
+			Manager::getInstance()->getLevel()->getScreen()->addText(text);
+		}
+		else if (manager->getLevel()->getScreenName() == "playermode") {
+			GUIText* text = gui->renderText("default", 196, 150, "Singleplayer", 0.35f, Color(1, 1, 1), TEXT_ALIGN_MIDDLE);
+			Manager::getInstance()->getLevel()->getScreen()->addText(text);
+
+			text = gui->renderText("default", 196, 315, "Multiplayer", 0.35f, Color(1, 1, 1), TEXT_ALIGN_MIDDLE);
+			Manager::getInstance()->getLevel()->getScreen()->addText(text);
+		}
 	}
 }
 

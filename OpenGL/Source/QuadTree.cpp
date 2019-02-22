@@ -1,9 +1,11 @@
 #include "QuadTree.h"
-
+#include "Utility.h"
 
 QuadTree::QuadTree(Vector3 min, Vector3 max) {
 	this->min = min;
 	this->max = max;
+
+	halfSize = (max - min).Length() / 2.0f;
 }
 
 QuadTree::QuadTree() {
@@ -32,10 +34,32 @@ void QuadTree::Subdivide() {
 	bottomRight = new QuadTree(half, max);
 }
 
+bool QuadTree::Insert(Mesh* mesh, Vector3 pos) {
+
+	if (!withinBounds(pos)) return false;
+
+	if (meshes.size() < capacity) {
+		meshes.push_back(mesh);
+		return true;
+	}
+
+	// Subdivide and add each point according to the Quad it belongs in
+	if (topRight == nullptr) Subdivide();
+
+	if (topRight->Insert(mesh, pos)) return true;
+	if (topLeft->Insert(mesh, pos)) return true;
+	if (bottomLeft->Insert(mesh, pos)) return true;
+	if (bottomRight->Insert(mesh, pos)) return true;
+
+	return false;
+}
+
 
 bool QuadTree::Insert(Mesh* mesh) {
 
 	Vector3 pos = mesh->position;
+
+	
 
 	if (!withinBounds(pos)) return false;
 
@@ -129,7 +153,12 @@ std::vector<Mesh*> QuadTree::queryMesh(Vector3 minB, Vector3 maxB) {
 	for (int g = 0; g < (int)meshes.size(); g++) {
 		Mesh* current = meshes[g];
 		if (current == nullptr) continue;
-		if (withinBounds(current->position, minB, maxB))
+		//if (withinBounds(current->position, minB, maxB))
+		Vector3 currentMin = current->position + Vector3(-current->getOBB()->getHalf().x, 0, -current->getOBB()->getHalf().z);
+		Vector3 currentMax = current->position + Vector3(current->getOBB()->getHalf().x, 0, current->getOBB()->getHalf().z);
+		currentMin = Utility::rotatePointByY(currentMin, current->rotation.y);
+		currentMax = Utility::rotatePointByY(currentMax, current->rotation.y);
+		if(placeOverlap(min, max, currentMin, currentMax))
 			results.push_back(current);
 	}
 

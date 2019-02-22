@@ -12,7 +12,8 @@ enum CAMERA_MODE {
 class Player : public Mesh
 {
 public:
-	Player(const char* meshName, Primitive* primitive, unsigned int texID = 0, DRAW_MODE drawMode = DRAW_TRIANGLES);
+	Player(const char* meshName, Primitive* primitive, std::string input,
+		unsigned int texID = 0, DRAW_MODE drawMode = DRAW_TRIANGLES);
 	Player();
 	~Player();
 
@@ -28,7 +29,10 @@ public:
 	bool isInVehicle;
 
 
+
 private:
+	std::string input;
+	Vector3 racePosition;
 	Car* car;
 	CAMERA_MODE cameraMode;
 	FreeLookCamera* firstPerson;

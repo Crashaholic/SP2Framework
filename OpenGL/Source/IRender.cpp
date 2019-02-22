@@ -3,6 +3,15 @@
 #include "Application.h"
 #include "Utility.h"
 
+
+float quadVertices[] =
+{
+	-1.0f,  1.0f,
+	-1.0f, -1.0f,
+	1.0f,  1.0f,
+	1.0f, -1.0f,
+};
+
 IRender::IRender(Vector3 pos, float rot, Vector3 scale, unsigned int textureID)
 {
 	glGenBuffers(1, &this->vbo);
@@ -35,20 +44,13 @@ IRender::~IRender()
 
 void IRender::draw()
 {
-	glDisable(GL_DEPTH_TEST);
 
-	glBindVertexArray(this->vao);
+	/*glBindVertexArray(this->vao);*/
 
 	float SCRWIDTH = (float)Application::winWidth;
 	float SCRHEIGHT = (float)Application::winHeight;
 
-	float quadVertices[] = 
-	{
-		-1.0f,  1.0f,
-		-1.0f, -1.0f,
-		 1.0f,  1.0f,
-		 1.0f, -1.0f,
-	};
+
 
 	Mtx44 model, view, proj;
 
@@ -96,9 +98,8 @@ void IRender::draw()
 	shader->updateUniforms();
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
-	glBindVertexArray(0);
+	/*glBindVertexArray(0);*/
 	glDisableVertexAttribArray(0);
-	glEnable(GL_DEPTH_TEST);
 
 }
 

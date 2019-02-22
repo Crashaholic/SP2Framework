@@ -9,7 +9,7 @@ public:
 
 	const int capacity = 4;
 
-
+	float halfSize = 0.0f;
 	Vector3 min;
 	Vector3 max;
 	//OBB boundary;
@@ -21,6 +21,7 @@ public:
 	QuadTree* bottomRight = NULL;
 
 	bool Insert(Mesh* mesh);
+	bool Insert(Mesh* mesh, Vector3 pos);
 	bool Delete(Mesh* mesh);
 	void Update(Mesh* mesh);
 	void Subdivide();
