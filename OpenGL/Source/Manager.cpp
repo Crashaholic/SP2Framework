@@ -73,8 +73,7 @@ void Manager::setLevel(std::string name) {
 		levels[currentLevel]->spawnObject(new Mesh("axes", axes, 0, false, false, "environment", Mesh::DRAW_LINES));
 		levels[currentLevel]->spawnObject(new Mesh("playerAxes", axes, 0, false, false, "environment", Mesh::DRAW_LINES));
 
-		dynamic_cast<Player*>(levels[currentLevel]->getObject("player"))->setCar(dynamic_cast<Car*>(levels[currentLevel]->getObject("car")));
-		dynamic_cast<Player*>(levels[currentLevel]->getObject("player2"))->setCar(dynamic_cast<Car*>(levels[currentLevel]->getObject("car2")));
+		
 	}
 }
 

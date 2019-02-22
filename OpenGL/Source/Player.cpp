@@ -67,6 +67,7 @@ void Player::Update(double dt) {
 
 
 
+
 		// Only translate if there is no collision
 		std::vector<Mesh*> collided = Collision::checkCollisionT(this, translation, { "ground", "pad1" });
 		if (translation != Vector3(0,0,0) && collided.size() == 0) {
@@ -95,7 +96,7 @@ void Player::Update(double dt) {
 
 	// Set Camera's Position
 	if (cameraMode == FIRST_PERSON) {
-		firstPerson->position = position + Vector3(0.0f, 1.2f, 0.0f) + forward * 0.2f;
+		firstPerson->position = position + Vector3(0.0f, 1.8f, 0.0f) + forward * 0.2f;
 	}
 	else if (cameraMode == FIXED_CAR) {
 		// Target = Camera's position

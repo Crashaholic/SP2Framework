@@ -97,15 +97,19 @@ void SceneA2::GenerateText()
 
 	if (manager->getLevelName() == "game")
 	{
-		std::string velocity;
-		Color color;
-		dynamic_cast<Car*>(manager->getLevel()->getObject("car"))->getVelocity(velocity, color);
-		GUIText* speed = gui->renderText("digital", 40, Application::winHeight / 2.0f - 20, velocity, 0.4f, color, TEXT_ALIGN_BOTTOM);
-		Manager::getInstance()->getLevel()->getScreen()->addText(speed);
+		if (dynamic_cast<Player*>(manager->getLevel()->getObject("player"))->isInVehicle) {
 
-		dynamic_cast<Car*>(manager->getLevel()->getObject("car2"))->getVelocity(velocity, color);
-		speed = gui->renderText("digital", 40, Application::winHeight / 2.0f + 20, velocity, 0.4f, color, TEXT_ALIGN_TOP);
-		Manager::getInstance()->getLevel()->getScreen()->addText(speed);
+			std::string velocity;
+			Color color;
+			dynamic_cast<Car*>(manager->getLevel()->getObject("car"))->getVelocity(velocity, color);
+			GUIText* speed = gui->renderText("digital", 40, Application::winHeight / 2.0f - 20, velocity, 0.4f, color, TEXT_ALIGN_BOTTOM);
+			Manager::getInstance()->getLevel()->getScreen()->addText(speed);
+
+			dynamic_cast<Car*>(manager->getLevel()->getObject("car2"))->getVelocity(velocity, color);
+			speed = gui->renderText("digital", 40, Application::winHeight / 2.0f + 20, velocity, 0.4f, color, TEXT_ALIGN_TOP);
+			Manager::getInstance()->getLevel()->getScreen()->addText(speed);
+
+		}
 	}
 	else if (manager->getLevelName() == "pregame") {
 
@@ -121,13 +125,6 @@ void SceneA2::GenerateText()
 			Manager::getInstance()->getLevel()->getScreen()->addText(text);
 
 			text = gui->renderText("default", 196, 645, "Exit", 0.4f, Color(1, 1, 1), TEXT_ALIGN_MIDDLE);
-			Manager::getInstance()->getLevel()->getScreen()->addText(text);
-		}
-		else if (manager->getLevel()->getScreenName() == "playermode") {
-			GUIText* text = gui->renderText("default", 196, 150, "Singleplayer", 0.35f, Color(1, 1, 1), TEXT_ALIGN_MIDDLE);
-			Manager::getInstance()->getLevel()->getScreen()->addText(text);
-
-			text = gui->renderText("default", 196, 315, "Multiplayer", 0.35f, Color(1, 1, 1), TEXT_ALIGN_MIDDLE);
 			Manager::getInstance()->getLevel()->getScreen()->addText(text);
 		}
 	}
@@ -352,4 +349,15 @@ manager->spawnObject(new AICar("ai", Primitives::loadModel("Models//car.obj"), L
 
 	//gui->renderText("default", 0, 500, "AI Vel: " + std::to_string(ai->velocity.x) + "," + std::to_string(ai->velocity.y) + ","
 	//	+ std::to_string(ai->velocity.z), 0.25f, Color(1, 0, 0));
+*/
+
+/*
+
+else if (manager->getLevel()->getScreenName() == "playermode") {
+GUIText* text = gui->renderText("default", 196, 150, "Singleplayer", 0.35f, Color(1, 1, 1), TEXT_ALIGN_MIDDLE);
+Manager::getInstance()->getLevel()->getScreen()->addText(text);
+
+text = gui->renderText("default", 196, 315, "Multiplayer", 0.35f, Color(1, 1, 1), TEXT_ALIGN_MIDDLE);
+Manager::getInstance()->getLevel()->getScreen()->addText(text);
+}
 */

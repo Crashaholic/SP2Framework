@@ -26,7 +26,6 @@ float LevitationPad::getLevitationForce() {
 void LevitationPad::Update(double dt)
 {
 
-
 	Mesh::Update(dt);
 	Vector3 levitate = Vector3(0, levitationForce, 0) * 4.15 * dt;
 	std::vector<Mesh*> collided = Collision::checkCollisionAbove(this, 35.0f, {"ground"});
@@ -35,7 +34,7 @@ void LevitationPad::Update(double dt)
 	for (int i = 0; i < collided.size(); i++) {
 		Mesh* m = collided[i];
 		if (abs(m->position.y - position.y + (getOBB()->getHalf().y * 2)+ levitate.y) < 35.0f) {
-			m->velocity.y = levitate.y;
+			m->velocity.y += levitate.y * dt;
 		}
 		else {
 			m->position.y = position.y + 35.0f;

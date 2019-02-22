@@ -153,12 +153,10 @@ std::vector<Mesh*> QuadTree::queryMesh(Vector3 minB, Vector3 maxB) {
 	for (int g = 0; g < (int)meshes.size(); g++) {
 		Mesh* current = meshes[g];
 		if (current == nullptr) continue;
-		//if (withinBounds(current->position, minB, maxB))
+		//if 
 		Vector3 currentMin = current->position + Vector3(-current->getOBB()->getHalf().x, 0, -current->getOBB()->getHalf().z);
 		Vector3 currentMax = current->position + Vector3(current->getOBB()->getHalf().x, 0, current->getOBB()->getHalf().z);
-		currentMin = Utility::rotatePointByY(currentMin, current->rotation.y);
-		currentMax = Utility::rotatePointByY(currentMax, current->rotation.y);
-		if(placeOverlap(min, max, currentMin, currentMax))
+		if(withinBounds(current->position, minB, maxB) || placeOverlap(min, max, currentMin, currentMax))
 			results.push_back(current);
 	}
 

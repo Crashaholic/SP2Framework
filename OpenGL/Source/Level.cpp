@@ -126,14 +126,16 @@ void Level::Load(std::string path) {
 				objects[current->Get("name")] = m;
 				if (collision) {
 					tree->Insert(m);
-					Vector3 currentMin = m->position + Vector3(-m->getOBB()->getHalf().x, 0, -m->getOBB()->getHalf().z);
-					Vector3 currentMax = m->position + Vector3(m->getOBB()->getHalf().x, 0, m->getOBB()->getHalf().z);
-					currentMin = Utility::rotatePointByY(currentMin, m->rotation.y);
-					currentMax = Utility::rotatePointByY(currentMax, m->rotation.y);
-					if (tree->withinBounds(currentMax))
-						tree->Insert(m, currentMax);
-					if (tree->withinBounds(currentMin))
-						tree->Insert(m, currentMin);
+					if (m->getType() == "environment") {
+						Vector3 currentMin = m->position + Vector3(-m->getOBB()->getHalf().x, 0, -m->getOBB()->getHalf().z);
+						Vector3 currentMax = m->position + Vector3(m->getOBB()->getHalf().x, 0, m->getOBB()->getHalf().z);
+						currentMin = Utility::rotatePointByY(currentMin, m->rotation.y);
+						currentMax = Utility::rotatePointByY(currentMax, m->rotation.y);
+						if (tree->withinBounds(currentMax))
+							tree->Insert(m, currentMax);
+						if (tree->withinBounds(currentMin))
+							tree->Insert(m, currentMin);
+					}
 				}
 			}
 		}
@@ -211,7 +213,8 @@ void Level::Load(std::string path) {
 
 void Level::renderGUI()
 {
-	screens[currentScreen]->Render();
+	if(currentScreen != "none")
+		screens[currentScreen]->Render();
 }
 
 void Level::renderSkybox()
@@ -319,26 +322,43 @@ void Level::Render()
 
 	std::string levelName = Manager::getInstance()->getLevelName();
 
+
 	glEnable(GL_DEPTH_TEST);
 	if (levelName == "game")
 	{
-		modelStack.LoadIdentity();
-		glViewport(0, 0, Application::winWidth, Application::winHeight / 2.0f);
-		viewStack.LoadMatrix(dynamic_cast<Player*>(objects["player2"])->getCamera()->LookAt());
+		Player* player = dynamic_cast<Player*>(objects["player"]);
+		if (!player->isInVehicle) {
 
-		for (int i = 0; i < (int)lightSources.size(); i++)
-			lightSources.at(i)->updateAttributes(viewStack);
+			modelStack.LoadIdentity();
+			glViewport(0, 0, Application::winWidth, Application::winHeight);
+			viewStack.LoadMatrix(dynamic_cast<Player*>(objects["player"])->getCamera()->LookAt());
 
-		renderObjects();
+			for (int i = 0; i < (int)lightSources.size(); i++)
+				lightSources.at(i)->updateAttributes(viewStack);
 
-		modelStack.LoadIdentity();
-		glViewport(0, Application::winHeight / 2.0f, Application::winWidth, Application::winHeight / 2.0f);
-		viewStack.LoadMatrix(dynamic_cast<Player*>(objects["player"])->getCamera()->LookAt());
+			renderObjects();
 
-		for (int i = 0; i < (int)lightSources.size(); i++)
-			lightSources.at(i)->updateAttributes(viewStack);
+		}else {
 
-		renderObjects();
+			modelStack.LoadIdentity();
+			glViewport(0, 0, Application::winWidth, Application::winHeight / 2.0f);
+			viewStack.LoadMatrix(dynamic_cast<Player*>(objects["player2"])->getCamera()->LookAt());
+
+			for (int i = 0; i < (int)lightSources.size(); i++)
+				lightSources.at(i)->updateAttributes(viewStack);
+
+			renderObjects();
+
+			modelStack.LoadIdentity();
+			glViewport(0, Application::winHeight / 2.0f, Application::winWidth, Application::winHeight / 2.0f);
+			viewStack.LoadMatrix(dynamic_cast<Player*>(objects["player"])->getCamera()->LookAt());
+
+			for (int i = 0; i < (int)lightSources.size(); i++)
+				lightSources.at(i)->updateAttributes(viewStack);
+
+			renderObjects();
+		}
+
 	}
 
 	glViewport(0, 0, Application::winWidth, Application::winHeight);
