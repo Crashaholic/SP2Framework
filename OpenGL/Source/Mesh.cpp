@@ -87,18 +87,20 @@ Mesh::~Mesh()
 
 void Mesh::Update(double dt)
 {
-
-	if (collisionEnabled)
+	if (Manager::getInstance()->getLevelName() == "game")
 	{
-		if (gravityEnabled)
-			onGroundCheck(dt);
-		position += velocity;
-		//Mesh* ground = Manager::getInstance()->getObject("ground");
-		//float groundY = ground->position.y + ground->getOBB()->getHalf().y * 2;
-	/*	if (position.y <= groundY) 
-			position.y = groundY;
-		}*/
-		Manager::getInstance()->getLevel()->getTree()->Update(this);
+		if (collisionEnabled)
+		{
+			if (gravityEnabled)
+				onGroundCheck(dt);
+			position += velocity;
+			//Mesh* ground = Manager::getInstance()->getObject("ground");
+			//float groundY = ground->position.y + ground->getOBB()->getHalf().y * 2;
+		/*	if (position.y <= groundY)
+				position.y = groundY;
+			}*/
+			Manager::getInstance()->getLevel()->getTree()->Update(this);
+		}
 	}
 }
 
@@ -177,7 +179,7 @@ void Mesh::onGroundCheck(double dt)
 
 
 	// Nothing below the player -> Gravity pull
-	if (!hasPad && std::find(collided.begin(), collided.end(), Manager::getInstance()->getLevel()->getObject("ground")) == collided.end())
+	if (!hasPad && collided.size() == 0)
 	{
 		//Vector3 target = velocity + grav * dt;
 		//Mesh* ground = Manager::getInstance()->getObject("ground");
@@ -192,11 +194,12 @@ void Mesh::onGroundCheck(double dt)
 	}
 	else
 	{
-
+		
 		if (!hasPad && velocity.y < 0)
 		{
+			Mesh* collidee = collided[0];
 			// Snap player to the ground if he is hovering slightly above due to inaccuracies in gravity collision
-			float groundY = Manager::getInstance()->getLevel()->getObject("ground")->position.y + Manager::getInstance()->getLevel()->getObject("ground")->getOBB()->getHalf().y * 2;
+			float groundY = collidee->position.y + collidee->getOBB()->getHalf().y * 2;
 			//float changeInY = position.y - groundY;
 
 			//if (changeInY > 0.0f)

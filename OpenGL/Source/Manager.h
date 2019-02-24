@@ -13,6 +13,13 @@
 #include <experimental/filesystem>
 #include <iostream>
 
+enum RACE_STATE {
+	RACE_IDLE,
+	RACE_STARTING,
+	RACE_STARTED,
+	RACE_COMPLETED,
+};
+
 class Manager
 {
 public:
@@ -22,10 +29,17 @@ public:
 	void loadPlayerProgress();
 	void savePlayerProgress();
 
+	void setGameState(RACE_STATE state);
+	RACE_STATE getGameState();
+	double getRaceStartCountdown();
+	void updateStartCountdown(double dt);
+
 	Level* getLevel();
 	void setLevel(std::string name);
 	std::string& getLevelName();
+
 	Camera* getCamera();
+
 	ShaderProgram* getShader(std::string name);
 	std::map<std::string, ShaderProgram*>* getShaders();
 
@@ -33,7 +47,10 @@ private:
 
 	Manager();
 	static Manager* instance;
+	double raceStartCountdown;
 	Camera* mainmenu;
+	
+	RACE_STATE gameState;
 	bool carOneUnlock;
 	bool carTwoUnlock;
 	bool carThreeUnlock;

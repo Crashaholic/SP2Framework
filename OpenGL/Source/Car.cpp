@@ -75,21 +75,21 @@ void Car::Update(double dt)
 		// Input 2 - S / K
 		// Input 3 - D / L
 
-		if (Application::IsKeyPressed(input[0]))
-			accInput = 1.0f;
-		else if (Application::IsKeyPressed(input[2]))
-			accInput = -1.0f;
-		else
-			accInput = 0.0f;
+		if (Manager::getInstance()->getGameState() == RACE_STARTED)
+		{
 
-		if (Application::IsKeyPressed(input[1]))
-			steerInput = -1;
-		else if (Application::IsKeyPressed(input[3]))
-			steerInput = 1;
-		else
-			steerInput = 0;
+			if (Application::IsKeyPressed(input[0]))
+				accInput = 1.0f;
+			else if (Application::IsKeyPressed(input[2]))
+				accInput = -1.0f;
 
-		//if (Application::IsKeyPressed('K') && !start) start = true;
+			if (Application::IsKeyPressed(input[1]))
+				steerInput = -1;
+			else if (Application::IsKeyPressed(input[3]))
+				steerInput = 1;
+
+		}
+
 
 		float thrustInput = 0.0f;
 
@@ -125,26 +125,15 @@ void Car::Update(double dt)
 		for (int i = 0; i < collided.size(); i++) {
 			Car* car = dynamic_cast<Car*>(collided[i]);
 			if (car == nullptr) continue;
-			//std::cout << "AI's velocity: " << ai->velocity.Length() << std::endl;
-			//std::cout << "Car's velocity: " << velocity.Length() << std::endl;
-
-			// Find difference in their forward 
-		
 
 			float kForwardDiff = 1.0f - abs(car->forward.Dot(-forward));
 			float finalVelCar = 0.0f;
 			float finalVelCar2 = 0.0f;
 
-			Collision::Collide(velocity.Length() * 8.0, car->velocity.Length(), 5, 3, finalVelCar, finalVelCar2, 10);
+			Collision::Collide(velocity.Length() * 7.0, car->velocity.Length(), 5, 3, finalVelCar, finalVelCar2, 10);
 
 			Vector3 vectorToCenter = car->position - position;
 			Vector3 diff = vectorToCenter - forward;
-			//std::cout << "distance to center: " << diff.Length() * Utility::Sign(diff) << std::endl;
-			std::cout << velocity << std::endl;
-	/*		std::cout << ai->forward.Dot(-forward) << std::endl;*/
-
-			//std::cout << diff << std::endl;
-
 
 			int t = 0;
 			if (diff.x > 0)
@@ -155,76 +144,83 @@ void Car::Update(double dt)
 			{
 				t = (diff.z > 0) ? 1 : -1;
 			}
-			
-			if(finalVelCar != 0.0f)
-				car->velocity = forward * finalVelCar2 * 0.60f;
-			car->torqueRot = t * velocity.Length() * 12.0;
 
-			float deltaRotY = Utility::Lerp(car->torqueRot, 0, 1.0 * dt);
-			float targetRotY = Utility::Lerp(car->rotation.y,car->rotation.y + deltaRotY, 20.0f * dt);
-			Vector3 deltaRotation = Vector3(0, deltaRotY, 0);
 
-			// Rotate only if there is no collision
-			if (Collision::checkCollisionR(this, deltaRotation, { "ground", "pad1" }).size() == 0) {
-				car->torqueRot = deltaRotY;
-				car->rotation.y = targetRotY;
-			}
+			//if(finalVelCar != 0.0f)
+			//	finalVelCar2 = finalVelCar2 * 0.60f;
 
-			collided = Collision::checkCollisionT(car, car->velocity, { "ground", "pad1" });
-			if (car->velocity != Vector3(0, 0, 0) && collided.size() == 0)
+
+			Vector3 v = (forward * finalVelCar2 * 0.70f) - car->velocity;
+
+			std::vector<Mesh*> collided = Collision::checkCollisionT(car, v, { "ground", "ramp", "rampsupport", "pad1" });
+			if (v != Vector3(0, 0, 0) && collided.size() == 0)
 			{
-				car->position += car->velocity;
-			}
-			else {
-				for (int i = 0; i < collided.size(); i++) {
-					if (collided[i]->getType() == "environment") {
-						Vector3 dirFromCar = collided[i]->position - car->position;
-						if (velocity.Length() > 0.0f) {
-							if (velocity.Dot(forward) >= 0.0f) {
-								velocity.x = 0;
-								velocity.z = 0;
-								break;
-							}
-						}
+				car->velocity += v;
+				car->torqueRot = t * velocity.Length() * 12.0f;
+			}/*
+			else
+			{
+				for (int i = 0; i < collided.size(); i++)
+				{
+
+					if (accInput == -1 && velocity.Dot(forward) >= 0.0f)
+					{
+						velocity.x = velocity.z = 0;
+						break;
+					}
+					else
+					{
+						std::cout << ".." << std::endl;
 					}
 				}
-			}
-			
-
+			}*/
 		}
 	}
 
 	
-	float deltaRotY = Utility::Lerp(torqueRot , 0, 1.0 * dt);
-	float targetRotY = Utility::Lerp(rotation.y, rotation.y + deltaRotY, 20.0f * dt);
-	Vector3 deltaRotation = Vector3(0, deltaRotY, 0);
+	//float deltaRotY = Utility::Lerp(torqueRot , 0, 1.0 * dt);
+	//float targetRotY = Utility::Lerp(rotation.y, rotation.y + deltaRotY, 20.0f * dt);
+	//Vector3 deltaRotation = Vector3(0, deltaRotY, 0);
 
-	// Rotate only if there is no collision
-	if (Collision::checkCollisionR(this, deltaRotation, { "ground", "pad1" }).size() == 0) {
-		torqueRot = deltaRotY;
-		rotation.y = targetRotY;
-	}
+	//// Rotate only if there is no collision
+	//if (Collision::checkCollisionR(this, deltaRotation, { "ground", "pad1" }).size() == 0) {
+	//	torqueRot = deltaRotY;
+	//	rotation.y = targetRotY;
+	//}
+	//else
+	//{
+	//	std::cout << "cant rotate" << std::endl;
+	//}
 
-	collided = Collision::checkCollisionT(this, velocity, { "ground", "pad1" });
+	collided = Collision::checkCollisionT(this, velocity, { "ground", "ramp", "rampsupport", "pad1" });
 	if (velocity != Vector3(0, 0, 0) && collided.size() == 0)
 	{
 		position += velocity;
 	}
 	else {
 		for (int i = 0; i < collided.size(); i++) {
-			if (collided[i]->getType() == "environment") {
-				Vector3 dirFromCar = collided[i]->position - position;
-				if (velocity.Length() > 0.0f) {
-					if (velocity.Dot(forward) >= 0.0f) {
-						velocity.x = 0;
-						velocity.z = 0;
-						break;
-					}
-				}
-			}
+			
+			//if (accInput != -1 && forward.Dot(collided[i]->position - position) > 0.0f)
+			//{
+			//	velocity.x = velocity.z = 0;
+			//	break;
+			//}
+			//else if(accInput == 1 && forward.Dot(collided[i]->position - position) > 0.0f)
+			//{
+			//	velocity.x = velocity.z = 0;
+			//	break;
+			//	std::cout << ".." << std::endl;
+			//}
+			//if (forward.Dot(collided[i]->position - position) > 0.0f)
+			//{
+			if(accInput == 0)
+				velocity.x = velocity.z = 0;
+			//	break;
+			//}
 		}
 	}
-
+	
+	std::cout << "V: " << velocity << std::endl;
 	Manager::getInstance()->getLevel()->getTree()->Update(this);
 }
 
@@ -246,13 +242,13 @@ Vector3 Car::calcAcceleration(float accInput, float steerInput, float dt)
 	// Linearly interpolate for smooth transitions
 	float newCurrentSteer = Utility::Lerp(currentSteer, currentSteer + steerAngle, (float)dt * 0.70f);
 	
-	float targetRotY = Utility::Lerp(rotation.y, -newCurrentSteer, 20.0f * dt);
-	Vector3 deltaRotation = Vector3(0, -newCurrentSteer - rotation.y, 0);
+	Vector3 deltaRotation = Vector3(0, -newCurrentSteer + torqueRot - rotation.y, 0);
 
 	// Rotate only if there is no collision
-	if (Collision::checkCollisionR(this, deltaRotation, { "ground", "pad1" }).size() == 0) {
-		rotation.y = targetRotY;
+	if (Collision::checkCollisionR(this, deltaRotation, { "ground", "ramp", "rampsupport", "pad1" }).size() == 0) {
 		currentSteer = newCurrentSteer;
+		rotation.y = -newCurrentSteer + torqueRot;
+
 	}
 
 
@@ -298,7 +294,7 @@ Vector3 Car::calcAcceleration(float accInput, float steerInput, float dt)
 	{
 		if (velocityDir == 1 && steerInput == 0)
 		{
-			if (velocity.Length() > 0.0f)
+			if (velocity.Length() > 0.1f)
 				braking = velocityDir * velocity.Normalized() * brakingAcceleration * 18.0f * dt;
 
 		}
@@ -336,8 +332,16 @@ Vector3 Car::calcFriction(float accInput, float steerInput, float dt)
 	{
 		
 		if (accInput != -1) {
-			drag = kDrag * velNoY.Length() * -velNoY.Normalized();
-			friction = (kFriction * -velNoY.Normalized());
+
+			if (velNoY.Length() > 0.01f)
+			{
+				drag = kDrag * velNoY.Length() * -velNoY.Normalized();
+				friction = (kFriction * -velNoY.Normalized());
+			}
+			else if(accInput == 0)
+			{
+				velocity.SetZero();
+			}
 		}
 
 		if (steerInput != 0)

@@ -11,8 +11,117 @@ Collision::~Collision()
 {
 }
 
+Vector3 Collision::getMTV(OBB& box, OBB& other)
+{
+	std::vector<Vector3> axes = { box.getX(), box.getY(), box.getZ(),
+		other.getX(), other.getY(), other.getZ(),
+		box.getX().Cross(other.getX()), box.getX().Cross(other.getY()), box.getX().Cross(other.getZ()),
+		box.getY().Cross(other.getX()), box.getY().Cross(other.getY()), box.getY().Cross(other.getZ()),
+		box.getZ().Cross(other.getX()), box.getZ().Cross(other.getY()), box.getZ().Cross(other.getZ()) };
+
+	float minimumOverlap = INFINITY;
+	Vector3 mtv;
+
+	for (int i = 0; i < axes.size(); i++)
+	{
+
+		Vector3 projA = getProjection(box, axes[i]);
+		Vector3 projB = getProjection(other, axes[i]);
+
+		float minA = projA.x;
+		float maxA = projA.z;
+		float minB = projB.x;
+		float maxB = projB.z;
+
+		// Overlap
+		if (minA <= maxB && maxA >= minB)
+		{
+			float overlap = min(maxA, maxB) - max(minA, minB);
+			std::cout << overlap << std::endl;
+			if (overlap != 0 && overlap < minimumOverlap)
+			{
+				minimumOverlap = overlap;
+				mtv = axes[i] * minimumOverlap;
+			}
+		}
+	}
+
+
+
+	if ((box.getPos() - other.getPos()).Dot(mtv) < 0)
+		mtv = -mtv;
+	
+	return mtv;
+}
+
+Vector3 Collision::getProjection(OBB& box, const Vector3& planeAxis)
+{
+	std::vector<Vector3> points;
+	Vector3 x = box.getX() * box.getHalf().x;
+	Vector3 y = box.getY() * box.getHalf().y;
+	Vector3 z = box.getZ() * box.getHalf().z;
+
+	points.push_back((box.getPos() + y + x + z));
+	points.push_back((box.getPos() + y + x - z));
+	points.push_back((box.getPos() + y - x + z));
+	points.push_back((box.getPos() + y - x - z));
+	points.push_back((box.getPos() - y + x + z));
+	points.push_back((box.getPos() - y + x - z));
+	points.push_back((box.getPos() - y - x + z));
+	points.push_back((box.getPos() - y - x - z));
+
+
+
+	Vector3 projections;
+
+	float length = points[0].Dot(planeAxis);
+	projections.Set(length, 0, length);
+
+	//std::cout << points[0] << std::endl;
+
+	for (int i = 1; i < points.size(); i++)
+	{
+		//std::cout << points[i] << std::endl;
+		length = points[i].Dot(planeAxis);
+		if (length < projections.x) projections.x = length;
+		if (length > projections.z) projections.z = length;
+	}
+	
+	return projections;
+}
+
+//Vector3 Collision::getOverlap(const Vector3& pos, const Vector3& planeAxis, OBB& box, OBB& other)
+//{
+//	float projectedPos = pos.Dot(planeAxis);
+//
+//	float distances[6];
+//	float minimumDistance = -1.0f;
+//
+//	distances[0] = fabs((box.getX() * box.getHalf().x).Dot(planeAxis));
+//	distances[1] = fabs((box.getY() * box.getHalf().y).Dot(planeAxis));
+//	distances[2] = fabs((box.getZ() * box.getHalf().z).Dot(planeAxis));
+//	distances[3] = fabs((other.getX() * other.getHalf().x).Dot(planeAxis));
+//	distances[4] = fabs((other.getY() * other.getHalf().y).Dot(planeAxis));
+//	distances[5] = fabs((other.getZ() * other.getHalf().z).Dot(planeAxis));
+//
+//
+//	if (projectedPos <= (distances[0] + distances[1] + distances[2] + distances[3] + distances[4] + distances[5]))
+//		return -1.0f;
+//
+//	minimumDistance = projectedPos + distances[0];
+//
+//	for (int i = 1; i < 6; i++)
+//	{
+//		float d = projectedPos + distances[i];
+//		if (d < minimumDistance) minimumDistance = d;
+//	}
+//
+//	return minimumDistance;
+//}
 
 bool Collision::getSeparatingPlane(const Vector3& pos, const Vector3& planeAxis, OBB& box, OBB& other) {
+
+	
 
 	float a1 = fabs((box.getX() * box.getHalf().x).Dot(planeAxis));
 	float a2 = fabs((box.getY() * box.getHalf().y).Dot(planeAxis));
@@ -28,6 +137,8 @@ bool Collision::getSeparatingPlane(const Vector3& pos, const Vector3& planeAxis,
 }
 
 bool Collision::checkCollision(OBB& box, OBB& other) {
+
+	
 
 	Vector3 pos = other.getPos() - box.getPos();
 

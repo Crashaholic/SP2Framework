@@ -34,7 +34,7 @@ private:
 
 	void renderSkybox();
 	void renderMesh(Mesh* mesh);
-
+	Cursor* cursor;
 	QuadTree* tree;
 	std::string currentScreen;
 	std::vector<LightSource*> lightSources;

@@ -19,6 +19,8 @@ Manager::Manager()
 	carThreeUnlock = false;
 	money = 0;
 
+
+
 	std::string path = "Data//Level";
 	for (const auto & entry : std::experimental::filesystem::directory_iterator(path)) {
 		currentLevel = Utility::splitLine(entry.path().filename().string(), '.')[0];
@@ -28,7 +30,11 @@ Manager::Manager()
 
 
 	currentLevel = "pregame";
-	mainmenu = new Camera(Vector3(1, 1, 1));
+	setLevel("pregame");
+	mainmenu = new Camera(Vector3(1, 8, 1));
+	levels[currentLevel]->setScreen(levels[currentLevel]->getScreenName());
+	raceStartCountdown = -1.0f;
+	gameState = RACE_IDLE;
 }
 
 
@@ -58,9 +64,10 @@ Manager* Manager::getInstance()
 }
 
 void Manager::setLevel(std::string name) {
+
 	currentLevel = name;
 
-	if (name == "game") {
+	if (name == "game" || name == "pregame") {
 		Primitive* quad = Primitives::generateQuad(Color(1, 1, 1));
 		levels[currentLevel]->spawnObject(new Mesh("skyboxFront", quad, LoadTGA("Image//front.tga")));
 		levels[currentLevel]->spawnObject(new Mesh("skyboxTop", quad, LoadTGA("Image//top.tga")));
@@ -75,8 +82,36 @@ void Manager::setLevel(std::string name) {
 
 		
 	}
+
+	
 }
 
+void Manager::setGameState(RACE_STATE state)
+{
+	gameState = state;
+	if (state == RACE_STARTING)
+		raceStartCountdown = 6.0f;
+}
+
+RACE_STATE Manager::getGameState()
+{
+	return gameState;
+}
+
+double Manager::getRaceStartCountdown()
+{
+	return raceStartCountdown;
+}
+
+void Manager::updateStartCountdown(double dt)
+{
+	raceStartCountdown -= dt;
+	if (raceStartCountdown <= 0.0f)
+	{
+		gameState = RACE_STARTED;
+		levels[currentLevel]->getScreen()->removeItem("starttextbackground");
+	}
+}
 
 Level* Manager::getLevel()
 {

@@ -5,11 +5,13 @@ Cursor::Cursor()
 	lastX = lastY = 0;
 	moveX = moveY = 0;
 	currX = currY = 0;
-	cursorGUI = new GUITexture(
+	cursorGUI = new GUITexture("cursor",
 		Vector3(0, 0, 0),
 		0.0f,
 		Vector3(16.f, 16.f, 16.f),
 		LoadTGA("Image//cursor.tga"));
+
+	cooldownTimer = -1.0f;
 }
 
 double Cursor::getX()
@@ -32,25 +34,39 @@ double Cursor::getMoveY()
 	return moveY;
 }
 
-void Cursor::updateVars(double newX, double newY, double winWidth, double winHeight)
+void Cursor::setOnCooldown(double duration)
 {
-	double MouseX = newX;
-	double MouseY = newY;
+	this->cooldownTimer = duration;
+}
+
+bool Cursor::updateVars(double newX, double newY, double winWidth, double winHeight, double dt)
+{
+	if (cooldownTimer >= 0.0f)
+	{
+		cooldownTimer -= dt;
+		return false;
+	}
+
+	double mouseX = newX;
+	double mouseY = newY;
 	float mouseSensX = 1.5f;
 	float mouseSensY = 1.25f;
 
-	moveX = MouseX - lastX;
-	moveY = lastY - MouseY;
+	moveX = mouseX - lastX;
+	moveY = lastY - mouseY;
 
-	lastX = MouseX;
-	lastY = MouseY;
-	
+	lastX = mouseX;
+	lastY = mouseY;
+
 	currX += moveX * mouseSensX;
 	currY += moveY * mouseSensY;
 
 	currX = Math::Clamp(currX, -winWidth / 2.0f, winWidth / 2.0f);
 	currY = Math::Clamp(currY, -winHeight / 2.0f, winHeight / 2.0f);
-	//std::cout << "cursorX: " << currX << " | cursorY: " << currY << '\n';
+
+	updateTexture();
+
+	return true;
 }
 
 void Cursor::updateTexture()

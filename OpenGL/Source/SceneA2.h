@@ -37,14 +37,11 @@ public:
 private:
 
 
-	void RenderMesh(Mesh* mesh, bool enableLight, unsigned int shader = 0);
 	void RenderScene();
 	void GenerateText();
 	void InitShaderProperties();
 	void playMusic();
 
-
-	MS modelStack, viewStack, projectionStack;
 
 	unsigned m_vertexArrayID;
 

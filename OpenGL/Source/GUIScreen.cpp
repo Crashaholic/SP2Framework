@@ -5,8 +5,7 @@
 
 GUIScreen::GUIScreen(std::string name) {
 	this->name = name;
-	cursor = new Cursor();
-	renderables.push_back(cursor->getGUITexture()->getIRender());
+	cursor = nullptr;
 }
 
 GUIScreen::GUIScreen() {
@@ -58,7 +57,7 @@ void GUIScreen::Render()
 
 	}
 
-	for (int i = renderables.size() - 1; i >= 0; i--) {
+	for (int i = 0; i < (int) renderables.size(); i++){
 		renderables[i]->draw();
 	}
 
@@ -74,38 +73,79 @@ void GUIScreen::Render()
 
 }
 
-void GUIScreen::Update()
+void GUIScreen::Update(double dt)	
 {
+	Manager* manager = Manager::getInstance();
 
+	if (name == "ingame")
+	{
+		if (manager->getGameState() == RACE_IDLE){
+			manager->setGameState(RACE_STARTING);
+		}
+	}
 
 	if (cursor != nullptr)
 	{
-		cursor->updateVars(Application::mouse_x, Application::mouse_y, Application::winWidth, Application::winHeight);
-		cursor->updateTexture();
-
-		for (int i = 0; i < (int)buttons.size(); i++)
+		if (cursor->updateVars(Application::mouse_x, Application::mouse_y, Application::winWidth, Application::winHeight, dt))
 		{
-			if (buttons[i]->checkStatus(cursor->getX(), cursor->getY(), Application::winWidth, Application::winHeight))
+			Level* level = manager->getLevel();
+
+			for (int i = 0; i < (int)buttons.size(); i++)
 			{
-				if (name == "mainmenu") {
-
-					if (buttons[i]->getName() == "playgame")
+				if (buttons[i]->checkStatus(cursor->getX(), cursor->getY(), Application::winWidth, Application::winHeight))
+				{
+					if (name == "mainmenu")
 					{
-						Manager::getInstance()->setLevel("game");
-					}
 
+						if (buttons[i]->getAction() == "playgame")
+						{
+							level->setScreen("gameselection");
+							/*Manager::getInstance()->setLevel("game");*/
+						}
+
+					}
+					else if (name == "gameselection")
+					{
+						if (buttons[i]->getAction() == "newgame")
+						{
+							manager->setLevel("game");
+						}
+						else if (buttons[i]->getAction() == "loadgame")
+						{
+
+						}
+					}
+					else if (name == "playermode")
+					{
+
+						if (buttons[i]->getAction() == "playsingleplayer")
+						{
+
+						}
+						else if (buttons[i]->getAction() == "playmultiplayer")
+						{
+							std::cout << "works" << std::endl;
+							level->setScreen("ingame");
+							dynamic_cast<Player*>(level->getObject("player"))->setCar(dynamic_cast<Car*>(level->getObject("car")));
+							dynamic_cast<Player*>(level->getObject("player2"))->setCar(dynamic_cast<Car*>(level->getObject("car2")));
+						}
+					}
 				}
-				else if (name == "playermode") {
 
-					if (buttons[i]->getName() == "playsingleplayer") {
+				
 
+				if (buttons[i]->isHover(cursor->getX(), cursor->getY()))
+				{
+					GUIText* text = nullptr;
+					if (buttons[i]->getAction() == "playsingleplayer")
+					{
+						text = GUIManager::getInstance()->renderText("consolas", 497, 217, "Race against time", 0.4f, Color(1, 1, 1), TEXT_ALIGN_LEFT);
+						level->getScreen()->addText(text);
 					}
-					else if (buttons[i]->getName() == "playmultiplayer") {
-						Level* level = Manager::getInstance()->getLevel();
-						std::cout << "works" << std::endl;
-						Manager::getInstance()->getLevel()->setScreen("gameplay");
-						dynamic_cast<Player*>(level->getObject("player"))->setCar(dynamic_cast<Car*>(level->getObject("car")));
-						dynamic_cast<Player*>(level->getObject("player2"))->setCar(dynamic_cast<Car*>(level->getObject("car2")));
+					else if (buttons[i]->getAction() == "playmultiplayer")
+					{
+						text = GUIManager::getInstance()->renderText("consolas", 497, 217, "Race against another player!", 0.4f, Color(1, 1, 1), TEXT_ALIGN_LEFT, 300);
+						level->getScreen()->addText(text);
 					}
 				}
 			}
@@ -131,27 +171,20 @@ void GUIScreen::Update()
 
 	//}
 
-	if (Manager::getInstance()->getLevelName() == "game") {
 
-		Mesh* shop = Manager::getInstance()->getLevel()->getObject("shopkeeper");
-		Player* player = dynamic_cast<Player*>(Manager::getInstance()->getLevel()->getObject("player"));
 
-		if (!player->isInVehicle) {
+}
 
-			if ((player->position - shop->position).Length() <= 3.0f) {
-				GUIManager* gui = GUIManager::getInstance();
-				texts.push_back(gui->renderText("default", Application::winWidth / 2.0f, Application::winHeight / 2.0f, "Press E to open shop", 0.5f, Color(0, 1, 0), TEXT_ALIGN_MIDDLE));
-			}
-
-			Mesh* race = Manager::getInstance()->getLevel()->getObject("racenpc");
-			if ((player->position - race->position).Length() <= 3.0f) {
-				GUIManager* gui = GUIManager::getInstance();
-				texts.push_back(gui->renderText("default", Application::winWidth / 2.0f, Application::winHeight / 2.0f, "Press E to enter race", 0.5f, Color(1, 0.5, 0), TEXT_ALIGN_MIDDLE));
-			}
+void GUIScreen::removeItem(std::string name)
+{
+	for (int i = 0; i < renderables.size(); i++)
+	{
+		if (renderables[i]->getName() == name)
+		{
+			renderables.erase(renderables.begin() + i);
+			return;
 		}
-
 	}
-
 }
 
 void GUIScreen::addButton(GUIButton* button)
@@ -169,4 +202,11 @@ void GUIScreen::addTexture(GUITexture* texture)
 void GUIScreen::addText(GUIText* text)
 {
 	texts.push_back(text);
+}
+
+
+void GUIScreen::setCursor(Cursor* cursor)
+{
+	this->cursor = cursor;
+	renderables.push_back(cursor->getGUITexture()->getIRender());
 }

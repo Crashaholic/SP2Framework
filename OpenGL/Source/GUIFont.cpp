@@ -68,7 +68,7 @@ Texture Coordinates:
 
 */
 
-void GUIFont::createDataFromText(std::vector<GUIGlyph>& glyphs, float xPos, float yPos, std::string text, float fontSize, TextAlignment align)
+void GUIFont::createDataFromText(std::vector<GUIGlyph>& glyphs, float xPos, float yPos, std::string text, float fontSize, TextAlignment align, float maxWidth)
 {
 	float cursorX = xPos;
 	float cursorY = yPos;
@@ -150,10 +150,10 @@ void GUIFont::createDataFromText(std::vector<GUIGlyph>& glyphs, float xPos, floa
 
 		cursorX += c->xAdvance * fontSize;
 
-		if (actualMaxX > 1.0f)
+		if (actualMaxX * 1024.0f > (xPos + maxWidth))
 		{
-			cursorX = 0;
-			cursorY += c->height;
+			cursorX = xPos;
+			cursorY += textHeight + 2.0f;
 		}
 
 	}

@@ -9,8 +9,8 @@
 class GUITexture
 {
 public:
-	GUITexture(Vector3 pos, float rot, Vector3 scale, unsigned int textureID);
-	GUITexture(Vector3 pos, float rot, Vector3 scale, Vector3 color, float alpha);
+	GUITexture(std::string name, Vector3 pos, float rot, Vector3 scale, unsigned int textureID);
+	GUITexture(std::string name, Vector3 pos, float rot, Vector3 scale, Vector3 color, float alpha);
 	GUITexture() {};
 	~GUITexture();
 

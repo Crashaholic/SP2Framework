@@ -4,14 +4,14 @@
 * 
 */
 
-GUITexture::GUITexture(Vector3 pos, float rot, Vector3 scale, unsigned int textureID)
+GUITexture::GUITexture(std::string name, Vector3 pos, float rot, Vector3 scale, unsigned int textureID)
 {
-	render = new IRender(pos, rot, scale, textureID);
+	render = new IRender(name, pos, rot, scale, textureID);
 }
 
-GUITexture::GUITexture(Vector3 pos, float rot, Vector3 scale, Vector3 color, float alpha)
+GUITexture::GUITexture(std::string name, Vector3 pos, float rot, Vector3 scale, Vector3 color, float alpha)
 {
-	render = new IRender(pos, rot, scale, color, alpha);
+	render = new IRender(name, pos, rot, scale, color, alpha);
 }
 
 GUITexture::~GUITexture()

@@ -35,7 +35,7 @@ public:
 	unsigned int getVBO();
 	unsigned int getTexture();
 	void load(const char* path);
-	void createDataFromText(std::vector<GUIGlyph>& glyphs, float xPos, float yPos, std::string text, float fontSize=1.0f, TextAlignment align=TEXT_ALIGN_LEFT);
+	void createDataFromText(std::vector<GUIGlyph>& glyphs, float xPos, float yPos, std::string text, float fontSize=1.0f, TextAlignment align=TEXT_ALIGN_LEFT, float maxWidth=1024);
 private:
 	unsigned int texture;
 	unsigned int VBO;

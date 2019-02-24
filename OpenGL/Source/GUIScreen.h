@@ -17,11 +17,13 @@ public:
 	~GUIScreen();
 
 	void Render();
-	void Update();
+	void Update(double dt);
 
 	void addButton(GUIButton* button);
 	void addTexture(GUITexture* texture);
+	void removeItem(std::string name);
 	void addText(GUIText* text);
+	void setCursor(Cursor* cursor);
 
 private:
 	std::string name;

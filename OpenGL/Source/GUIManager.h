@@ -13,7 +13,7 @@ public:
 	static GUIManager* getInstance();
 	~GUIManager();
 
-	GUIText* renderText(std::string font, float xPos, float yPos, std::string text, float fontSize=1.0f, Color color=Color(1,1,1), TextAlignment align=TEXT_ALIGN_LEFT);
+	GUIText* renderText(std::string font, float xPos, float yPos, std::string text, float fontSize=1.0f, Color color=Color(1,1,1), TextAlignment align=TEXT_ALIGN_LEFT, float maxWidth=1024);
 
 	unsigned int FBO;
 

@@ -12,10 +12,11 @@ float quadVertices[] =
 	1.0f, -1.0f,
 };
 
-IRender::IRender(Vector3 pos, float rot, Vector3 scale, unsigned int textureID)
+IRender::IRender(std::string name, Vector3 pos, float rot, Vector3 scale, unsigned int textureID)
 {
 	glGenBuffers(1, &this->vbo);
 	glGenVertexArrays(1, &this->vao);
+	this->name = name;
 	this->pos = pos;
 	this->rot = rot;
 	this->scale = scale;
@@ -23,10 +24,11 @@ IRender::IRender(Vector3 pos, float rot, Vector3 scale, unsigned int textureID)
 	this->isSolidColor = false;
 }
 
-IRender::IRender(Vector3 pos, float rot, Vector3 scale, Vector3 color, float alpha)
+IRender::IRender(std::string name, Vector3 pos, float rot, Vector3 scale, Vector3 color, float alpha)
 {
 	glGenBuffers(1, &this->vbo);
 	glGenVertexArrays(1, &this->vao);
+	this->name = name;
 	this->pos = pos;
 	this->rot = rot;
 	this->scale = scale;
@@ -122,4 +124,9 @@ void IRender::setColor(Vector3 color, float alpha)
 {
 	this->color = color;
 	this->alpha = alpha;
+}
+
+std::string IRender::getName()
+{
+	return name;
 }

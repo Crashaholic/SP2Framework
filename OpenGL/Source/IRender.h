@@ -10,21 +10,11 @@
 
 class IRender
 {
-private:
-	unsigned int textureID;
-	unsigned int vao;
-	unsigned int vbo;
-
-	Vector3 pos, scale;
-	Vector3 color;
-	float rot;
-	float alpha;
-	bool isSolidColor;
 
 public:
-	IRender(Vector3 pos, float rot, Vector3 scale,
+	IRender(std::string name, Vector3 pos, float rot, Vector3 scale,
 		unsigned int textureID);
-	IRender(Vector3 pos, float rot, Vector3 scale,
+	IRender(std::string name, Vector3 pos, float rot, Vector3 scale,
 		Vector3 color, float alpha);
 	~IRender();
 
@@ -33,6 +23,20 @@ public:
 	virtual void setTexture(unsigned int existingTexture);
 	virtual void setTexture(const char* newTexture);
 	virtual void setColor(Vector3 color, float alpha);
+	std::string getName();
+
+private:
+	unsigned int textureID;
+	unsigned int vao;
+	unsigned int vbo;
+
+	std::string name;
+	Vector3 pos, scale;
+	Vector3 color;
+	float rot;
+	float alpha;
+	bool isSolidColor;
+
 };
 
 #endif

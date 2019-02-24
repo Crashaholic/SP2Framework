@@ -14,8 +14,9 @@ Level::Level(const char* levelPath)
 	Load(levelPath);
 
 	for (int i = 0; i < 2; i++)
-		if(lightSources.size() < 2)
-			lightSources.push_back(new LightSource());
+		lightSources.push_back(new LightSource());
+
+
 	
 }
 
@@ -23,6 +24,7 @@ Level::Level(const char* levelPath)
 
 Level::~Level()
 {
+	delete cursor;
 	delete tree;
 
 	for (auto const& object : objects)
@@ -35,6 +37,11 @@ Level::~Level()
 
 void Level::setScreen(std::string screen) {
 	currentScreen = screen;
+	cursor->setOnCooldown(0.2);
+	screens[screen]->setCursor(cursor);
+	
+	if (screen == "ingame")
+		Manager::getInstance()->setGameState(RACE_STARTING);
 }
 
 
@@ -78,6 +85,7 @@ void Level::Load(std::string path) {
 			continue;
 		}
 		else if (Utility::startsWith(line, "defaultscreen")) {
+			cursor = new Cursor();
 			currentScreen = args[1];
 			continue;
 		}
@@ -144,6 +152,7 @@ void Level::Load(std::string path) {
 			for (int i = 0; i < (int)objs->size(); i++) {
 				current = objs->at(i);
 
+				std::string name = current->Get("name");
 				std::string type = current->Get("type");
 				std::string screen = current->Get("screen");
 
@@ -170,13 +179,13 @@ void Level::Load(std::string path) {
 						Vector3 hoverColor = Vector3(std::stof(hoverColors[0]), std::stof(hoverColors[1]), std::stof(hoverColors[2]));
 						float normalAlpha = std::stof(colors[3]);
 						float hoverAlpha = std::stof(hoverColors[3]);
-						screens[screen]->addButton(new GUIButton(position, rot, scal, color, normalAlpha, hoverColor, hoverAlpha, action));
+						screens[screen]->addButton(new GUIButton(name, position, rot, scal, color, normalAlpha, hoverColor, hoverAlpha, action));
 					}
 					else
 					{
 						unsigned int textureID = LoadTGA(current->Get("texture").c_str());
 						unsigned int hoverID = LoadTGA(current->Get("hovertexture").c_str());
-						screens[screen]->addButton(new GUIButton(position, rot, scal, textureID, hoverID, action));
+						screens[screen]->addButton(new GUIButton(name, position, rot, scal, textureID, hoverID, action));
 					}
 
 				}
@@ -188,12 +197,12 @@ void Level::Load(std::string path) {
 						std::vector<std::string> colors = Utility::splitLine(current->Get("color"), ',');
 						Vector3 color = Vector3(std::stof(colors[0]), std::stof(colors[1]), std::stof(colors[2]));
 						float normalAlpha = std::stof(colors[3]);
-						screens[screen]->addTexture(new GUITexture(position, rot, scal, color, normalAlpha));
+						screens[screen]->addTexture(new GUITexture(name, position, rot, scal, color, normalAlpha));
 					}
 					else
 					{
 						unsigned int textureID = LoadTGA(current->Get("texture").c_str());
-						screens[screen]->addTexture(new GUITexture(position, rot, scal, textureID));
+						screens[screen]->addTexture(new GUITexture(name, position, rot, scal, textureID));
 					}
 				}
 
@@ -204,6 +213,7 @@ void Level::Load(std::string path) {
 		}
 	}
 
+	setScreen(currentScreen);
 	handle.close();
 
 
@@ -219,7 +229,7 @@ void Level::renderGUI()
 
 void Level::renderSkybox()
 {
-	if (Manager::getInstance()->getLevelName() != "game") return;
+	//if (Manager::getInstance()->getLevelName() != "game") return;
 
 	ShaderProgram* lit = Manager::getInstance()->getShader("lit");
 	lit->use();
@@ -318,7 +328,6 @@ void Level::renderMesh(Mesh* mesh)
 void Level::Render()
 {
 	ShaderProgram* lit = Manager::getInstance()->getShader("lit");
-	modelStack.LoadIdentity();
 
 	std::string levelName = Manager::getInstance()->getLevelName();
 
@@ -359,6 +368,19 @@ void Level::Render()
 			renderObjects();
 		}
 
+	}
+	else if (levelName == "pregame")
+	{
+		modelStack.LoadIdentity();
+		glViewport(0, 0, Application::winWidth, Application::winHeight);
+		Manager::getInstance()->getCamera()->setTarget(Vector3(0, 2, 0));
+		viewStack.LoadMatrix(Manager::getInstance()->getCamera()->LookAt());
+
+
+		for (int i = 0; i < (int)lightSources.size(); i++)
+			lightSources.at(i)->updateAttributes(viewStack);
+
+		renderObjects();
 	}
 
 	glViewport(0, 0, Application::winWidth, Application::winHeight);
@@ -411,7 +433,7 @@ void Level::Update(double dt)
 		object.second->Update(dt);
 	}
 
-	screens[currentScreen]->Update();
+	screens[currentScreen]->Update(dt);
 }
 
 

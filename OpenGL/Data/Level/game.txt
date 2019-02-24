@@ -234,25 +234,44 @@ texture=Image//rock.tga
 type=npc
 
 category=ui
+
+name=levelselectbackground
+screen=playermode
+texture=Image//graybackground.tga
+position=0,0
+rotation=0
+scale=800,600
+type=texture
+
+name=levelselectdesc
+screen=playermode
+texture=Image//modedescription.tga
+position=198,0
+rotation=0
+scale=243,205
+type=texture
+
 name=singleplayer
 screen=playermode
 texture=Image//mainmenubutton.tga
 hovertexture=Image//mainmenuhoverbutton.tga
-position=-316,234
+position=-242,68
 rotation=0
 scale=111,36
-action=playdasdada
+action=playsingleplayer
 type=button
 
 name=multiplayer
 screen=playermode
 texture=Image//mainmenubutton.tga
 hovertexture=Image//mainmenuhoverbutton.tga
-position=-316,69
+position=-242,-89
 rotation=0
 scale=111,36
 action=playmultiplayer
 type=button
+
+
 
 name=abc
 screen=gameplay
@@ -270,6 +289,7 @@ hovertexture=Image//buyhover.tga
 position=-316,234
 rotation=0
 scale=111,36
+action=nothing
 type=button
 
 name=undo
@@ -279,6 +299,7 @@ hovertexture=Image//undohoverbutton.tga
 position=-316,69
 rotation=0
 scale=111,36
+action=nothing
 type=button
 
 name=exitshop
@@ -288,4 +309,14 @@ hovertexture=Image//exitshophover.tga
 position=-316,-96
 rotation=0
 scale=111,36
+action=nothing
 type=button
+
+
+name=starttextbackground
+screen=ingame
+texture=Image//graybackground.tga
+position=0,0
+rotation=0
+scale=800, 50
+type=texture

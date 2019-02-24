@@ -62,9 +62,9 @@ GUIManager* GUIManager::getInstance()
 
 
 
-GUIText* GUIManager::renderText(std::string font, float xPos, float yPos, std::string text, float fontSize, Color color, TextAlignment align)
+GUIText* GUIManager::renderText(std::string font, float xPos, float yPos, std::string text, float fontSize, Color color, TextAlignment align, float maxWidth)
 {
 	std::vector<GUIGlyph> glyphs;
-	fonts[font]->createDataFromText(glyphs, xPos, yPos, text, fontSize, align);
+	fonts[font]->createDataFromText(glyphs, xPos, yPos, text, fontSize, align, maxWidth);
 	return new GUIText(glyphs, xPos, yPos, fonts[font]->getTexture(), fontSize, color);
 }

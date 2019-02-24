@@ -1,15 +1,14 @@
-#pragma once
+#ifndef CURSOR_H
+#define CURSOR_H
+
 #include "GUITexture.h"
 #include "LoadTGA.h"
 #include <iostream>
 
 class Cursor
 {
-private:
-	double lastX, lastY;
-	double moveX, moveY;
-	double currX, currY;
-	GUITexture* cursorGUI;
+
+
 public:
 	Cursor();
 	double getX();
@@ -17,9 +16,18 @@ public:
 	double getMoveX();
 	double getMoveY();
 
-	void updateVars(double newX, double newY, double winWidth, double winHeight);
+	void setOnCooldown(double duration);
+	bool updateVars(double newX, double newY, double winWidth, double winHeight, double dt);
 	void updateTexture();
 
 	GUITexture* getGUITexture() const;
 
+private:
+	double cooldownTimer;
+	double lastX, lastY;
+	double moveX, moveY;
+	double currX, currY;
+	GUITexture* cursorGUI;
 };
+
+#endif
