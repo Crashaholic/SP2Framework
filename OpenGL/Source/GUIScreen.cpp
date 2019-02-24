@@ -101,6 +101,10 @@ void GUIScreen::Update()
 						Manager::getInstance()->getShop()->buyUpgrade(dynamic_cast<Player*>(Manager::getInstance()->getLevel()->getObject("player")), 3);
 						Manager::getInstance()->getLevel()->setScreen("confirmation");
 					}
+					if (buttons[i]->getName() == "undo")
+					{
+						Manager::getInstance()->getLevel()->setScreen("confirmationundo");
+					}
 				}
 				else if (name == "confirmation")
 				{
@@ -109,6 +113,19 @@ void GUIScreen::Update()
 						Manager::getInstance()->getLevel()->setScreen("shop");
 					}
 					else if (buttons[i]->getName() == "denypurchase")
+					{
+						Manager::getInstance()->getLevel()->setScreen("shop");
+						Manager::getInstance()->getShop()->Undo(dynamic_cast<Player*>(Manager::getInstance()->getLevel()->getObject("player")));
+					}
+				}
+				else if (name == "confirmationundo")
+				{
+					if (buttons[i]->getName() == "confirmundo")
+					{
+						Manager::getInstance()->getShop()->Undo(dynamic_cast<Player*>(Manager::getInstance()->getLevel()->getObject("player")));
+						Manager::getInstance()->getLevel()->setScreen("shop");
+					}
+					else if (buttons[i]->getName() == "denyundo")
 					{
 						Manager::getInstance()->getLevel()->setScreen("shop");
 					}

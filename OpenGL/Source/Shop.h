@@ -10,14 +10,15 @@ public:
 	Shop();
 	~Shop();
 	void enterShop();
-	int Buy(/*Player,*/Car*&, int);
 	void buyCar(Player *player, int carSelected);
 	void buyUpgrade(Player *player, int choice);
+	void addUpgradeToTransactionHistory(int tier, char type, int moneySpent);
+	void addCarToTransactionHistory(int carType, int moneySpent);
 
-	int Undo(Player *player);
+	void Undo(Player *player);
 	void exitShop();
 private:
-	shopNode* Head;
-	shopNode* Tail;
-};//make objMoney[4]
+	shopNode* head;
+	shopNode* tail;
+};
 #endif

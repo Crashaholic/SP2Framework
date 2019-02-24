@@ -8,19 +8,27 @@ public:
 
 	void setNext(shopNode*);
 	void setBack(shopNode*);
-	void setNext();
-	void setBack();
+	//void setNext();
+	//void setBack();
 
-	void setObjNo(int);
-
+	void setUpgradeType(char type);
+	void setUpgradeTier(int tier);
+	void setCarBought(int type);
+	void setMoneySpent(int money);
 	shopNode* getNext();
 	shopNode* getBack();
-	int getObjNo();
+	int getUpgradeTier();
+	char getUpgradeType();
+	int getMoneySpent();
+	int getCarBought();
 
 protected:
 	shopNode* Next;
 	shopNode* Back;
-	int objNo;//the obj bought eg. tires,engine,nitro
+
+	char upgradeType; //Type of upgrade
+	int upgradeTier; //Tier of upgrade
+	int carTypeBought;
 	int moneySpent;
 
 };

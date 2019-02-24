@@ -4,7 +4,10 @@ shopNode::shopNode()
 {
 	Next = nullptr;
 	Back = nullptr;
-	objNo = 0;
+	upgradeTier = 1;
+	upgradeType = 0;
+	moneySpent = 0;
+	carTypeBought = 0;
 }
 
 shopNode::~shopNode()
@@ -17,24 +20,38 @@ void shopNode::setNext(shopNode* Current)
 	Next = Current;
 }
 
-void shopNode::setNext()
-{
-	Next = new shopNode;
-}
+//void shopNode::setNext()
+//{
+//	Next = new shopNode;
+//}
 
 void shopNode::setBack(shopNode* Current)
 {
 	Back = Current;
 }
 
-void shopNode::setBack()
+//void shopNode::setBack()
+//{
+//	Back = new shopNode;
+//}
+
+void shopNode::setUpgradeTier(int tier)
 {
-	Back = new shopNode;
+	upgradeTier = tier;
 }
 
-void shopNode::setObjNo(int Number)
+void shopNode::setUpgradeType(char type)
 {
-	objNo = Number;
+	upgradeType = type;
+}
+void shopNode::setCarBought(int type)
+{
+	carTypeBought = type;
+}
+
+void shopNode::setMoneySpent(int money)
+{
+	moneySpent = money;
 }
 
 shopNode* shopNode::getNext()
@@ -47,7 +64,22 @@ shopNode* shopNode::getBack()
 	return Back;
 }
 
-int shopNode::getObjNo()
+int shopNode::getUpgradeTier()
 {
-	return objNo;
+	return upgradeTier;
+}
+
+char shopNode::getUpgradeType()
+{
+	return upgradeType;
+}
+
+int shopNode::getMoneySpent()
+{
+	return moneySpent;
+}
+
+int shopNode::getCarBought()
+{
+	return carTypeBought;
 }
