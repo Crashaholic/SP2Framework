@@ -54,35 +54,26 @@ void SceneA2::Init()
 
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
+	
+	pp = new PostProcess(manager->getShader("custom"));
+	pp->init();
+	glGenFramebuffers(1, &this->FBO);
+	glGenRenderbuffers(1, &this->RBO);
+	glGenBuffers(1, &this->VBO);
 }
 
 void SceneA2::CreateMesh()
 {
-	
-
-	// Skybox Planes
-	//Primitive* quad = Primitives::generateQuad(Color(1, 1, 1));
-	//manager->getLevel()->spawnObject(new Mesh("skyboxFront", quad, LoadTGA("Image//front.tga")));
-	//manager->getLevel()->spawnObject(new Mesh("skyboxTop", quad, LoadTGA("Image//top.tga")));
-	//manager->getLevel()->spawnObject(new Mesh("skyboxBottom", quad, LoadTGA("Image//bottom.tga")));
-	//manager->getLevel()->spawnObject(new Mesh("skyboxLeft", quad, LoadTGA("Image//left.tga")));
-	//manager->getLevel()->spawnObject(new Mesh("skyboxRight", quad, LoadTGA("Image//right.tga")));
-	//manager->getLevel()->spawnObject(new Mesh("skyboxBack", quad, LoadTGA("Image//back.tga")));
-
-	//Primitive* axes = Primitives::generateAxes();
-	//manager->getLevel()->spawnObject(new Mesh("axes", axes, 0, false, false, "environment", Mesh::DRAW_LINES));
-	//manager->getLevel()->spawnObject(new Mesh("playerAxes", axes, 0, false, false, "environment", Mesh::DRAW_LINES));
-
-	//player = dynamic_cast<Player*>(manager->getLevel()->getObject("human"));
-	//car = dynamic_cast<Car*>(manager->getLevel()->getObject("car"));
-	//player->setCar(car);
 
 }
 
 void SceneA2::Render()
 {
 	gui = GUIManager::getInstance();
+
+	Mtx44 projection;
+	projection.SetToPerspective(45.0f, (float)Application::winWidth / (float)Application::winHeight, 0.1f, 10000.0f);
+	projectionStack.LoadMatrix(projection);
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	//modelStack.LoadIdentity();
@@ -99,7 +90,7 @@ void SceneA2::Render()
 	//RenderScene();
 	//glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	modelStack.LoadIdentity();
 
 	viewStack.LoadMatrix(manager->getCamera()->LookAt());
@@ -110,7 +101,59 @@ void SceneA2::Render()
 	}
 
 	gui = GUIManager::getInstance();
+
+	// Reflection FBO
+	glGenFramebuffers(1, &FBO);
+	glBindFramebuffer(GL_FRAMEBUFFER, FBO);
+
+	glGenTextures(1, &FBOTexture);
+	glBindTexture(GL_TEXTURE_2D, FBOTexture);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, Application::winWidth, Application::winHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, FBOTexture, 0);
+
+	// Reflection RBO
+	glBindRenderbuffer(GL_RENDERBUFFER, RBO);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, (GLsizei) Application::winWidth, (GLsizei) Application::winHeight);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, RBO);
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+		std::cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << std::endl;
+
+
+	//Unbind
+	manager->getInstance()->getShader("lit")->use();
 	RenderScene();
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	float quadVertices[] =
+	{
+		// positions   // texCoords
+		-1.0f,  1.0f,  0.0f, 1.0f,
+		-1.0f, -1.0f,  0.0f, 0.0f,
+		 1.0f, -1.0f,  1.0f, 0.0f,
+
+		-1.0f,  1.0f,  0.0f, 1.0f,
+		 1.0f, -1.0f,  1.0f, 0.0f,
+		 1.0f,  1.0f,  1.0f, 1.0f
+	};
+
+	manager->getShader("custom")->use();
+
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), &quadVertices, GL_STATIC_DRAW);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
+
+	manager->getShader("custom")->setUniform("screenTexture", 0);
+	manager->getShader("custom")->updateUniforms();
+	glBindTexture(GL_TEXTURE_2D, FBOTexture);
+	glDrawArrays(GL_TRIANGLES, 0, 6);
+	glBindTexture(GL_TEXTURE_2D, 0);
+	glDeleteTextures(1, &FBOTexture);
+
 	glDisable(GL_DEPTH_TEST);
 	RenderUI();
 	glEnable(GL_DEPTH_TEST);
@@ -119,8 +162,6 @@ void SceneA2::Render()
 void SceneA2::RenderScene()
 {
 	glBindVertexArray(m_vertexArrayID);
-
-
 
 	if (manager->getLevelName() == "game") {
 		Level* level = manager->getLevel();
@@ -145,25 +186,8 @@ void SceneA2::RenderScene()
 
 void SceneA2::RenderUI() 
 {
-
 	Manager::getInstance()->getLevel()->renderGUI();
 	gui->renderText("bahnschrift", 0, 10, "FPS: " + std::to_string(lastFramesPerSecond), 0.4f, Color(0, 1, 0));
-
-
-
-	//gui->renderText("default", 0, 300, "Waypoints: " + std::to_string(dynamic_cast<AICar*>(manager->getObject("ai"))->currentID), 0.4f, Color(0, 1, 0));
-	//if (!player->isInVehicle && (player->getCar()->position - player->position).Length() <= 6.0f)
-	//	gui->renderText("default", 400, 300, "Press F to enter car", 0.4f, Color(0, 1, 0), TEXT_ALIGN_MIDDLE);
-
-	//
-	//Mesh* ai = manager->getLevel()->getObject("ai");
-
-	//gui->renderText("default", 0, 550, "AI Pos: " + std::to_string(ai->position.x) + "," + std::to_string(ai->position.y) + ","
-	//	+ std::to_string(ai->position.z), 0.25f, Color(0, 1, 1));
-
-	//gui->renderText("default", 0, 500, "AI Vel: " + std::to_string(ai->velocity.x) + "," + std::to_string(ai->velocity.y) + ","
-	//	+ std::to_string(ai->velocity.z), 0.25f, Color(1, 0, 0));
-
 }
 
 void SceneA2::RenderMesh(Mesh* mesh, bool enableLight, unsigned int shader)

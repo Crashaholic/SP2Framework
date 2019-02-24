@@ -12,6 +12,7 @@ Manager::Manager()
 	shaders["lit"] = new ShaderProgram("Shader//Texture.vert", "Shader//Blending.frag");
 	shaders["text"] = new ShaderProgram("Shader//Text.vert", "Shader//Text.frag");
 	shaders["overlay"] = new ShaderProgram("Shader//UI.vert", "Shader//UI.frag");
+	shaders["custom"] = new ShaderProgram("Shader//framebuffer.vert", "Shader//framebuffer.frag");
 
 
 	carOneUnlock = true;

@@ -90,6 +90,7 @@
     <ClCompile Include="Source\LevitationPad.cpp" />
     <ClCompile Include="Source\AICar.cpp" />
     <ClCompile Include="Source\AIWaypoint.cpp" />
+    <ClCompile Include="Source\PostProcess.cpp" />
     <ClCompile Include="Source\QuadNode.cpp" />
     <ClCompile Include="Source\QuadTree.cpp" />
     <ClCompile Include="Source\Car.cpp" />
@@ -131,6 +132,7 @@
     <ClInclude Include="Source\IRender.h" />
     <ClInclude Include="Source\AICar.h" />
     <ClInclude Include="Source\AIWaypoint.h" />
+    <ClInclude Include="Source\PostProcess.h" />
     <ClInclude Include="Source\QuadNode.h" />
     <ClInclude Include="Source\QuadTree.h" />
     <ClInclude Include="Source\Car.h" />
@@ -167,6 +169,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Shader\Blending.frag" />
+    <None Include="Shader\framebuffer.frag" />
+    <None Include="Shader\framebuffer.vert" />
     <None Include="Shader\Text.frag" />
     <None Include="Shader\Text.vert" />
     <None Include="Shader\Texture.vert" />

@@ -17,6 +17,7 @@
 #include "GUIManager.h"
 #include "Player.h"
 #include "Cursor.h"
+#include "PostProcess.h"
 
 #include "GUITexture.h"
 #include "soloud.h"
@@ -65,6 +66,12 @@ private:
 	Car* car;
 	GUIManager *gui;
 	ShaderProgram* lit;
+	PostProcess* pp;
+
+	unsigned int FBOTexture;
+	unsigned int FBO;
+	unsigned int RBO;
+	unsigned int VBO;
 
 	SoLoud::Soloud Engine;
 	SoLoud::Wav Music[6];

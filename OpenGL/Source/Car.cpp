@@ -178,10 +178,6 @@ void Car::Update(double dt)
 	{
 		position += velocity;
 	}
-
-	
-
-
 }
 
 

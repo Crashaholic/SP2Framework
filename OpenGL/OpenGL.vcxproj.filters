@@ -126,6 +126,9 @@
     <ClCompile Include="Source\Level.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Source\PostProcess.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Application.h">
@@ -248,6 +251,9 @@
     <ClInclude Include="Source\Level.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Source\PostProcess.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="playerProgress.txt" />
@@ -259,5 +265,7 @@
     <None Include="Shader\Texture.vert" />
     <None Include="Shader\UI.frag" />
     <None Include="Shader\UI.vert" />
+    <None Include="Shader\framebuffer.vert" />
+    <None Include="Shader\framebuffer.frag" />
   </ItemGroup>
 </Project>
