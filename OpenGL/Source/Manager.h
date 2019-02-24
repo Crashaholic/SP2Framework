@@ -11,6 +11,7 @@
 #include <fstream>
 #include <string>
 #include "Level.h"
+#include "Shop.h"
 #include <experimental/filesystem>
 #include <iostream>
 
@@ -24,6 +25,7 @@ public:
 	void loadPlayerProgress(Player *player);
 	void savePlayerProgress(Player *player);
 
+	Shop* getShop();
 	Level* getLevel();
 	void setLevel(std::string name);
 	std::string& getLevelName();
@@ -36,14 +38,14 @@ private:
 	Manager();
 	static Manager* instance;
 	Camera* mainmenu;
-	bool carOneUnlock;
-	bool carTwoUnlock;
-	bool carThreeUnlock;
-	int money;
+	//bool carOneUnlock;
+	//bool carTwoUnlock;
+	//bool carThreeUnlock;
 
 	std::string currentLevel;
 	std::map<std::string, Level*> levels;
 	std::map<std::string, ShaderProgram*> shaders;
+	Shop* shop;
 };
 
 #endif

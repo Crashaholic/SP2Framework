@@ -21,13 +21,15 @@ public:
 	void setCameraMode(CAMERA_MODE mode);
 
 	Camera* getCamera();
-	Camera* getTopdownCamera();
 	void setCar(Car* car);
 	void unlockCar(int carSelected);
 	void lockCar(int carSelected);
 	void setMoney(int change);
 	Car* getCar();
 	int getMoney();
+	//R
+	void getMoneyText(std::string& moneyString, Color& color);
+	//R end
 	bool getCarsUnlocked(int carID); //for saving player progress
 
 	void switchCameraMode();

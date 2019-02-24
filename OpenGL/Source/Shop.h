@@ -10,9 +10,9 @@ public:
 	Shop();
 	~Shop();
 	void enterShop();
-	//int Buy(/*Player,*/Car*&, int);
+	int Buy(/*Player,*/Car*&, int);
 	void buyCar(Player *player, int carSelected);
-	void buyUpgrade(Player *player);
+	void buyUpgrade(Player *player, int choice);
 
 	int Undo(Player *player);
 	void exitShop();

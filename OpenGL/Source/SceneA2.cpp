@@ -30,6 +30,7 @@ void SceneA2::Init()
 	Music[BGM_INGAME].load("Music//BGM_InGame.wav");
 
 	BGMFlag = 0;
+	loadFlag = false;
 
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 	elapsedTimeCounter = bounceTimeCounter = lastTimed = 0.0f;
@@ -73,11 +74,6 @@ void SceneA2::Render()
 	GenerateText();
 	Manager::getInstance()->getLevel()->Render();
 
-
-
-
-	
-
 }
 
 void SceneA2::RenderScene()
@@ -95,7 +91,13 @@ void SceneA2::GenerateText()
 	if (manager->getLevelName() == "game")
 	{
 		std::string velocity;
+
+		//Player UI
+		std::string money;
+		std::string carStats;
+		
 		Color color;
+
 		dynamic_cast<Car*>(manager->getLevel()->getObject("car"))->getVelocity(velocity, color);
 		GUIText* speed = gui->renderText("digital", 40, Application::winHeight / 2.0f - 20, velocity, 0.4f, color, TEXT_ALIGN_BOTTOM);
 		Manager::getInstance()->getLevel()->getScreen()->addText(speed);
@@ -104,16 +106,54 @@ void SceneA2::GenerateText()
 		speed = gui->renderText("digital", 40, Application::winHeight / 2.0f + 20, velocity, 0.4f, color, TEXT_ALIGN_TOP);
 		Manager::getInstance()->getLevel()->getScreen()->addText(speed);
 		
+		//R: Player UI (Money)
+		dynamic_cast<Player*>(manager->getLevel()->getObject("player"))->getMoneyText(money, color);
+		GUIText* playerMoney = gui->renderText("digital", 40, Application::winHeight / 2.0f - 100, money, 0.4f, color, TEXT_ALIGN_TOP);
+		Manager::getInstance()->getLevel()->getScreen()->addText(playerMoney);
+
+		//R: Player UI (Engine)
+		dynamic_cast<Car*>(manager->getLevel()->getObject("car"))->getEngineTierText(carStats, color);
+		GUIText* carTierStats = gui->renderText("digital", 20, Application::winHeight / 2.0f - 120, carStats, 0.2f, color, TEXT_ALIGN_LEFT);
+		Manager::getInstance()->getLevel()->getScreen()->addText(carTierStats);
+
+		//R: Player UI (Nitro)
+		dynamic_cast<Car*>(manager->getLevel()->getObject("car"))->getNitroTierText(carStats, color);
+		carTierStats = gui->renderText("digital", 20, Application::winHeight / 2.0f - 140, carStats, 0.2f, color, TEXT_ALIGN_LEFT);
+		Manager::getInstance()->getLevel()->getScreen()->addText(carTierStats);
+		
+		//R: Player UI (Tires)
+		dynamic_cast<Car*>(manager->getLevel()->getObject("car"))->getTireTierText(carStats, color);
+		carTierStats = gui->renderText("digital", 20, Application::winHeight / 2.0f - 160, carStats, 0.2f, color, TEXT_ALIGN_LEFT);
+		Manager::getInstance()->getLevel()->getScreen()->addText(carTierStats);
+
+
+		//R: shop screen stuff
 		if (manager->getLevel()->getScreenName() == "shop") {
-		GUIText* text = gui->renderText("default", 196, 150, "buy", 0.35f, Color(1, 1, 1), TEXT_ALIGN_MIDDLE);
+		GUIText* text = gui->renderText("default", 170, 80, "buy car", 0.35f, Color(1, 1, 1), TEXT_ALIGN_MIDDLE);
 		Manager::getInstance()->getLevel()->getScreen()->addText(text);
 
-		text = gui->renderText("default", 196, 315, "undo", 0.35f, Color(1, 1, 1), TEXT_ALIGN_MIDDLE);
+		text = gui->renderText("default", 160, 180, "upgrade nitro", 0.30f, Color(1, 1, 1), TEXT_ALIGN_MIDDLE);
 		Manager::getInstance()->getLevel()->getScreen()->addText(text);
 
-		text = gui->renderText("default", 196, 480, "exit", 0.35f, Color(1, 1, 1), TEXT_ALIGN_MIDDLE);
+		text = gui->renderText("default", 160, 280, "upgrade tire", 0.35f, Color(1, 1, 1), TEXT_ALIGN_MIDDLE);
+		Manager::getInstance()->getLevel()->getScreen()->addText(text);
+
+		text = gui->renderText("default", 160, 380, "upgrade engine", 0.30f, Color(1, 1, 1), TEXT_ALIGN_MIDDLE);
+		Manager::getInstance()->getLevel()->getScreen()->addText(text);
+
+		text = gui->renderText("default", 180, 480, "undo", 0.35f, Color(1, 1, 1), TEXT_ALIGN_MIDDLE);
+		Manager::getInstance()->getLevel()->getScreen()->addText(text);
+
+		text = gui->renderText("default", 180, 580, "exit", 0.35f, Color(1, 1, 1), TEXT_ALIGN_MIDDLE);
 		Manager::getInstance()->getLevel()->getScreen()->addText(text);
 	}
+		if (manager->getLevel()->getScreenName() == "confirmation") {
+			GUIText* text = gui->renderText("default", 512, 200, "Yes", 0.35f, Color(1, 1, 0), TEXT_ALIGN_MIDDLE);
+			Manager::getInstance()->getLevel()->getScreen()->addText(text);
+
+			text = gui->renderText("default", 512, 400, "No", 0.30f, Color(1, 1, 0), TEXT_ALIGN_MIDDLE);
+			Manager::getInstance()->getLevel()->getScreen()->addText(text);
+		}
 	}
 	else if (manager->getLevelName() == "pregame") {
 
@@ -256,7 +296,12 @@ void SceneA2::Update(double dt)
 		}
 
 		if (manager->getLevelName() == "game") {
+			
 			player = dynamic_cast<Player*>(manager->getLevel()->getObject("player"));
+			//R start
+			loadProgress();
+			//R end
+
 			if (Application::IsKeyPressed(VK_F5)) {
 				player->switchCameraMode();
 				bounceTimeCounter = 0.3f;
@@ -308,9 +353,18 @@ void SceneA2::Update(double dt)
 
 }
 
+void SceneA2::loadProgress()
+{
+	if (loadFlag == false && dynamic_cast<Player*>(manager->getLevel()->getObject("player")) != nullptr)
+	{
+		manager->loadPlayerProgress(dynamic_cast<Player*>(manager->getLevel()->getObject("player") ) );
+		loadFlag = true;
+	}
+}
+
 void SceneA2::Exit()
 {
-	manager->savePlayerProgress(player);
+	manager->savePlayerProgress(dynamic_cast<Player*>(manager->getLevel()->getObject("player")));
 	Engine.deinit();
 	delete manager;
 	delete gui;

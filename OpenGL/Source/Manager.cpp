@@ -14,10 +14,10 @@ Manager::Manager()
 	shaders["overlay"] = new ShaderProgram("Shader//UI.vert", "Shader//UI.frag");
 
 
-	carOneUnlock = true;
-	carTwoUnlock = false;
-	carThreeUnlock = false;
-	money = 0;
+	//carOneUnlock = true;
+	//carTwoUnlock = false;
+	//carThreeUnlock = false;
+	//money = 0;
 
 	std::string path = "Data//Level";
 	for (const auto & entry : std::experimental::filesystem::directory_iterator(path)) {
@@ -29,6 +29,7 @@ Manager::Manager()
 
 	currentLevel = "pregame";
 	mainmenu = new Camera(Vector3(1, 1, 1));
+	shop = new Shop;
 }
 
 
@@ -36,6 +37,7 @@ Manager::~Manager()
 {
 
 	delete mainmenu;
+	delete shop;
 
 	savePlayerProgress(dynamic_cast<Player*>(getLevel()->getObject("player")));
 
@@ -78,6 +80,10 @@ void Manager::setLevel(std::string name) {
 	}
 }
 
+Shop* Manager::getShop()
+{
+	return shop;
+}
 
 Level* Manager::getLevel()
 {
@@ -111,9 +117,10 @@ void Manager::loadPlayerProgress(Player *player)
 {
 	std::fstream playerProgress; //input
 	std::string line;
+	int money = 0;
 	int carID = 0;
 
-	playerProgress.open("playerProgress.txt", std::fstream::in);
+	playerProgress.open("Data\\playerProgress.txt", std::fstream::in);
 	if (playerProgress.is_open())
 	{
 		while (getline(playerProgress, line))
@@ -125,6 +132,7 @@ void Manager::loadPlayerProgress(Player *player)
 				/*std::cout << "ID has been secured";*/
 				money = std::stoi(args[1]);
 				std::cout << "Money: " << money << std::endl;
+				player->setMoney(money);
 			}
 
 			if (Utility::startsWith(line, "ID"))
@@ -167,13 +175,14 @@ void Manager::savePlayerProgress(Player *player)
 	std::string nitroString;
 	std::string tireString;
 	std::string engineString;
+	int money = player->getMoney();
 
 	moneyString = std::to_string(money);
 	nitroString = std::to_string(player->getCar()->getNitroTier());
 	tireString = std::to_string(player->getCar()->getTireTier());
 	engineString = std::to_string(player->getCar()->getEngineTier());
 
-	playerProgress.open("playerProgress.txt", std::fstream::out | std::fstream::trunc);
+	playerProgress.open("Data\\playerProgress.txt", std::fstream::out | std::fstream::trunc);
 
 	if (playerProgress.is_open())
 	{

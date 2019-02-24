@@ -14,45 +14,45 @@ void Shop::enterShop()
 	//Head = Tail = new shopNode;
 }
 
-//int Shop::Buy(/*Player Player,*/Car*& Car, int Number)
-//{//4 options: Car, Nitro, Tires, Engine
-//	//if (Number == 1) {
-//	//	//Make the data of the car save if buying new car, be cause of delete
-//	//	//if (Player.getMoney() >= (Player.getCarPrice[Number - 1] * Player.getCarTeir[Number - 1])) {
-//	//	delete Car;//if/switch statement for different cars
-//	//	Car = new Car1;
-//	//	Tail->setObjNo(Number);
-//	//	Tail->setNext();
-//	//	Tail->getNext()->setBack(Tail);
-//	//	Tail = Tail->getNext();
-//	//	//Player.setMoney(Player.getMoney() - (Player.getCarPrice[Number - 1] * Player.getCarTeir[Number - 1]));
-//	//	//}
-//	//	//else{
-//	//		//Number = 0;
-//	//	//}
-//	//}
-//	//else if (Number >= 2 && Number <= 4) {
-//	//	//if (Player.getMoney() >= (Car->getTier(Number - 2) * Car->getObjMoney(Number - 1))) {//&& teir limit not reached
-//	//	Tail->setObjNo(Number);
-//	//	Tail->setNext();
-//	//	Tail->getNext()->setBack(Tail);
-//	//	Tail = Tail->getNext();
-//	//	//Player.setMoney(Player.getMoney() - (Car->getTier(Number - 2) * Car->getObjMoney(Number - 1)));
-//	//	Car->Upgrade(Number - 2);
-//	//	//}
-//	//	/*else {
-//	//		Number = 0;//This means not enough money
-//	//	}*/
-//	//}
-//	//else if (Number == 6) {
-//	//	Number = Undo(Car);
-//	//}
-//	//else {
-//	//	Number = 5;//This means item does not exists
-//	//}
-//	//return Number;
-//	return 0;
-//}
+int Shop::Buy(/*Player Player,*/Car*& Car, int Number)
+{//4 options: Car, Nitro, Tires, Engine
+	//if (Number == 1) {
+	//	//Make the data of the car save if buying new car, be cause of delete
+	//	//if (Player.getMoney() >= (Player.getCarPrice[Number - 1] * Player.getCarTeir[Number - 1])) {
+	//	delete Car;//if/switch statement for different cars
+	//	Car = new Car1;
+	//	Tail->setObjNo(Number);
+	//	Tail->setNext();
+	//	Tail->getNext()->setBack(Tail);
+	//	Tail = Tail->getNext();
+	//	//Player.setMoney(Player.getMoney() - (Player.getCarPrice[Number - 1] * Player.getCarTeir[Number - 1]));
+	//	//}
+	//	//else{
+	//		//Number = 0;
+	//	//}
+	//}
+	//else if (Number >= 2 && Number <= 4) {
+	//	//if (Player.getMoney() >= (Car->getTier(Number - 2) * Car->getObjMoney(Number - 1))) {//&& teir limit not reached
+	//	Tail->setObjNo(Number);
+	//	Tail->setNext();
+	//	Tail->getNext()->setBack(Tail);
+	//	Tail = Tail->getNext();
+	//	//Player.setMoney(Player.getMoney() - (Car->getTier(Number - 2) * Car->getObjMoney(Number - 1)));
+	//	Car->Upgrade(Number - 2);
+	//	//}
+	//	/*else {
+	//		Number = 0;//This means not enough money
+	//	}*/
+	//}
+	//else if (Number == 6) {
+	//	Number = Undo(Car);
+	//}
+	//else {
+	//	Number = 5;//This means item does not exists
+	//}
+	//return Number;
+	return 0;
+}
 
 void Shop::buyCar(Player *player, int carSelected)
 {
@@ -70,41 +70,52 @@ void Shop::buyCar(Player *player, int carSelected)
 	}
 }
 
-void Shop::buyUpgrade(Player *player)
+void Shop::buyUpgrade(Player *player, int choice)
 {
 	int nitroTier = player->getCar()->getNitroTier();
 	int tireTier = player->getCar()->getTireTier();
 	int engineTier = player->getCar()->getEngineTier();
 
-	if (nitroTier == 1 || tireTier == 1 || engineTier == 1 && player->getMoney() >= 50)
+	//1 for nitro, 2 for tire, 3 for engine
+	if (choice == 1 && player->getMoney() >= 50)
 	{
-		player->setMoney(-50);
 		if (nitroTier == 1)
 		{
+			player->setMoney(-50);
 			player->getCar()->setNitroTier(2);
 		}
-		else if (tireTier == 1)
+		else if (nitroTier == 2)
 		{
-			player->getCar()->setTireTier(2);
-		}
-		else if (engineTier == 1)
-		{
-			player->getCar()->setEngineTier(2);
+			player->setMoney(-75);
+			player->getCar()->setNitroTier(3);
 		}
 	}
-	if (nitroTier == 2 || tireTier == 2 || engineTier == 2 && player->getMoney() >= 75)
+	if (choice == 2 && player->getMoney() >= 75)
 	{
-		player->setMoney(-75);
-		if (nitroTier == 2)
+		
+		if (tireTier == 1)
 		{
-			player->getCar()->setNitroTier(3);
+			player->setMoney(-50);
+			player->getCar()->setTireTier(2);
 		}
 		else if (tireTier == 2)
 		{
+			player->setMoney(-75);
 			player->getCar()->setTireTier(3);
+		}
+		
+	}
+	if (choice == 3 && player->getMoney() >= 75)
+	{
+	
+		if (engineTier == 1)
+		{
+			player->setMoney(-50);
+			player->getCar()->setEngineTier(2);
 		}
 		else if (engineTier == 2)
 		{
+			player->setMoney(-75);
 			player->getCar()->setEngineTier(3);
 		}
 	}
@@ -144,11 +155,11 @@ int Shop::Undo(Player *player)
 
 void Shop::exitShop()
 {
-	//while (Tail->getBack() != nullptr) {
-	//	Tail = Tail->getBack();
-	//	delete Tail->getNext();
-	//}
-	//delete Head;
+	while (Tail->getBack() != nullptr) {
+		Tail = Tail->getBack();
+		delete Tail->getNext();
+	}
+	delete Head;
 }
 
 

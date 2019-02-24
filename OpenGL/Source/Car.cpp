@@ -115,6 +115,24 @@ void Car::setTireTier(int newTier)
 	}
 }
 
+void Car::getEngineTierText(std::string& tier, Color& color)
+{
+	tier = "Engine Tier: " + std::to_string(engineTier);
+	color.Set(1, 1, 0);
+}
+
+void Car::getNitroTierText(std::string& tier, Color& color)
+{
+	tier = "Nitro Tier: " + std::to_string(nitroTier);
+	color.Set(1, 1, 0);
+}
+
+void Car::getTireTierText(std::string& tier, Color& color)
+{
+	tier = "Tire Tier: " + std::to_string(tireTier);
+	color.Set(1, 1, 0);
+}
+
 int Car::getEngineTier()
 {
 	return engineTier;
@@ -197,8 +215,8 @@ void Car::Update(double dt)
 	{
 		isSoundEmitted = true;
 		carSounds[SFX_DRIVING].setLooping(1);
-		carEngine.play(carSounds[SFX_DRIVING], 0.5f, 1);
-		carEngine.seek(carEngine.play(carSounds[SFX_DRIVING], 0.5f, 1), 1.0f);
+		carEngine.play(carSounds[SFX_DRIVING], 0.f, 1);
+		carEngine.seek(carEngine.play(carSounds[SFX_DRIVING], 0.0f, 1), 1.0f);
 		carEngine.setPause(carEngine.play(carSounds[SFX_DRIVING]), 0);
 
 	}

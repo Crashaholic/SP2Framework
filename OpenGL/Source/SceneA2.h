@@ -34,14 +34,15 @@ public:
 	virtual void Render();
 	virtual void Update(double dt);
 	virtual void Exit();
-private:
 
+private:
 
 	void RenderMesh(Mesh* mesh, bool enableLight, unsigned int shader = 0);
 	void RenderScene();
 	void GenerateText();
 	void InitShaderProperties();
 	void playMusic();
+	void loadProgress();
 
 
 	MS modelStack, viewStack, projectionStack;
@@ -55,6 +56,7 @@ private:
 	float elapsedTimeCounter = 0.0f;
 
 	int BGMFlag;
+	bool loadFlag;
 
 	Manager *manager;
 	Player* player;

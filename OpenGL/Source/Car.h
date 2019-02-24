@@ -32,6 +32,9 @@ public:
 	void setEngineTier(int newTier);
 	void setNitroTier(int newTier);
 	void setTireTier(int newTier);
+	void getEngineTierText(std::string& tier, Color& color);
+	void getNitroTierText(std::string& tier, Color& color);
+	void getTireTierText(std::string& tier, Color& color);
 	int getEngineTier();
 	int getNitroTier();
 	int getTireTier();

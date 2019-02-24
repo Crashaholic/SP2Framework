@@ -13,6 +13,7 @@ Player::Player(const char* meshName, Primitive* primitive, std::string input, un
 	walkSpeed = 3.0f;
 	isInVehicle = false;
 	cameraMode = FIRST_PERSON;
+	money = 0;
 
 	firstPerson = new FreeLookCamera(position - Vector3(0.0f, 0.1f, 0.0f) + Vector3(-0.2f, 0.0f, 0.0f));
 	fixedCar = new Camera(position + Vector3(0.0f, 8.0f, -6.0f));
@@ -149,7 +150,7 @@ void Player::setCar(Car* car)
 
 void Player::setMoney(int change)
 {
-	money = money + change;
+	this->money += change;
 }
 
 void Player::unlockCar(int carSelected)
@@ -192,6 +193,13 @@ Car* Player::getCar()
 int Player::getMoney()
 {
 	return money;
+}
+
+void Player::getMoneyText(std::string& moneyString, Color& color)
+{
+	moneyString = std::to_string(money);
+	color.Set(1, 1, 0);
+
 }
 
 bool Player::getCarsUnlocked(int carID)

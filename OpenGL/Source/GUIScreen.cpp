@@ -67,13 +67,50 @@ void GUIScreen::Update()
 					}
 
 				}
-				else if (name == "playermode") {
+				else if (name == "playermode")
+				{
 
-					if (buttons[i]->getName() == "singleplayer") {
+					if (buttons[i]->getName() == "singleplayer")
+					{
 
 					}
-					else if (buttons[i]->getName() == "multiplayer") {
+					else if (buttons[i]->getName() == "multiplayer") 
+					{
 						Manager::getInstance()->setLevel("game");
+					}
+				}
+				else if (name == "shop")
+				{
+					std::cout << "upgrade called" << std::endl;
+					if (buttons[i]->getName() == "buycar")
+					{
+
+					}
+					if (buttons[i]->getName() == "upgradenitro")
+					{   //buy upgrade and push it to history
+						Manager::getInstance()->getShop()->buyUpgrade(dynamic_cast<Player*>(Manager::getInstance()->getLevel()->getObject("player")), 1);
+						Manager::getInstance()->getLevel()->setScreen("confirmation");
+					}
+					if (buttons[i]->getName() == "upgradetire")
+					{
+						Manager::getInstance()->getShop()->buyUpgrade(dynamic_cast<Player*>(Manager::getInstance()->getLevel()->getObject("player")), 2);
+						Manager::getInstance()->getLevel()->setScreen("confirmation");
+					}
+					if (buttons[i]->getName() == "upgradeengine")
+					{
+						Manager::getInstance()->getShop()->buyUpgrade(dynamic_cast<Player*>(Manager::getInstance()->getLevel()->getObject("player")), 3);
+						Manager::getInstance()->getLevel()->setScreen("confirmation");
+					}
+				}
+				else if (name == "confirmation")
+				{
+					if (buttons[i]->getName() == "confirmpurchase")
+					{
+						Manager::getInstance()->getLevel()->setScreen("shop");
+					}
+					else if (buttons[i]->getName() == "denypurchase")
+					{
+						Manager::getInstance()->getLevel()->setScreen("shop");
 					}
 				}
 			}
