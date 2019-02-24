@@ -59,16 +59,19 @@ void Shop::buyCar(Player *player, int carSelected)
 	if (carSelected == 2 && player->getMoney() >= 50)
 	{
 		player->unlockCar(carSelected);
+		player->setMoney(-50);
 		addCarToTransactionHistory(2, 50);
 	}
 	if (carSelected == 3 && player->getMoney() >= 100)
 	{
 		player->unlockCar(carSelected);
+		player->setMoney(-100);
 		addCarToTransactionHistory(3, 100);
 	}
 	if (carSelected == 4 && player->getMoney() >= 200)
 	{
 		player->unlockCar(carSelected);
+		player->setMoney(-200);
 		addCarToTransactionHistory(4, 200);
 	}
 }

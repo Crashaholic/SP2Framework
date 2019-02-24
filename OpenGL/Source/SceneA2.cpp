@@ -148,10 +148,27 @@ void SceneA2::GenerateText()
 		Manager::getInstance()->getLevel()->getScreen()->addText(text);
 	}
 		if (manager->getLevel()->getScreenName() == "confirmation") {
-			GUIText* text = gui->renderText("default", 512, 200, "Yes", 0.35f, Color(1, 1, 0), TEXT_ALIGN_MIDDLE);
+			GUIText* text = gui->renderText("default", 512, 280, "Yes", 0.35f, Color(1, 1, 0), TEXT_ALIGN_MIDDLE);
 			Manager::getInstance()->getLevel()->getScreen()->addText(text);
 
-			text = gui->renderText("default", 512, 400, "No", 0.30f, Color(1, 1, 0), TEXT_ALIGN_MIDDLE);
+			text = gui->renderText("default", 512, 480, "No", 0.30f, Color(1, 1, 0), TEXT_ALIGN_MIDDLE);
+			Manager::getInstance()->getLevel()->getScreen()->addText(text);
+		}
+		if (manager->getLevel()->getScreenName() == "confirmationundo") {
+			GUIText* text = gui->renderText("default", 512, 280, "Yes", 0.35f, Color(1, 1, 0), TEXT_ALIGN_MIDDLE);
+			Manager::getInstance()->getLevel()->getScreen()->addText(text);
+
+			text = gui->renderText("default", 512, 480, "No", 0.30f, Color(1, 1, 0), TEXT_ALIGN_MIDDLE);
+			Manager::getInstance()->getLevel()->getScreen()->addText(text);
+		}
+		if (manager->getLevel()->getScreenName() == "carselection") {
+			GUIText* text = gui->renderText("default", 512, 80, "car Two", 0.35f, Color(1, 1, 1), TEXT_ALIGN_MIDDLE);
+			Manager::getInstance()->getLevel()->getScreen()->addText(text);
+
+			text = gui->renderText("default", 512, 180, "car Three", 0.30f, Color(1, 1, 1), TEXT_ALIGN_MIDDLE);
+			Manager::getInstance()->getLevel()->getScreen()->addText(text);
+
+			text = gui->renderText("default", 512, 280, "car Four", 0.35f, Color(1, 1, 1), TEXT_ALIGN_MIDDLE);
 			Manager::getInstance()->getLevel()->getScreen()->addText(text);
 		}
 	}

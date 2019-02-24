@@ -84,7 +84,7 @@ void GUIScreen::Update()
 					std::cout << "upgrade called" << std::endl;
 					if (buttons[i]->getName() == "buycar")
 					{
-
+						Manager::getInstance()->getLevel()->setScreen("carselection");
 					}
 					if (buttons[i]->getName() == "upgradenitro")
 					{   //buy upgrade and push it to history
@@ -128,6 +128,45 @@ void GUIScreen::Update()
 					else if (buttons[i]->getName() == "denyundo")
 					{
 						Manager::getInstance()->getLevel()->setScreen("shop");
+					}
+				}
+				else if (name == "carselection")
+				{
+					if (buttons[i]->getName() == "buycartwo")
+					{
+						if (dynamic_cast<Player*>(Manager::getInstance()->getLevel()->getObject("player"))->getCarsUnlocked(2) == false)
+						{
+							Manager::getInstance()->getShop()->buyCar(dynamic_cast<Player*>(Manager::getInstance()->getLevel()->getObject("player")), 2);
+							Manager::getInstance()->getLevel()->setScreen("shop");
+						}
+						else
+						{
+							Manager::getInstance()->getLevel()->setScreen("shop");
+						}
+					}
+					else if(buttons[i]->getName() == "buycarthree")
+					{
+						if (dynamic_cast<Player*>(Manager::getInstance()->getLevel()->getObject("player"))->getCarsUnlocked(3) == false)
+						{
+							Manager::getInstance()->getShop()->buyCar(dynamic_cast<Player*>(Manager::getInstance()->getLevel()->getObject("player")), 3);
+							Manager::getInstance()->getLevel()->setScreen("shop");
+						}
+						else
+						{
+							Manager::getInstance()->getLevel()->setScreen("shop");
+						}
+					}
+					else if (buttons[i]->getName() == "buycarfour")
+					{
+						if (dynamic_cast<Player*>(Manager::getInstance()->getLevel()->getObject("player"))->getCarsUnlocked(4) == false)
+						{
+							Manager::getInstance()->getShop()->buyCar(dynamic_cast<Player*>(Manager::getInstance()->getLevel()->getObject("player")), 4);
+							Manager::getInstance()->getLevel()->setScreen("shop");
+						}
+						else
+						{
+							Manager::getInstance()->getLevel()->setScreen("shop");
+						}
 					}
 				}
 			}

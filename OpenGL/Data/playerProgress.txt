@@ -1,3 +1,5 @@
-Money=425
+Money=50
 ID=1
-Upgrade=Nitro:2,Tire:3,Engine:1
+ID=2
+ID=3
+Upgrade=Nitro:1,Tire:1,Engine:1
