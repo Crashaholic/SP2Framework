@@ -14,45 +14,6 @@ void Shop::enterShop()
 {
 }
 
-//int Shop::Buy(/*Player Player,*/Car*& Car, int Number)
-//{//4 options: Car, Nitro, Tires, Engine
-//	//if (Number == 1) {
-//	//	//Make the data of the car save if buying new car, be cause of delete
-//	//	//if (Player.getMoney() >= (Player.getCarPrice[Number - 1] * Player.getCarTeir[Number - 1])) {
-//	//	delete Car;//if/switch statement for different cars
-//	//	Car = new Car1;
-//	//	Tail->setObjNo(Number);
-//	//	Tail->setNext();
-//	//	Tail->getNext()->setBack(Tail);
-//	//	Tail = Tail->getNext();
-//	//	//Player.setMoney(Player.getMoney() - (Player.getCarPrice[Number - 1] * Player.getCarTeir[Number - 1]));
-//	//	//}
-//	//	//else{
-//	//		//Number = 0;
-//	//	//}
-//	//}
-//	//else if (Number >= 2 && Number <= 4) {
-//	//	//if (Player.getMoney() >= (Car->getTier(Number - 2) * Car->getObjMoney(Number - 1))) {//&& teir limit not reached
-//	//	Tail->setObjNo(Number);
-//	//	Tail->setNext();
-//	//	Tail->getNext()->setBack(Tail);
-//	//	Tail = Tail->getNext();
-//	//	//Player.setMoney(Player.getMoney() - (Car->getTier(Number - 2) * Car->getObjMoney(Number - 1)));
-//	//	Car->Upgrade(Number - 2);
-//	//	//}
-//	//	/*else {
-//	//		Number = 0;//This means not enough money
-//	//	}*/
-//	//}
-//	//else if (Number == 6) {
-//	//	Number = Undo(Car);
-//	//}
-//	//else {
-//	//	Number = 5;//This means item does not exists
-//	//}
-//	//return Number;
-//	/*return 0;*/
-//}
 
 void Shop::buyCar(Player *player, int carSelected)
 {
@@ -243,8 +204,18 @@ void Shop::Undo(Player *player)
 				player->lockCar(4);
 			}
 
-			tail = tail->getBack();
-			delete current;
+			if (head == tail) //if the list only has 1 node
+			{
+				delete current;
+				head = nullptr;
+				tail = nullptr;
+			}
+			else
+			{
+				tail = tail->getBack();
+				delete current;
+			}
+
 		}
 	}
 }

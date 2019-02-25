@@ -9,7 +9,6 @@ public:
 	void setNext(shopNode*);
 	void setBack(shopNode*);
 	//void setNext();
-	//void setBack();
 
 	void setUpgradeType(char type);
 	void setUpgradeTier(int tier);

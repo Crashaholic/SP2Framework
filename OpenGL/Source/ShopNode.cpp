@@ -20,20 +20,10 @@ void shopNode::setNext(shopNode* Current)
 	Next = Current;
 }
 
-//void shopNode::setNext()
-//{
-//	Next = new shopNode;
-//}
-
 void shopNode::setBack(shopNode* Current)
 {
 	Back = Current;
 }
-
-//void shopNode::setBack()
-//{
-//	Back = new shopNode;
-//}
 
 void shopNode::setUpgradeTier(int tier)
 {
