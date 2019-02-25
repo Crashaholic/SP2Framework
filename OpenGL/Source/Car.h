@@ -6,10 +6,6 @@
 #include "LightSource.h"
 #include <fstream>
 
-enum PhysicsMode {
-	PHYSICS_CAR,
-	PHYSICS_PLANE,
-};
 
 class Car : public Mesh
 {
@@ -23,8 +19,11 @@ public:
 	float currentSteer;
 	float angularVelocity;
 	Vector3 forward;
-	PhysicsMode mode;
 	void getVelocity(std::string& vel, Color& color);
+	int getWaypointID();
+	int getLaps();
+	double getTiming();
+	bool hasFinished();
 
 protected:
 
@@ -33,8 +32,13 @@ protected:
 
 private:
 
+	void updateWaypoint();
+	bool finished;
+	int laps;
+	double timer;
 	std::string input;
 	float torqueRot;
+	int waypointID;
 
 	float engineAcceleration;
 	float reverseAcceleration;

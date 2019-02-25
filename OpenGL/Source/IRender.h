@@ -24,11 +24,15 @@ public:
 	virtual void setTexture(const char* newTexture);
 	virtual void setColor(Vector3 color, float alpha);
 	std::string getName();
+	bool isEnabled();
+	void setEnabled(bool state);
 
 private:
 	unsigned int textureID;
 	unsigned int vao;
 	unsigned int vbo;
+
+	bool enabled;
 
 	std::string name;
 	Vector3 pos, scale;

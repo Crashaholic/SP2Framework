@@ -130,6 +130,13 @@ void GUIScreen::Update(double dt)
 							dynamic_cast<Player*>(level->getObject("player2"))->setCar(dynamic_cast<Car*>(level->getObject("car2")));
 						}
 					}
+					else if (name == "endgame") {
+
+						if (buttons[i]->getAction() == "backtomainmenu") {
+							manager->setLevel("pregame");
+							manager->getLevel()->setScreen("mainmenu");
+						}
+					}
 				}
 
 				
@@ -173,6 +180,17 @@ void GUIScreen::Update(double dt)
 
 
 
+}
+
+IRender* GUIScreen::getItem(std::string name) {
+	for (int i = 0; i < renderables.size(); i++)
+	{
+		if (renderables[i]->getName() == name)
+		{
+			return renderables[i];
+		}
+	}
+	return nullptr;
 }
 
 void GUIScreen::removeItem(std::string name)

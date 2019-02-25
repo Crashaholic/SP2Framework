@@ -7,14 +7,15 @@
 #include <MatrixStack.h>
 #include "QuadTree.h"
 #include "LightSource.h"
+#include "Waypoint.h"
 
 class Level
 {
 public:
-	Level(const char* levelPath);
+	Level(const char* levelPath, std::vector<Waypoint*>* waypoints);
 	~Level();
 
-	void Load(std::string levelPath);
+	void Load(std::string levelPath, std::vector<Waypoint*>* waypoints);
 	void setScreen(std::string screen);
 	void spawnObject(Mesh* m);
 
@@ -29,11 +30,13 @@ public:
 	QuadTree* getTree();
 	GUIScreen* getScreen();
 	std::string getScreenName();
+	int getTotalLaps();
 
 private:
 
 	void renderSkybox();
 	void renderMesh(Mesh* mesh);
+	int totalLaps;
 	Cursor* cursor;
 	QuadTree* tree;
 	std::string currentScreen;

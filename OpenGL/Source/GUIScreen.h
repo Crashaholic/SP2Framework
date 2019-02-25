@@ -22,6 +22,7 @@ public:
 	void addButton(GUIButton* button);
 	void addTexture(GUITexture* texture);
 	void removeItem(std::string name);
+	IRender* getItem(std::string name);
 	void addText(GUIText* text);
 	void setCursor(Cursor* cursor);
 

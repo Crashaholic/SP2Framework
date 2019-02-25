@@ -241,23 +241,25 @@ void Mesh::Translate(MS& modelStack, float x, float y, float z) {
 
 void Mesh::Rotate(MS& modelStack, float angle, float x, float y, float z) {
 
-	
+	//Vector3 rot = Vector3(x, y, z);
+	//if (Collision::checkCollisionR(this, rot, {}).size() == 0) {
 
-	if (x == 1) {
-		obb->setPosAxis(position + Vector3(0, defaultObb->getHalf().y, 0), Utility::rotatePointByX(obb->getX(), angle),
-			Utility::rotatePointByX(obb->getY(), angle),
-			Utility::rotatePointByX(obb->getZ(), angle));
-	}
-	else if (y == 1) {
-		obb->setPosAxis(position + Vector3(0, defaultObb->getHalf().y, 0), Utility::rotatePointByY(obb->getX(), angle),
-			Utility::rotatePointByY(obb->getY(), angle),
-			Utility::rotatePointByY(obb->getZ(), angle));
-	}
-	else if (z == 1) {
-		obb->setPosAxis(position + Vector3(0, defaultObb->getHalf().y, 0), Utility::rotatePointByZ(obb->getX(), angle),
-			Utility::rotatePointByZ(obb->getY(), angle),
-			Utility::rotatePointByZ(obb->getZ(), angle));
-	}
+		if (x == 1) {
+			obb->setPosAxis(position + Vector3(0, defaultObb->getHalf().y, 0), Utility::rotatePointByX(obb->getX(), angle),
+				Utility::rotatePointByX(obb->getY(), angle),
+				Utility::rotatePointByX(obb->getZ(), angle));
+		}
+		else if (y == 1) {
+			obb->setPosAxis(position + Vector3(0, defaultObb->getHalf().y, 0), Utility::rotatePointByY(obb->getX(), angle),
+				Utility::rotatePointByY(obb->getY(), angle),
+				Utility::rotatePointByY(obb->getZ(), angle));
+		}
+		else if (z == 1) {
+			obb->setPosAxis(position + Vector3(0, defaultObb->getHalf().y, 0), Utility::rotatePointByZ(obb->getX(), angle),
+				Utility::rotatePointByZ(obb->getY(), angle),
+				Utility::rotatePointByZ(obb->getZ(), angle));
+		}
+	/*}*/
 
 	modelStack.Rotate(angle, x, y, z);
 

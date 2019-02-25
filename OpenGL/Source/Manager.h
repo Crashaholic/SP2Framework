@@ -12,6 +12,7 @@
 #include "Level.h"
 #include <experimental/filesystem>
 #include <iostream>
+#include "Waypoint.h"
 
 enum RACE_STATE {
 	RACE_IDLE,
@@ -42,11 +43,16 @@ public:
 
 	ShaderProgram* getShader(std::string name);
 	std::map<std::string, ShaderProgram*>* getShaders();
+	std::vector<Waypoint*>* getWaypoints();
+	int getPlacement(std::string name);
+
 
 private:
 
 	Manager();
 	static Manager* instance;
+
+
 	double raceStartCountdown;
 	Camera* mainmenu;
 	
@@ -59,6 +65,7 @@ private:
 	std::string currentLevel;
 	std::map<std::string, Level*> levels;
 	std::map<std::string, ShaderProgram*> shaders;
+	std::vector<Waypoint*> waypoints;
 };
 
 #endif

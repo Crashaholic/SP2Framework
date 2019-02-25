@@ -120,6 +120,7 @@
     <ClCompile Include="Source\Utility.cpp" />
     <ClCompile Include="Source\Texture.cpp" />
     <ClCompile Include="Source\Transformation.cpp" />
+    <ClCompile Include="Source\Waypoint.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Level.h" />
@@ -161,6 +162,7 @@
     <ClInclude Include="Source\Utility.h" />
     <ClInclude Include="Source\Texture.h" />
     <ClInclude Include="Source\Transformation.h" />
+    <ClInclude Include="Source\Waypoint.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="playerProgress.txt" />

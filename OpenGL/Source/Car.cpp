@@ -26,14 +26,18 @@ Car::Car(const char* meshName, Primitive* primitive, std::string input, unsigned
 
 	engineAcceleration = brakingAcceleration = reverseAcceleration = 0.0f;
 	isOccupied = false;
+	finished = false;
 	steerAmount = 0.0f;
 	currentSteer = -90.0f;
+	torqueRot = 0.0f;
+	timer = 0.0;
+	waypointID = 0;
+	laps = 0;
 
 	start = false;
 
 	previousInputs[0] = previousInputs[1] = 0;
 
-	mode = PHYSICS_CAR;
 	thrusters = 300.0f;
 	thrust = 0.0f;
 	torqueRot = 0.0f;
@@ -60,15 +64,11 @@ void Car::Update(double dt)
 
 	onGroundCheck(dt);
 
-
-
 	float accInput = 0.0f;
 	float steerInput = 0.0f;
 
 	if (isOccupied)
 	{
-
-
 
 		// Input 0 - W / I
 		// Input 1 - A / J
@@ -94,7 +94,7 @@ void Car::Update(double dt)
 		float thrustInput = 0.0f;
 
 		// Modify
-		if (Application::IsKeyPressed(input[4]) /*&& thrusters > 0.0f*/) {
+		if (Application::IsKeyPressed(input[4]) && thrusters > 0.0f) {
 			std::cout << thrusters << std::endl;
 			thrustInput = 1.0f;
 			thrust = Utility::Lerp(thrust, 1.0f, 8.0f * dt);
@@ -111,12 +111,12 @@ void Car::Update(double dt)
 
 		
 		velocity += calcAcceleration(accInput, steerInput, dt);
+
+		if(Manager::getInstance()->getGameState() == RACE_STARTED && !hasFinished())
+			timer += dt;
 	}
 
 	velocity += calcFriction(accInput, steerInput, dt);
-
-	//if (name == "car")
-	//	std::cout << "R: " << velocity << std::endl;
 
 
 	std::vector<Mesh*> collided = Collision::checkCollisionTypes(this, velocity, { "car", "ai"});
@@ -126,102 +126,126 @@ void Car::Update(double dt)
 			Car* car = dynamic_cast<Car*>(collided[i]);
 			if (car == nullptr) continue;
 
-			float kForwardDiff = 1.0f - abs(car->forward.Dot(-forward));
-			float finalVelCar = 0.0f;
-			float finalVelCar2 = 0.0f;
+			Vector3 target = car->velocity * 1.5f;
 
-			Collision::Collide(velocity.Length() * 7.0, car->velocity.Length(), 5, 3, finalVelCar, finalVelCar2, 10);
-
-			Vector3 vectorToCenter = car->position - position;
-			Vector3 diff = vectorToCenter - forward;
-
-			int t = 0;
-			if (diff.x > 0)
-			{
-				t = (diff.z > 0) ? -1 : 1;
-			}
-			else
-			{
-				t = (diff.z > 0) ? 1 : -1;
-			}
+				float kForwardDiff = 1.0f - abs(car->forward.Dot(-forward));
+				float finalVelCar = 0.0f;
+				float finalVelCar2 = 0.0f;
 
 
-			//if(finalVelCar != 0.0f)
-			//	finalVelCar2 = finalVelCar2 * 0.60f;
+				Collision::Collide(velocity.Length() * 6.5, car->velocity.Length(), 5, 3, finalVelCar, finalVelCar2, 10);
 
+				Vector3 vectorToCenter = car->position - position;
+				Vector3 diff = vectorToCenter - forward;
 
-			Vector3 v = (forward * finalVelCar2 * 0.70f) - car->velocity;
-
-			std::vector<Mesh*> collided = Collision::checkCollisionT(car, v, { "ground", "ramp", "rampsupport", "pad1" });
-			if (v != Vector3(0, 0, 0) && collided.size() == 0)
-			{
-				car->velocity += v;
-				car->torqueRot = t * velocity.Length() * 12.0f;
-			}/*
-			else
-			{
-				for (int i = 0; i < collided.size(); i++)
+				int t = 0;
+				if (diff.x > 0)
 				{
-
-					if (accInput == -1 && velocity.Dot(forward) >= 0.0f)
-					{
-						velocity.x = velocity.z = 0;
-						break;
-					}
-					else
-					{
-						std::cout << ".." << std::endl;
-					}
+					t = (diff.z > 0) ? -1 : 1;
 				}
-			}*/
+				else
+				{
+					t = (diff.z > 0) ? 1 : -1;
+				}
+
+				if (finalVelCar2 < 0.1f) finalVelCar2 = 0.1f;
+				//if(finalVelCar != 0.0f)
+				//	finalVelCar2 = finalVelCar2 * 0.60f;
+
+				if (finalVelCar2 != 0.0f) {
+
+					Vector3 v = (forward * finalVelCar2 * 1.0f) - car->velocity;
+					Vector3 v2 = v * 1.50;
+					std::vector<Mesh*> collided = Collision::checkCollisionT(car, v2, { "ground", "ramp", "rampsupport", "pad1" });
+					if (collided.size() == 0)
+					{
+						car->velocity += v;
+					}
+					else {
+						for (int i = 0; i < collided.size(); i++) {
+
+
+							//if (collided[i]->getType() == "environment") {
+							//	if (car->velocity.Length() > 0.1f) {
+							//		car->velocity.x = -car->velocity.x;
+							//		car->velocity.z = -car->velocity.z;
+							//	}
+
+
+							//	//if (abs(forward.Dot(collided[i]->getOBB()->getZ())) < 0.5f) {
+							//	//	position += velocity;
+							//	//}
+							//}
+						}
+					}
+
+				}
+			
 		}
 	}
 
 	
-	//float deltaRotY = Utility::Lerp(torqueRot , 0, 1.0 * dt);
-	//float targetRotY = Utility::Lerp(rotation.y, rotation.y + deltaRotY, 20.0f * dt);
-	//Vector3 deltaRotation = Vector3(0, deltaRotY, 0);
-
-	//// Rotate only if there is no collision
-	//if (Collision::checkCollisionR(this, deltaRotation, { "ground", "pad1" }).size() == 0) {
-	//	torqueRot = deltaRotY;
-	//	rotation.y = targetRotY;
-	//}
-	//else
-	//{
-	//	std::cout << "cant rotate" << std::endl;
-	//}
-
 	collided = Collision::checkCollisionT(this, velocity, { "ground", "ramp", "rampsupport", "pad1" });
-	if (velocity != Vector3(0, 0, 0) && collided.size() == 0)
+	if (collided.size() == 0)
 	{
 		position += velocity;
 	}
 	else {
+
 		for (int i = 0; i < collided.size(); i++) {
 			
-			//if (accInput != -1 && forward.Dot(collided[i]->position - position) > 0.0f)
-			//{
-			//	velocity.x = velocity.z = 0;
-			//	break;
-			//}
-			//else if(accInput == 1 && forward.Dot(collided[i]->position - position) > 0.0f)
-			//{
-			//	velocity.x = velocity.z = 0;
-			//	break;
-			//	std::cout << ".." << std::endl;
-			//}
-			//if (forward.Dot(collided[i]->position - position) > 0.0f)
-			//{
-			if(accInput == 0)
+			if (accInput == 0) {
 				velocity.x = velocity.z = 0;
-			//	break;
-			//}
+			}
+			else {
+				if (collided[i]->getType() == "environment") {
+
+					if (velocity.Length() > 0.1f) {
+						velocity.x = -velocity.x;
+						velocity.z = -velocity.z;
+
+					}
+
+					if (abs(forward.Dot(collided[i]->getOBB()->getZ())) < 0.5f) {
+						position += velocity;
+					}
+				}
+
+				
+			}
+
+
 		}
+
 	}
 	
-	std::cout << "V: " << velocity << std::endl;
+	//std::cout << "V: " << velocity << std::endl;
 	Manager::getInstance()->getLevel()->getTree()->Update(this);
+
+	if(isOccupied)
+		updateWaypoint();
+}
+
+void Car::updateWaypoint() {
+	std::vector<Waypoint*>* waypoints = Manager::getInstance()->getWaypoints();
+	int nextWaypoint = (waypointID == waypoints->size() - 1) ? 0 : waypointID + 1;
+
+	Waypoint* next = waypoints->at(nextWaypoint);
+	if (next != nullptr) {
+
+		if (Collision::checkCollision(*obb, *next->getOBB())) {
+			waypointID++;
+			if (waypointID == waypoints->size()) waypointID = 0;
+			if (waypointID == 1) laps++;
+
+			if (laps > Manager::getInstance()->getLevel()->getTotalLaps()) {
+				finished = true;
+			}
+		}
+
+	}
+	std::cout << name << ": " << laps << std::endl;
+
 }
 
 
@@ -240,17 +264,19 @@ Vector3 Car::calcAcceleration(float accInput, float steerInput, float dt)
 		steerAngle = -steerAngle;
 
 	// Linearly interpolate for smooth transitions
-	float newCurrentSteer = Utility::Lerp(currentSteer, currentSteer + steerAngle, (float)dt * 0.70f);
-	
-	Vector3 deltaRotation = Vector3(0, -newCurrentSteer + torqueRot - rotation.y, 0);
+	float newCurrentSteer = Utility::Lerp(currentSteer, currentSteer + steerAngle, (float)dt * 0.50f);
+	//
+	Vector3 deltaRotation = Vector3(0, -newCurrentSteer - rotation.y, 0);
 
-	// Rotate only if there is no collision
-	if (Collision::checkCollisionR(this, deltaRotation, { "ground", "ramp", "rampsupport", "pad1" }).size() == 0) {
+	//// Rotate only if there is no collision
+	if (Collision::checkCollisionR(this, deltaRotation, { "ground", "ramp", "rampsupport", "pad1", "car2", "car" }).size() == 0) {
+
+		rotation.y = -newCurrentSteer;
 		currentSteer = newCurrentSteer;
-		rotation.y = -newCurrentSteer + torqueRot;
-
 	}
 
+
+	
 
 	// Determine the steered forward of car
 	float angle = 90.0f + currentSteer;
@@ -387,6 +413,23 @@ void Car::getVelocity(std::string& vel, Color& color) {
 	{
 		color.Set(1, 0, 0);
 	}
+}
+double Car::getTiming() {
+	return timer;
+}
+
+int Car::getWaypointID() {
+	return waypointID;
+}
+
+int Car::getLaps() {
+	if (laps == 0)
+		return 1;
+	return laps;
+}
+
+bool Car::hasFinished() {
+	return finished;
 }
 
 // Friction

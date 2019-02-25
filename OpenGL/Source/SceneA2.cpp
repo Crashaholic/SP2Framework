@@ -172,7 +172,85 @@ void SceneA2::GenerateText()
 					Application::winHeight / 2.0f, drawText, 0.5f, Color(1, 0, 0), TEXT_ALIGN_MIDDLE);
 				level->getScreen()->addText(text);
 			}
+			else if (state == RACE_STARTED) {
 
+
+
+
+
+				Car* car = dynamic_cast<Car*>(level->getObject("car"));
+
+				if (car->hasFinished()) {
+
+					IRender* grayTexture = level->getScreen()->getItem("endgamebot");
+					if (!grayTexture->isEnabled()) grayTexture->setEnabled(true);
+
+
+					text = gui->renderText("digital", Application::winWidth / 2.0f - 10.0f,
+						100, std::to_string(car->getTiming()), 0.5f, Color(1, 0, 0), TEXT_ALIGN_MIDDLE);
+					level->getScreen()->addText(text);
+				}
+				else {
+					text = gui->renderText("digital", Application::winWidth / 2.0f - 10.0f,
+						100, std::to_string(manager->getPlacement("car")), 0.5f, Color(1, 0, 0), TEXT_ALIGN_MIDDLE);
+					level->getScreen()->addText(text);
+
+				}
+
+				Car* car2 = dynamic_cast<Car*>(level->getObject("car2"));
+				if (car2->hasFinished()) {
+
+					IRender* grayTexture = level->getScreen()->getItem("endgametop");
+					if (!grayTexture->isEnabled()) grayTexture->setEnabled(true);
+
+					text = gui->renderText("digital", Application::winWidth / 2.0f - 10.0f,
+						Application::winHeight / 2.0f + 100, std::to_string(car2->getTiming()), 0.5f, Color(1, 0, 0), TEXT_ALIGN_MIDDLE);
+					level->getScreen()->addText(text);
+				}
+				else {
+
+					text = gui->renderText("digital", Application::winWidth / 2.0f - 10.0f,
+						Application::winHeight / 2.0f + 100, std::to_string(manager->getPlacement("car2")), 0.5f, Color(1, 0, 0), TEXT_ALIGN_MIDDLE);
+					level->getScreen()->addText(text);
+
+				}
+
+				if (car->hasFinished() && car2->hasFinished()) {
+					level->setScreen("endgame");
+					manager->setGameState(RACE_COMPLETED);
+				}
+
+			}
+
+		}
+		else if (level->getScreenName() == "endgame") {
+			Car* car = dynamic_cast<Car*>(level->getObject("car"));
+			Car* car2 = dynamic_cast<Car*>(level->getObject("car2"));
+			std::string winner = (car->getTiming() < car2->getTiming()) ? "Player1 wins!" : "Player2 wins!";
+
+			text = gui->renderText("digital", Application::winWidth / 2.0f - 20,
+				100, winner, 0.5f, Color(1, 1, 1), TEXT_ALIGN_MIDDLE);
+			level->getScreen()->addText(text);
+			
+			text = gui->renderText("digital", Application::winWidth / 2.0f - 70,
+				Application::winHeight / 2.0f - 25, "Player One's Timing: " + std::to_string(car->getTiming()), 0.3f, Color(1, 1, 0), TEXT_ALIGN_MIDDLE);
+			level->getScreen()->addText(text);
+
+			text = gui->renderText("digital", Application::winWidth / 2.0f - 70,
+				Application::winHeight / 2.0f + 25, "Player Two's Timing: " + std::to_string(car2->getTiming()), 0.3f, Color(1, 1, 0), TEXT_ALIGN_MIDDLE);
+			level->getScreen()->addText(text);
+			
+
+			text = gui->renderText("default", 502, 565, "Next Level", 0.4f, Color(1, 1, 1), TEXT_ALIGN_MIDDLE);
+			level->getScreen()->addText(text);
+
+			text = gui->renderText("default", 356, 664, "Restart", 0.4f, Color(1, 1, 1), TEXT_ALIGN_MIDDLE);
+			level->getScreen()->addText(text);
+
+			text = gui->renderText("default", 656, 664, "Main Menu", 0.4f, Color(1, 1, 1), TEXT_ALIGN_MIDDLE);
+			level->getScreen()->addText(text);
+
+			
 		}
 	}
 	else if (manager->getLevelName() == "pregame") {

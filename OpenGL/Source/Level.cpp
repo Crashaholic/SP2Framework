@@ -6,12 +6,12 @@
 #include "Application.h"
 
 
-Level::Level(const char* levelPath)
+Level::Level(const char* levelPath, std::vector<Waypoint*>* waypoints)
 {
 	Mtx44 proj;
 	proj.SetToPerspective(45.0f, (float)Application::winWidth / (float)Application::winHeight, 0.1f, 10000.0f);
 	projectionStack.LoadMatrix(proj);
-	Load(levelPath);
+	Load(levelPath, waypoints);
 
 	for (int i = 0; i < 2; i++)
 		lightSources.push_back(new LightSource());
@@ -44,8 +44,12 @@ void Level::setScreen(std::string screen) {
 		Manager::getInstance()->setGameState(RACE_STARTING);
 }
 
+int Level::getTotalLaps() {
+	return totalLaps;
+}
 
-void Level::Load(std::string path) {
+
+void Level::Load(std::string path, std::vector<Waypoint*>* waypoints) {
 
 	tree = new QuadTree(Vector3(-1500, 0, -1500), Vector3(1500, 0, 1500));
 	std::ifstream handle(path);
@@ -89,7 +93,11 @@ void Level::Load(std::string path) {
 			currentScreen = args[1];
 			continue;
 		}
-		else if (Utility::startsWith(line, "name"))
+		else if (Utility::startsWith(line, "laps")) {
+			totalLaps = std::stoi(args[1]);
+			continue;
+		}
+		else if (Utility::startsWith(line, "name") || Utility::startsWith(line, "id"))
 		{
 			current = new Object();
 			collection[category].push_back(current);
@@ -207,6 +215,23 @@ void Level::Load(std::string path) {
 				}
 
 
+
+
+			}
+		}
+		else if (c.first == "checkpoints") {
+			std::vector<Object*>* objs = &c.second;
+			for (int i = 0; i < (int)objs->size(); i++) {
+				current = objs->at(i);
+
+				int id = std::stoi(current->Get("id"));
+				std::vector<std::string> pos = Utility::splitLine(current->Get("position"), ',');
+				Vector3 position = Vector3(std::stof(pos[0]), std::stof(pos[1]), std::stof(pos[2]));
+				std::vector<std::string> scale = Utility::splitLine(current->Get("scale"), ',');
+				Vector3 scal = Vector3(std::stof(scale[0]), std::stof(scale[1]), std::stof(scale[2]));
+
+				
+				waypoints->push_back(new Waypoint(position, scal));
 
 
 			}
@@ -457,6 +482,8 @@ QuadTree* Level::getTree()
 
 Mesh* Level::getObject(std::string name)
 {
+	if (objects.find(name) == objects.end())
+		return nullptr;
 	return objects[name];
 }
 

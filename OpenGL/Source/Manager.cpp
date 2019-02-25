@@ -25,7 +25,7 @@ Manager::Manager()
 	for (const auto & entry : std::experimental::filesystem::directory_iterator(path)) {
 		currentLevel = Utility::splitLine(entry.path().filename().string(), '.')[0];
 		std::cout << currentLevel << std::endl;
-		levels[currentLevel] = new Level(entry.path().string().c_str());
+		levels[currentLevel] = new Level(entry.path().string().c_str(), &waypoints);
 	}
 
 
@@ -45,6 +45,10 @@ Manager::~Manager()
 
 	savePlayerProgress();
 
+	for (int i = 0; i < waypoints.size(); i++)
+		if(waypoints[i] != nullptr)
+			delete waypoints[i];
+
 	for (auto const& shader : shaders)
 		if (shader.second != nullptr)
 			delete shader.second;
@@ -63,11 +67,20 @@ Manager* Manager::getInstance()
 	return instance;
 }
 
+
+
 void Manager::setLevel(std::string name) {
 
 	currentLevel = name;
 
 	if (name == "game" || name == "pregame") {
+
+		Car* car = dynamic_cast<Car*>(levels[name]->getObject("car"));
+		if (car != nullptr) {
+			//delete levels[name];
+			//levels[name] = new Level("Data//Level//game.txt", &waypoints);
+		}
+
 		Primitive* quad = Primitives::generateQuad(Color(1, 1, 1));
 		levels[currentLevel]->spawnObject(new Mesh("skyboxFront", quad, LoadTGA("Image//front.tga")));
 		levels[currentLevel]->spawnObject(new Mesh("skyboxTop", quad, LoadTGA("Image//top.tga")));
@@ -89,8 +102,11 @@ void Manager::setLevel(std::string name) {
 void Manager::setGameState(RACE_STATE state)
 {
 	gameState = state;
-	if (state == RACE_STARTING)
+	if (state == RACE_STARTING) {
+		levels[currentLevel]->getScreen()->getItem("endgametop")->setEnabled(false);
+		levels[currentLevel]->getScreen()->getItem("endgamebot")->setEnabled(false);
 		raceStartCountdown = 6.0f;
+	}
 }
 
 RACE_STATE Manager::getGameState()
@@ -140,6 +156,11 @@ Camera* Manager::getCamera() {
 std::string& Manager::getLevelName() {
 	return currentLevel;
 }
+
+std::vector<Waypoint*>* Manager::getWaypoints() {
+	return &waypoints;
+}
+
 
 
 void Manager::loadPlayerProgress()
@@ -258,3 +279,70 @@ void Manager::savePlayerProgress()
 	playerProgress.close();
 }
 
+
+int Manager::getPlacement(std::string name) {
+	
+	Car* car1 = dynamic_cast<Car*>(levels[currentLevel]->getObject("car"));
+	Car* car2 = dynamic_cast<Car*>(levels[currentLevel]->getObject("car2"));
+
+	int lapDiff = car2->getLaps() - car1->getLaps();
+
+	if (lapDiff > 0) {
+		if (name == "car") {
+			return 2;
+		}
+		else {
+			return 1;
+		}
+	}
+	else if (lapDiff < 0) {
+		if (name == "car"){
+			return 1;
+		}
+		else {
+			return 2;
+		}
+	}
+	else {
+
+		int car2ID = 0;
+		if (car2->getWaypointID() == 0) {
+			if (car2->getLaps() != 1)
+				car2ID = 11;
+		}
+		else {
+			car2ID = car2->getWaypointID();
+		}
+
+		int carID = 0;
+		if (car1->getWaypointID() == 0) {
+			if (car1->getLaps() != 1)
+				carID = 11;
+		}
+		else {
+			carID = car1->getWaypointID();
+		}
+
+
+		int checkpointDiff = car2ID - carID;
+		if (checkpointDiff > 0) {
+			return (name == "car") ? 2 : 1;
+		}
+		else if (checkpointDiff < 0) {
+			return (name == "car") ? 1 : 2;
+		}
+		else {
+			int nextWaypoint = (car1->getWaypointID() + 1 == waypoints.size() ? 0 : car1->getWaypointID() + 1);
+			Vector3 carDiff = waypoints[nextWaypoint]->getOBB()->getPos() - car1->position;
+			carDiff.y = 0;
+			Vector3 car2Diff = waypoints[nextWaypoint]->getOBB()->getPos() - car2->position;
+			car2Diff.y = 0;
+			if (carDiff.Length() < car2Diff.Length()) {
+				return (name == "car") ? 1 : 2;
+			}
+			else {
+				return (name == "car2") ? 1 : 2;
+			}
+		}
+	}
+}

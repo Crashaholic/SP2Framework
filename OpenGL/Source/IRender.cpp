@@ -22,6 +22,7 @@ IRender::IRender(std::string name, Vector3 pos, float rot, Vector3 scale, unsign
 	this->scale = scale;
 	this->textureID = textureID;
 	this->isSolidColor = false;
+	enabled = true;
 }
 
 IRender::IRender(std::string name, Vector3 pos, float rot, Vector3 scale, Vector3 color, float alpha)
@@ -35,6 +36,8 @@ IRender::IRender(std::string name, Vector3 pos, float rot, Vector3 scale, Vector
 	this->color = color;
 	this->alpha = alpha;
 	this->isSolidColor = true;
+	enabled = true;
+
 }
 
 
@@ -46,7 +49,7 @@ IRender::~IRender()
 
 void IRender::draw()
 {
-
+	if (!enabled) return;
 	/*glBindVertexArray(this->vao);*/
 
 	float SCRWIDTH = (float)Application::winWidth;
@@ -129,4 +132,13 @@ void IRender::setColor(Vector3 color, float alpha)
 std::string IRender::getName()
 {
 	return name;
+}
+
+
+bool IRender::isEnabled() {
+	return enabled;
+}
+
+void IRender::setEnabled(bool state) {
+	enabled = state;
 }
