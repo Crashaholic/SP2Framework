@@ -115,7 +115,7 @@ void SceneA2::GenerateText()
 
 		if (manager->getLevel()->getScreenName() == "mainmenu") {
 
-			GUIText* text = gui->renderText("default", 196, 150, "Play", 0.4f, Color(1, 1, 1), TEXT_ALIGN_MIDDLE);
+		/*	GUIText* text = gui->renderText("default", 196, 150, "Play", 0.4f, Color(1, 1, 1), TEXT_ALIGN_MIDDLE);
 			Manager::getInstance()->getLevel()->getScreen()->addText(text);
 
 			text = gui->renderText("default", 196, 315, "Tutorial", 0.35f, Color(1, 1, 1), TEXT_ALIGN_MIDDLE);
@@ -125,7 +125,44 @@ void SceneA2::GenerateText()
 			Manager::getInstance()->getLevel()->getScreen()->addText(text);
 
 			text = gui->renderText("default", 196, 645, "Exit", 0.4f, Color(1, 1, 1), TEXT_ALIGN_MIDDLE);
+			Manager::getInstance()->getLevel()->getScreen()->addText(text);*/
+
+
+			// TUTORIAL SECTION
+
+
+			/*GUIText* text = gui->renderText("default", 451, 109, "[A]", 0.4f, Color(1, 1, 1), TEXT_ALIGN_MIDDLE);
 			Manager::getInstance()->getLevel()->getScreen()->addText(text);
+		
+			text = gui->renderText("default", 480, 159, "Hold [A] to steer left", 0.4f, Color(1, 1, 1), TEXT_ALIGN_MIDDLE);
+			Manager::getInstance()->getLevel()->getScreen()->addText(text);*/
+
+			/*GUIText* text = gui->renderText("default", 451, 109, "[D]", 0.4f, Color(1, 1, 1), TEXT_ALIGN_MIDDLE);
+			Manager::getInstance()->getLevel()->getScreen()->addText(text);
+
+			text = gui->renderText("default", 480, 159, "Hold [D] to steer right", 0.4f, Color(1, 1, 1), TEXT_ALIGN_MIDDLE);
+			Manager::getInstance()->getLevel()->getScreen()->addText(text);*/
+
+			/*GUIText* text = gui->renderText("default", 451, 109, "[W]", 0.4f, Color(1, 1, 1), TEXT_ALIGN_MIDDLE);
+			Manager::getInstance()->getLevel()->getScreen()->addText(text);
+
+			text = gui->renderText("default", 480, 159, "Hold [W] to accelerate", 0.4f, Color(1, 1, 1), TEXT_ALIGN_MIDDLE);
+			Manager::getInstance()->getLevel()->getScreen()->addText(text);*/
+			
+			/*GUIText* text = gui->renderText("default", 451, 109, "[V]", 0.4f, Color(1, 1, 1), TEXT_ALIGN_MIDDLE);
+			Manager::getInstance()->getLevel()->getScreen()->addText(text);
+
+			text = gui->renderText("default", 480, 159, "Hold [V] to activate", 0.4f, Color(1, 1, 1), TEXT_ALIGN_MIDDLE);
+			Manager::getInstance()->getLevel()->getScreen()->addText(text);*/
+			
+			/*GUIText* text = gui->renderText("default", 451, 109, "[S]", 0.4f, Color(1, 1, 1), TEXT_ALIGN_MIDDLE);
+			Manager::getInstance()->getLevel()->getScreen()->addText(text);
+
+			text = gui->renderText("default", 480, 159, "Hold [S] to brake", 0.4f, Color(1, 1, 1), TEXT_ALIGN_MIDDLE);
+			Manager::getInstance()->getLevel()->getScreen()->addText(text);*/
+
+			GUIText* text = gui->renderText("default", 480, 159, "To drift, steer ([A] or [D]) without pressing [W].", 0.4f, Color(1, 1, 1), TEXT_ALIGN_MIDDLE);
+			Manager::getInstance()->getLevel()->getScreen()->addText(text); 
 		}
 	}
 }
