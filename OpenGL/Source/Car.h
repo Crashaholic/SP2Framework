@@ -5,7 +5,15 @@
 #include "Mesh.h"
 #include "LightSource.h"
 #include <fstream>
+#include "soloud.h"
+#include "soloud_wav.h"
 
+
+enum soundEffects
+{
+	SFX_ENTEROREXIT,
+	SFX_DRIVING
+};
 
 class Car : public Mesh
 {
@@ -24,6 +32,20 @@ public:
 	int getLaps();
 	double getTiming();
 	bool hasFinished();
+
+
+	void setEngineTier(int newTier);
+	void setNitroTier(int newTier);
+	void setTireTier(int newTier);
+	void getEngineTierText(std::string& tier, Color& color);
+	void getNitroTierText(std::string& tier, Color& color);
+	void getTireTierText(std::string& tier, Color& color);
+	int getEngineTier();
+	int getNitroTier();
+	int getTireTier();
+
+	SoLoud::Soloud carEngine;
+	SoLoud::Wav carSounds[2];
 
 protected:
 
@@ -61,7 +83,10 @@ private:
 	float previousInputs[2];
 
 
-
+	//Tier range: 1 to 3 (1 is the worst, 3 is the best)
+	int engineTier; //Increase max velocity
+	int nitroTier; //Increase acceleration & unlimit velocity for short duration
+	int tireTier; //Allow sharper turns in shorter durations
 
 
 };

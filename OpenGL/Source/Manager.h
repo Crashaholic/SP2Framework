@@ -13,6 +13,7 @@
 #include <experimental/filesystem>
 #include <iostream>
 #include "Waypoint.h"
+#include "Shop.h"
 
 enum RACE_STATE {
 	RACE_IDLE,
@@ -27,8 +28,8 @@ public:
 	~Manager();
 	static Manager* getInstance();
 
-	void loadPlayerProgress();
-	void savePlayerProgress();
+	void loadPlayerProgress(Player* player);
+	void savePlayerProgress(Player* player);
 
 	void setGameState(RACE_STATE state);
 	RACE_STATE getGameState();
@@ -45,7 +46,7 @@ public:
 	std::map<std::string, ShaderProgram*>* getShaders();
 	std::vector<Waypoint*>* getWaypoints();
 	int getPlacement(std::string name);
-
+	Shop* getShop();
 
 private:
 
@@ -55,7 +56,7 @@ private:
 
 	double raceStartCountdown;
 	Camera* mainmenu;
-	
+	Shop* shop;
 	RACE_STATE gameState;
 	bool carOneUnlock;
 	bool carTwoUnlock;

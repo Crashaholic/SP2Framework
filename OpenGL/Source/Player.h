@@ -19,7 +19,9 @@ public:
 
 	void Update(double dt);
 	void setCameraMode(CAMERA_MODE mode);
-
+	void unlockCar(int carSelected);
+	void lockCar(int carSelected);
+	void setMoney(int change);
 	Camera* getCamera();
 	Camera* getTopdownCamera();
 	void setCar(Car* car);
@@ -28,6 +30,9 @@ public:
 	void switchCameraMode();
 	bool isInVehicle;
 
+	int getMoney();
+	void getMoneyText(std::string& moneyString, Color& color);
+	bool getCarsUnlocked(int carID); 
 
 
 private:
@@ -39,6 +44,12 @@ private:
 	Camera* topdown;
 	Camera* fixedCar;
 	float walkSpeed;
+	int money;
+
+	bool carOneUnlock;
+	bool carTwoUnlock;
+	bool carThreeUnlock;
+	bool carFourUnlock;
 };
 
 #endif

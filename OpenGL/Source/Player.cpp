@@ -18,6 +18,10 @@ Player::Player(const char* meshName, Primitive* primitive, std::string input, un
 	fixedCar = new Camera(position + Vector3(0.0f, 8.0f, -6.0f));
 	topdown = new Camera(position + Vector3(0.0f, 8.0f, -6.0f));
 	
+	carOneUnlock = true;
+	carTwoUnlock = false;
+	carThreeUnlock = false;
+	carFourUnlock = false;
 }
 
 Player::Player()
@@ -133,6 +137,64 @@ void Player::Update(double dt) {
 
 }
 
+bool Player::getCarsUnlocked(int carID)
+{
+	if (carID == 1)
+		return carOneUnlock;
+	if (carID == 2)
+		return carTwoUnlock;
+	if (carID == 3)
+		return carThreeUnlock;
+	if (carID == 4)
+		return carFourUnlock;
+}
+
+void Player::getMoneyText(std::string& moneyString, Color& color)
+{
+	moneyString = std::to_string(money);
+	color.Set(1, 1, 0);
+
+}
+
+
+
+void Player::setMoney(int change)
+{
+	this->money += change;
+}
+
+void Player::unlockCar(int carSelected)
+{
+	if (carSelected == 2)
+	{
+		carTwoUnlock = true;
+	}
+	if (carSelected == 3)
+	{
+		carThreeUnlock = true;
+	}
+	if (carSelected == 4)
+	{
+		carFourUnlock = true;
+	}
+}
+
+void Player::lockCar(int carSelected)
+{
+	if (carSelected == 2)
+	{
+		carTwoUnlock = false;
+	}
+	if (carSelected == 3)
+	{
+		carThreeUnlock = false;
+	}
+	if (carSelected == 4)
+	{
+		carFourUnlock = false;
+	}
+}
+
 
 void Player::setCar(Car* car) {
 	this->car = car;
@@ -169,5 +231,9 @@ void Player::setCameraMode(CAMERA_MODE mode)
 {
 
 	cameraMode = mode;
+}
+
+int Player::getMoney() {
+	return money;
 }
 

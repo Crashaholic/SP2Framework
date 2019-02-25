@@ -12,6 +12,9 @@ Car::Car(const char* meshName, Primitive* primitive, std::string input, unsigned
 	: Mesh(meshName, primitive, texID, true, true, "car", drawMode)
 {
 
+	carEngine.init();
+	carSounds[SFX_ENTEROREXIT].load("Music//SFX_CarEnter.wav");
+	carSounds[SFX_DRIVING].load("Music//SFX_CarDriving.wav");
 
 	this->input = input;
 
@@ -56,6 +59,7 @@ Car::~Car()
 void Car::setOccupied(bool isOccupied)
 {
 	this->isOccupied = isOccupied;
+	carEngine.play(carSounds[SFX_ENTEROREXIT]);
 }
 
 
@@ -430,6 +434,90 @@ int Car::getLaps() {
 
 bool Car::hasFinished() {
 	return finished;
+}
+
+
+void Car::setEngineTier(int newTier)
+{
+	this->engineTier = newTier;
+	if (engineTier == 1)
+	{
+	}
+	if (engineTier == 2)
+	{
+
+	}
+	if (engineTier == 3)
+	{
+
+	}
+}
+
+void Car::setNitroTier(int newTier)
+{
+	this->nitroTier = newTier;
+	if (nitroTier == 1)
+	{
+		//edit base stats of car obj
+	}
+	if (nitroTier == 2)
+	{
+
+	}
+	if (nitroTier == 3)
+	{
+
+	}
+}
+
+void Car::setTireTier(int newTier)
+{
+	this->tireTier = newTier;
+	if (tireTier == 1)
+	{
+		//edit base stats of car obj
+	}
+	if (tireTier == 2)
+	{
+
+	}
+	if (tireTier == 3)
+	{
+
+	}
+}
+
+void Car::getEngineTierText(std::string& tier, Color& color)
+{
+	tier = "Engine Tier: " + std::to_string(engineTier);
+	color.Set(1, 1, 0);
+}
+
+void Car::getNitroTierText(std::string& tier, Color& color)
+{
+	tier = "Nitro Tier: " + std::to_string(nitroTier);
+	color.Set(1, 1, 0);
+}
+
+void Car::getTireTierText(std::string& tier, Color& color)
+{
+	tier = "Tire Tier: " + std::to_string(tireTier);
+	color.Set(1, 1, 0);
+}
+
+int Car::getEngineTier()
+{
+	return engineTier;
+}
+
+int Car::getNitroTier()
+{
+	return nitroTier;
+}
+
+int Car::getTireTier()
+{
+	return tireTier;
 }
 
 // Friction

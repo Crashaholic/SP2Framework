@@ -35,15 +35,16 @@ Manager::Manager()
 	levels[currentLevel]->setScreen(levels[currentLevel]->getScreenName());
 	raceStartCountdown = -1.0f;
 	gameState = RACE_IDLE;
+	shop = new Shop();
 }
 
 
 Manager::~Manager()
 {
-
+	delete shop;
 	delete mainmenu;
 
-	savePlayerProgress();
+//	savePlayerProgress();
 
 	for (int i = 0; i < waypoints.size(); i++)
 		if(waypoints[i] != nullptr)
@@ -119,6 +120,10 @@ double Manager::getRaceStartCountdown()
 	return raceStartCountdown;
 }
 
+Shop* Manager::getShop() {
+	return shop;
+}
+
 void Manager::updateStartCountdown(double dt)
 {
 	raceStartCountdown -= dt;
@@ -163,7 +168,7 @@ std::vector<Waypoint*>* Manager::getWaypoints() {
 
 
 
-void Manager::loadPlayerProgress()
+void Manager::loadPlayerProgress(Player* player)
 {
 	std::fstream playerProgress; //input
 	std::string line;
@@ -249,7 +254,7 @@ void Manager::loadPlayerProgress()
 	playerProgress.close();
 }
 
-void Manager::savePlayerProgress()
+void Manager::savePlayerProgress(Player* player)
 {
 	std::fstream playerProgress; //input
 	std::string line;

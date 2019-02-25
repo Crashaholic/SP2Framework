@@ -41,7 +41,9 @@ private:
 	void GenerateText();
 	void InitShaderProperties();
 	void playMusic();
+	void loadProgress();
 
+	bool loadFlag;
 
 	unsigned m_vertexArrayID;
 
