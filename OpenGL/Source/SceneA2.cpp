@@ -267,14 +267,15 @@ void SceneA2::playMusic()
 		Engine.play(Music[BGM_MAIN]);
 		BGMFlag = 1;
 	}
-	if (manager->getLevelName() == "game" && BGMFlag == 1)
+	if (manager->getLevel()->getScreenName() == "gameplay" && BGMFlag == 1 || BGMFlag == 3)
 	{
 		Music[BGM_MAIN].stop();
 		Engine.play(Music[BGM_INGAME]);
 		BGMFlag = 2;
 	}
-	if (manager->getLevel()->getScreenName() == "race" && BGMFlag == 2)
+	if (manager->getLevel()->getScreenName() == "ingame" && BGMFlag == 2)
 	{
+		Music[BGM_INGAME].stop();
 		Engine.play(Music[BGM_RACE]);
 		BGMFlag = 3;
 	}
