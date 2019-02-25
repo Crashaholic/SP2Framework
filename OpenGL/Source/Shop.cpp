@@ -1,86 +1,233 @@
 #include "Shop.h"
-Shop::Shop() {
+Shop::Shop()
+{
+	head = nullptr;
+	tail = nullptr;
 }
-Shop::~Shop() {
+
+Shop::~Shop()
+{
+
 }
-void Shop::enterShop() {
-	//Head = Tail = new shopNode;
-}
-int Shop::Buy(/*Player Player,*/Car*& Car, int Number) {//4 options: Car, Nitro, Tires, Engine
-	//if (Number == 1) {
-	//	//Make the data of the car save if buying new car, be cause of delete
-	//	//if (Player.getMoney() >= (Player.getCarPrice[Number - 1] * Player.getCarTeir[Number - 1])) {
-	//	delete Car;//if/switch statement for different cars
-	//	Car = new Car1;
-	//	Tail->setObjNo(Number);
-	//	Tail->setNext();
-	//	Tail->getNext()->setBack(Tail);
-	//	Tail = Tail->getNext();
-	//	//Player.setMoney(Player.getMoney() - (Player.getCarPrice[Number - 1] * Player.getCarTeir[Number - 1]));
-	//	//}
-	//	//else{
-	//		//Number = 0;
-	//	//}
-	//}
-	//else if (Number >= 2 && Number <= 4) {
-	//	//if (Player.getMoney() >= (Car->getTier(Number - 2) * Car->getObjMoney(Number - 1))) {//&& teir limit not reached
-	//	Tail->setObjNo(Number);
-	//	Tail->setNext();
-	//	Tail->getNext()->setBack(Tail);
-	//	Tail = Tail->getNext();
-	//	//Player.setMoney(Player.getMoney() - (Car->getTier(Number - 2) * Car->getObjMoney(Number - 1)));
-	//	Car->Upgrade(Number - 2);
-	//	//}
-	//	/*else {
-	//		Number = 0;//This means not enough money
-	//	}*/
-	//}
-	//else if (Number == 6) {
-	//	Number = Undo(Car);
-	//}
-	//else {
-	//	Number = 5;//This means item does not exists
-	//}
-	//return Number;
-	return 0;
-}
-int Shop::Undo(/*Player Player,*/Car*& Car) {
-	//if (Tail != Head) {
-	//	if (Tail->getBack()->getObjNo() == 1) {
-	//		//Player.setMoney(Player.getMoney() + (Player.getCarPrice[Number - 1] * Player.getCarTeir[Number - 1]-1));
-	//		delete Car;
-	//		Car = new Car1;
-	//		//load the files.
-	//	}
-	//	else {
-	//		//Car->setTier(Car->getTier()-1);
-	//		//Player.setMoney(Player.getMoney() + ((Car->getTier(Tail->getBack()->getTier()-1)) * Car->getObjMoney(Tail->getBack()->getObjNo())));
-	//	}
-	//	if (Tail->getBack() == Head) {
-	//		delete Tail;
-	//		Head = Tail = new shopNode;
-	//	}
-	//	else {
-	//		Tail->setNext(Tail);
-	//		Tail = Tail->getBack();
-	//		Tail->setBack(Tail->getBack());
-	//		delete Tail->getNext();
-	//	}
-	//}
-	//else {
-	//	return 5;
-	//}
-	//return 6;
-	return 0;
+
+void Shop::enterShop()
+{
 }
 
 
-void Shop::exitShop() {
-	//while (Tail->getBack() != nullptr) {
-	//	Tail = Tail->getBack();
-	//	delete Tail->getNext();
-	//}
-	//delete Head;
+void Shop::buyCar(Player *player, int carSelected)
+{
+	if (carSelected == 2 && player->getMoney() >= 50)
+	{
+		player->unlockCar(carSelected);
+		player->setMoney(-50);
+		addCarToTransactionHistory(2, 50);
+	}
+	if (carSelected == 3 && player->getMoney() >= 100)
+	{
+		player->unlockCar(carSelected);
+		player->setMoney(-100);
+		addCarToTransactionHistory(3, 100);
+	}
+	if (carSelected == 4 && player->getMoney() >= 200)
+	{
+		player->unlockCar(carSelected);
+		player->setMoney(-200);
+		addCarToTransactionHistory(4, 200);
+	}
+}
+
+void Shop::buyUpgrade(Player *player, int choice)
+{
+	int nitroTier = player->getCar()->getNitroTier();
+	int tireTier = player->getCar()->getTireTier();
+	int engineTier = player->getCar()->getEngineTier();
+
+	//1 for nitro, 2 for tire, 3 for engine
+	if (choice == 1)
+	{
+		if (nitroTier == 1 && player->getMoney() >= 50)
+		{
+			player->setMoney(-50);
+			player->getCar()->setNitroTier(2);
+			addUpgradeToTransactionHistory(2, 'N', 50);
+		}
+		else if (nitroTier == 2 && player->getMoney() >= 75)
+		{
+			player->setMoney(-75);
+			player->getCar()->setNitroTier(3);
+			addUpgradeToTransactionHistory(3, 'N', 75);
+		}
+	}
+	if (choice == 2)
+	{
+		
+		if (tireTier == 1 && player->getMoney() >= 50)
+		{
+			player->setMoney(-50);
+			player->getCar()->setTireTier(2);
+			addUpgradeToTransactionHistory(2, 'T', 50);
+		}
+		else if (tireTier == 2 && player->getMoney() >= 75)
+		{
+			player->setMoney(-75);
+			player->getCar()->setTireTier(3);
+			addUpgradeToTransactionHistory(3, 'N', 75);
+		}
+		
+	}
+	if (choice == 3 && player->getMoney() >= 75)
+	{
+	
+		if (engineTier == 1 && player->getMoney() >= 50)
+		{
+			player->setMoney(-50);
+			player->getCar()->setEngineTier(2);
+			addUpgradeToTransactionHistory(2, 'E', 50);
+		}
+		else if (engineTier == 2 && player->getMoney() >= 75)
+		{
+			player->setMoney(-75);
+			player->getCar()->setEngineTier(3);
+			addUpgradeToTransactionHistory(3, 'E', 75);
+		}
+	}
+}
+
+void Shop::addUpgradeToTransactionHistory(int tier, char type, int moneySpent)
+{
+	//Type of purchases:N for nitro, T for Tire & E for engine
+	shopNode* current = nullptr;
+	//if Link list is empty
+	if (head == nullptr)
+	{
+		head = new shopNode;
+		tail = head;
+		current = head;
+
+		current->setMoneySpent(moneySpent);
+		current->setUpgradeTier(tier);
+		current->setUpgradeType(type);
+	}
+	else if (head != nullptr)
+	{
+		current = new shopNode;
+		
+		current->setMoneySpent(moneySpent);
+		current->setUpgradeTier(tier);
+		current->setUpgradeType(type);
+
+		//Step 1: link the tail to the new node
+		tail->setNext(current);
+		//step 2: link the new node to the previous node
+		current->setBack(tail);
+		tail = current;
+	}
+}
+
+void Shop::addCarToTransactionHistory(int carType, int moneySpent)
+{
+	shopNode* current = nullptr;
+	//if Link list is empty
+	if (head == nullptr)
+	{
+		head = new shopNode;
+		tail = head;
+		current = head;
+
+		current->setMoneySpent(moneySpent);
+		current->setCarBought(carType);
+	}
+	else
+	{
+		current = new shopNode;
+
+		current->setMoneySpent(moneySpent);
+		current->setCarBought(carType);
+		
+		//Step 1: link the tail to the new node
+		tail->setNext(current);
+		//step 2: link the new node to the previous node
+		current->setBack(tail);
+		tail = current;
+	}
+}
+
+void Shop::Undo(Player *player)
+{
+	shopNode* current = tail;
+
+	if (head != nullptr)
+	{
+		//check what kind of transaction was made
+		if (tail->getCarBought() == 0)
+		{
+			player->setMoney(tail->getMoneySpent());
+			if (tail->getUpgradeType() == 'N')
+			{
+				player->getCar()->setNitroTier(player->getCar()->getNitroTier() - 1);
+			}
+			else if (tail->getUpgradeType() == 'T')
+			{
+				player->getCar()->setTireTier(player->getCar()->getTireTier() - 1);
+			}
+			else if (tail->getUpgradeType() == 'E')
+			{
+				player->getCar()->setEngineTier(player->getCar()->getEngineTier() - 1);
+			}
+
+			if (head == tail) //if the list only has 1 node
+			{
+				delete current;
+				head = nullptr;
+				tail = nullptr;
+			}
+			else
+			{
+				tail = tail->getBack();
+				delete current;
+			}
+		}
+		else //If transaction made was upgrade ^ or if it was car 
+		{
+			player->setMoney(tail->getMoneySpent());
+			if (tail->getCarBought() == 2)
+			{
+				player->lockCar(2);
+			}
+			if (tail->getCarBought() == 3)
+			{
+				player->lockCar(3);
+			}
+			if (tail->getCarBought() == 4)
+			{
+				player->lockCar(4);
+			}
+
+			if (head == tail) //if the list only has 1 node
+			{
+				delete current;
+				head = nullptr;
+				tail = nullptr;
+			}
+			else
+			{
+				tail = tail->getBack();
+				delete current;
+			}
+
+		}
+	}
+}
+
+
+void Shop::exitShop()
+{
+	while (tail->getBack() != nullptr) {
+		tail = tail->getBack();
+		delete tail->getNext();
+	}
+	delete head;
 }
 
 
@@ -124,36 +271,3 @@ void Shop::exitShop() {
 //		}
 //	} while (inGame);
 //}
-
-
-shopNode::shopNode() {
-	Next = nullptr;
-	Back = nullptr;
-	objNo = 0;
-}
-shopNode::~shopNode() {
-}
-void shopNode::setNext(shopNode* Current) {
-	Next = Current;
-}
-void shopNode::setNext() {
-	Next = new shopNode;
-}
-void shopNode::setBack(shopNode* Current) {
-	Back = Current;
-}
-void shopNode::setBack() {
-	Back = new shopNode;
-}
-void shopNode::setObjNo(int Number) {
-	objNo = Number;
-}
-shopNode* shopNode::getNext() {
-	return Next;
-}
-shopNode* shopNode::getBack() {
-	return Back;
-}
-int shopNode::getObjNo() {
-	return objNo;
-}

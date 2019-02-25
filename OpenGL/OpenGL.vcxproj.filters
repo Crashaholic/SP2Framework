@@ -1,18 +1,43 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
-    </Filter>
-    <Filter Include="Resource Files">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
-    </Filter>
+    <ClCompile Include="Source\Level.cpp" />
+    <ClCompile Include="Source\GUIButton.cpp" />
+    <ClCompile Include="Source\GUIScreen.cpp" />
+    <ClCompile Include="Source\LevitationPad.cpp" />
+    <ClCompile Include="Source\AICar.cpp" />
+    <ClCompile Include="Source\AIWaypoint.cpp" />
+    <ClCompile Include="Source\QuadNode.cpp" />
+    <ClCompile Include="Source\QuadTree.cpp" />
+    <ClCompile Include="Source\Car.cpp" />
+    <ClCompile Include="Source\Player.cpp" />
+    <ClCompile Include="Source\Cursor.cpp" />
+    <ClCompile Include="Source\GUITexture.cpp" />
+    <ClCompile Include="Source\IRender.cpp" />
+    <ClCompile Include="Source\Collision.cpp" />
+    <ClCompile Include="Source\OBB.cpp" />
+    <ClCompile Include="Source\GUIText.cpp" />
+    <ClCompile Include="Source\GUIFont.cpp" />
+    <ClCompile Include="Source\GUIManager.cpp" />
+    <ClCompile Include="Source\GUIChar.cpp" />
+    <ClCompile Include="Source\ShaderProgram.cpp" />
+    <ClCompile Include="Source\shader.cpp" />
+    <ClCompile Include="Source\Manager.cpp" />
+    <ClCompile Include="Source\Primitive.cpp" />
+    <ClCompile Include="Source\Camera.cpp" />
+    <ClCompile Include="Source\LightSource.cpp" />
+    <ClCompile Include="Source\Primitives.cpp" />
+    <ClCompile Include="Source\FreeLookCamera.cpp" />
+    <ClCompile Include="Source\SceneA2.cpp" />
+    <ClCompile Include="Source\LoadTGA.cpp" />
+    <ClCompile Include="Source\Mesh.cpp" />
+    <ClCompile Include="Source\Application.cpp" />
+    <ClCompile Include="Source\main.cpp" />
+    <ClCompile Include="Source\Shop.cpp" />
+    <ClCompile Include="Source\ShopNode.cpp" />
+    <ClCompile Include="Source\Utility.cpp" />
+    <ClCompile Include="Source\Texture.cpp" />
+    <ClCompile Include="Source\Transformation.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Application.cpp">
@@ -265,5 +290,8 @@
     <None Include="Shader\Texture.vert" />
     <None Include="Shader\UI.frag" />
     <None Include="Shader\UI.vert" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="playerProgress.txt" />
   </ItemGroup>
 </Project>

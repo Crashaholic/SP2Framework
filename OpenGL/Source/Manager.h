@@ -6,10 +6,12 @@
 #include "Mesh.h"
 #include "FreeLookCamera.h"
 #include "QuadTree.h"
+#include "Player.h"
 #include <map>
 #include <fstream>
 #include <string>
 #include "Level.h"
+#include "Shop.h"
 #include <experimental/filesystem>
 #include <iostream>
 #include "Waypoint.h"
@@ -27,8 +29,9 @@ public:
 	~Manager();
 	static Manager* getInstance();
 
-	void loadPlayerProgress();
-	void savePlayerProgress();
+	void spawnObject(Mesh* mesh);
+	void loadPlayerProgress(Player *player);
+	void savePlayerProgress(Player *player);
 
 	void setGameState(RACE_STATE state);
 	RACE_STATE getGameState();

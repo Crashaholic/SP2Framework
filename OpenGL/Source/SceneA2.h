@@ -34,13 +34,14 @@ public:
 	virtual void Render();
 	virtual void Update(double dt);
 	virtual void Exit();
-private:
 
+private:
 
 	void RenderScene();
 	void GenerateText();
 	void InitShaderProperties();
 	void playMusic();
+	void loadProgress();
 
 
 	unsigned m_vertexArrayID;
@@ -51,9 +52,8 @@ private:
 	int lastFramesPerSecond = 0;
 	float elapsedTimeCounter = 0.0f;
 
-	bool state_MainMenu;
-	bool state_InGame;
-	bool state_Race;
+	int BGMFlag;
+	bool loadFlag;
 
 	Manager *manager;
 	Player* player;
@@ -62,15 +62,13 @@ private:
 	ShaderProgram* lit;
 
 	SoLoud::Soloud Engine;
-	SoLoud::Wav Music[6];
+	SoLoud::Wav Music[4];
 
 	enum Sounds
 	{
 		BGM_MAIN,
 		BGM_INGAME,
 		BGM_RACE,
-		SFX_ACCELERATE,
-		SFX_STEERING,
 		SFX_VICTORY
 	};
 

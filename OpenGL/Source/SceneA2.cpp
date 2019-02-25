@@ -13,9 +13,6 @@
 
 SceneA2::SceneA2()
 {
-	state_MainMenu = true;
-	state_InGame = true;
-	state_Race = false;
 }
 
 
@@ -32,8 +29,9 @@ void SceneA2::Init()
 	Music[BGM_MAIN].load("Music//BGM_MainMenu.wav");
 	Music[BGM_INGAME].load("Music//BGM_InGame.wav");
 
+	BGMFlag = 0;
+	loadFlag = false;
 
-	/*manager->loadPlayerProgress();*/
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 	elapsedTimeCounter = bounceTimeCounter = lastTimed = 0.0f;
 	lastFramesPerSecond = framesPerSecond = 1;
@@ -64,11 +62,6 @@ void SceneA2::Render()
 	glBindVertexArray(m_vertexArrayID);
 	GenerateText();
 	Manager::getInstance()->getLevel()->Render();
-
-
-
-
-	
 
 }
 
@@ -299,19 +292,21 @@ void SceneA2::InitShaderProperties()
 
 void SceneA2::playMusic()
 {
-	if (state_MainMenu)
+	if (manager->getLevelName() == "pregame" && BGMFlag == 0)
 	{
 		Engine.play(Music[BGM_MAIN]);
-		state_MainMenu = false;
+		BGMFlag = 1;
 	}
-	if (state_InGame)
+	if (manager->getLevelName() == "game" && BGMFlag == 1)
 	{
+		Music[BGM_MAIN].stop();
 		Engine.play(Music[BGM_INGAME]);
-		state_InGame = false;
+		BGMFlag = 2;
 	}
-	if (!state_Race)
+	if (manager->getLevel()->getScreenName() == "race" && BGMFlag == 2)
 	{
 		Engine.play(Music[BGM_RACE]);
+		BGMFlag = 3;
 	}
 
 }
@@ -319,7 +314,7 @@ void SceneA2::playMusic()
 
 void SceneA2::Update(double dt)
 {
-	//playMusic();
+	playMusic();
 
 	// Bounce Time
 	if (bounceTimeCounter <= 0.0f) {
@@ -372,9 +367,18 @@ void SceneA2::Update(double dt)
 
 }
 
+void SceneA2::loadProgress()
+{
+	if (loadFlag == false && dynamic_cast<Player*>(manager->getLevel()->getObject("player")) != nullptr)
+	{
+		manager->loadPlayerProgress(dynamic_cast<Player*>(manager->getLevel()->getObject("player") ) );
+		loadFlag = true;
+	}
+}
+
 void SceneA2::Exit()
 {
-	manager->savePlayerProgress();
+	manager->savePlayerProgress(dynamic_cast<Player*>(manager->getLevel()->getObject("player")));
 	Engine.deinit();
 	delete manager;
 	delete gui;

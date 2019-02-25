@@ -179,28 +179,106 @@ void GUIScreen::Update(double dt)
 	//}
 
 
+					if (buttons[i]->getName() == "singleplayer")
+					{
 
-}
-
-IRender* GUIScreen::getItem(std::string name) {
-	for (int i = 0; i < renderables.size(); i++)
-	{
-		if (renderables[i]->getName() == name)
-		{
-			return renderables[i];
-		}
-	}
-	return nullptr;
-}
-
-void GUIScreen::removeItem(std::string name)
-{
-	for (int i = 0; i < renderables.size(); i++)
-	{
-		if (renderables[i]->getName() == name)
-		{
-			renderables.erase(renderables.begin() + i);
-			return;
+					}
+					else if (buttons[i]->getName() == "multiplayer") 
+					{
+						Manager::getInstance()->setLevel("game");
+					}
+				}
+				else if (name == "shop")
+				{
+					std::cout << "upgrade called" << std::endl;
+					if (buttons[i]->getName() == "buycar")
+					{
+						Manager::getInstance()->getLevel()->setScreen("carselection");
+					}
+					if (buttons[i]->getName() == "upgradenitro")
+					{   //buy upgrade and push it to history
+						Manager::getInstance()->getShop()->buyUpgrade(dynamic_cast<Player*>(Manager::getInstance()->getLevel()->getObject("player")), 1);
+						Manager::getInstance()->getLevel()->setScreen("confirmation");
+					}
+					if (buttons[i]->getName() == "upgradetire")
+					{
+						Manager::getInstance()->getShop()->buyUpgrade(dynamic_cast<Player*>(Manager::getInstance()->getLevel()->getObject("player")), 2);
+						Manager::getInstance()->getLevel()->setScreen("confirmation");
+					}
+					if (buttons[i]->getName() == "upgradeengine")
+					{
+						Manager::getInstance()->getShop()->buyUpgrade(dynamic_cast<Player*>(Manager::getInstance()->getLevel()->getObject("player")), 3);
+						Manager::getInstance()->getLevel()->setScreen("confirmation");
+					}
+					if (buttons[i]->getName() == "undo")
+					{
+						Manager::getInstance()->getLevel()->setScreen("confirmationundo");
+					}
+				}
+				else if (name == "confirmation")
+				{
+					if (buttons[i]->getName() == "confirmpurchase")
+					{
+						Manager::getInstance()->getLevel()->setScreen("shop");
+					}
+					else if (buttons[i]->getName() == "denypurchase")
+					{
+						Manager::getInstance()->getLevel()->setScreen("shop");
+						Manager::getInstance()->getShop()->Undo(dynamic_cast<Player*>(Manager::getInstance()->getLevel()->getObject("player")));
+					}
+				}
+				else if (name == "confirmationundo")
+				{
+					if (buttons[i]->getName() == "confirmundo")
+					{
+						Manager::getInstance()->getShop()->Undo(dynamic_cast<Player*>(Manager::getInstance()->getLevel()->getObject("player")));
+						Manager::getInstance()->getLevel()->setScreen("shop");
+					}
+					else if (buttons[i]->getName() == "denyundo")
+					{
+						Manager::getInstance()->getLevel()->setScreen("shop");
+					}
+				}
+				else if (name == "carselection")
+				{
+					if (buttons[i]->getName() == "buycartwo")
+					{
+						if (dynamic_cast<Player*>(Manager::getInstance()->getLevel()->getObject("player"))->getCarsUnlocked(2) == false)
+						{
+							Manager::getInstance()->getShop()->buyCar(dynamic_cast<Player*>(Manager::getInstance()->getLevel()->getObject("player")), 2);
+							Manager::getInstance()->getLevel()->setScreen("shop");
+						}
+						else
+						{
+							Manager::getInstance()->getLevel()->setScreen("shop");
+						}
+					}
+					else if(buttons[i]->getName() == "buycarthree")
+					{
+						if (dynamic_cast<Player*>(Manager::getInstance()->getLevel()->getObject("player"))->getCarsUnlocked(3) == false)
+						{
+							Manager::getInstance()->getShop()->buyCar(dynamic_cast<Player*>(Manager::getInstance()->getLevel()->getObject("player")), 3);
+							Manager::getInstance()->getLevel()->setScreen("shop");
+						}
+						else
+						{
+							Manager::getInstance()->getLevel()->setScreen("shop");
+						}
+					}
+					else if (buttons[i]->getName() == "buycarfour")
+					{
+						if (dynamic_cast<Player*>(Manager::getInstance()->getLevel()->getObject("player"))->getCarsUnlocked(4) == false)
+						{
+							Manager::getInstance()->getShop()->buyCar(dynamic_cast<Player*>(Manager::getInstance()->getLevel()->getObject("player")), 4);
+							Manager::getInstance()->getLevel()->setScreen("shop");
+						}
+						else
+						{
+							Manager::getInstance()->getLevel()->setScreen("shop");
+						}
+					}
+				}
+			}
 		}
 	}
 }

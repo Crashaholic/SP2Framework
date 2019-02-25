@@ -13,11 +13,17 @@ Player::Player(const char* meshName, Primitive* primitive, std::string input, un
 	walkSpeed = 3.0f;
 	isInVehicle = false;
 	cameraMode = FIRST_PERSON;
+	money = 0;
 
 	firstPerson = new FreeLookCamera(position - Vector3(0.0f, 0.1f, 0.0f) + Vector3(-0.2f, 0.0f, 0.0f));
 	fixedCar = new Camera(position + Vector3(0.0f, 8.0f, -6.0f));
 	topdown = new Camera(position + Vector3(0.0f, 8.0f, -6.0f));
 	
+	carOneUnlock = true;
+	carTwoUnlock = false;
+	carThreeUnlock = false;
+	carFourUnlock = false;
+
 }
 
 Player::Player()
@@ -134,7 +140,8 @@ void Player::Update(double dt) {
 }
 
 
-void Player::setCar(Car* car) {
+void Player::setCar(Car* car)
+{
 	this->car = car;
 	isInVehicle = true;
 	car->setOccupied(true);
@@ -142,15 +149,74 @@ void Player::setCar(Car* car) {
 	setCameraMode(FIXED_CAR);
 }
 
-Car* Player::getCar() {
+void Player::setMoney(int change)
+{
+	this->money += change;
+}
+
+void Player::unlockCar(int carSelected)
+{
+	if (carSelected == 2)
+	{
+		carTwoUnlock = true;
+	}
+	if (carSelected == 3)
+	{
+		carThreeUnlock = true;
+	}
+	if (carSelected == 4)
+	{
+		carFourUnlock = true;
+	}
+}
+
+void Player::lockCar(int carSelected)
+{
+	if (carSelected == 2)
+	{
+		carTwoUnlock = false;
+	}
+	if (carSelected == 3)
+	{
+		carThreeUnlock = false;
+	}
+	if (carSelected == 4)
+	{
+		carFourUnlock = false;
+	}
+}
+
+Car* Player::getCar()
+{
 	return car;
 }
 
-Camera* Player::getTopdownCamera() {
-	return topdown;
+int Player::getMoney()
+{
+	return money;
 }
 
-Camera* Player::getCamera() {
+void Player::getMoneyText(std::string& moneyString, Color& color)
+{
+	moneyString = std::to_string(money);
+	color.Set(1, 1, 0);
+
+}
+
+bool Player::getCarsUnlocked(int carID)
+{
+	if (carID == 1)
+		return carOneUnlock;
+	if (carID == 2)
+		return carTwoUnlock;
+	if (carID == 3)
+		return carThreeUnlock;
+	if (carID == 4)
+		return carFourUnlock;
+}
+
+Camera* Player::getCamera()
+{
 	if (cameraMode == FIRST_PERSON)
 		return firstPerson;
 	else if (cameraMode == FIXED_CAR)
@@ -158,7 +224,8 @@ Camera* Player::getCamera() {
 	return nullptr;
 }
 
-void Player::switchCameraMode() {
+void Player::switchCameraMode()
+{
 	if (cameraMode == FIRST_PERSON)
 		cameraMode = FIXED_CAR;
 	else

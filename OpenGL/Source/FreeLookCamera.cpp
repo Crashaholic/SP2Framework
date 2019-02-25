@@ -83,6 +83,7 @@ void FreeLookCamera::updateMouse()
 
 
 	this->target = position + front;
+
 }
 
 void FreeLookCamera::Update(double dt)

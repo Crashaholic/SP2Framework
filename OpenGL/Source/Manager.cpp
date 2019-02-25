@@ -14,10 +14,10 @@ Manager::Manager()
 	shaders["overlay"] = new ShaderProgram("Shader//UI.vert", "Shader//UI.frag");
 
 
-	carOneUnlock = true;
-	carTwoUnlock = false;
-	carThreeUnlock = false;
-	money = 0;
+	//carOneUnlock = true;
+	//carTwoUnlock = false;
+	//carThreeUnlock = false;
+	//money = 0;
 
 
 
@@ -42,8 +42,9 @@ Manager::~Manager()
 {
 
 	delete mainmenu;
+	delete shop;
 
-	savePlayerProgress();
+	savePlayerProgress(dynamic_cast<Player*>(getLevel()->getObject("player")));
 
 	for (int i = 0; i < waypoints.size(); i++)
 		if(waypoints[i] != nullptr)
@@ -161,15 +162,14 @@ std::vector<Waypoint*>* Manager::getWaypoints() {
 	return &waypoints;
 }
 
-
-
-void Manager::loadPlayerProgress()
+void Manager::loadPlayerProgress(Player *player)
 {
 	std::fstream playerProgress; //input
 	std::string line;
+	int money = 0;
 	int carID = 0;
 
-	playerProgress.open("playerProgress.txt", std::fstream::in);
+	playerProgress.open("Data\\playerProgress.txt", std::fstream::in);
 	if (playerProgress.is_open())
 	{
 		while (getline(playerProgress, line))
@@ -181,13 +181,14 @@ void Manager::loadPlayerProgress()
 				/*std::cout << "ID has been secured";*/
 				money = std::stoi(args[1]);
 				std::cout << "Money: " << money << std::endl;
+				player->setMoney(money);
 			}
 
 			if (Utility::startsWith(line, "ID"))
 			{
-				/*std::cout << "ID has been secured";*/
 				carID = std::stoi(args[1]);
 				std::cout << "Car ID " << carID << std::endl;
+				player->unlockCar(carID);
 			}
 
 			if (Utility::startsWith(line, "Upgrade"))
@@ -197,84 +198,61 @@ void Manager::loadPlayerProgress()
 				if (Utility::startsWith(upgradeArgs[0], "Nitro"))
 				{
 					std::vector<std::string> upgradeArgsStats = Utility::splitLine(upgradeArgs[0], ':');
-					if (Utility::startsWith(upgradeArgsStats[1], "1"))
-					{
-						std::cout << "Nitro has been upgraded by 1\n";
-					}
-					else if (Utility::startsWith(upgradeArgsStats[1], "2"))
-					{
-						std::cout << "Nitro has been upgraded by 2\n";
-					}
-					else if (Utility::startsWith(upgradeArgsStats[1], "3"))
-					{
-						std::cout << "Nitro has been upgraded by 3\n";
-					}
+					player->getCar()->setNitroTier(std::stoi(upgradeArgsStats[1]));
 				}
 				if (Utility::startsWith(upgradeArgs[1], "Tire"))
 				{
 					std::vector<std::string> upgradeArgsStats = Utility::splitLine(upgradeArgs[1], ':');
-					if (Utility::startsWith(upgradeArgsStats[1], "1"))
-					{
-						std::cout << "Tire has been upgraded by 1\n";
-					}
-					else if (Utility::startsWith(upgradeArgsStats[1], "2"))
-					{
-						std::cout << "Tire has been upgraded by 2\n";
-					}
-					else if (Utility::startsWith(upgradeArgsStats[1], "3"))
-					{
-						std::cout << "Tire has been upgraded by 3\n";
-					}
+					player->getCar()->setTireTier(std::stoi(upgradeArgsStats[1]));
 				}
 				if (Utility::startsWith(upgradeArgs[2], "Engine"))
 				{
 					std::vector<std::string> upgradeArgsStats = Utility::splitLine(upgradeArgs[2], ':');
-					if (Utility::startsWith(upgradeArgsStats[1], "1"))
-					{
-						std::cout << "Engine has been upgraded by 1\n";
-					}
-					else if (Utility::startsWith(upgradeArgsStats[1], "2"))
-					{
-						std::cout << "Engine has been upgraded by 2\n";
-					}
-					else if (Utility::startsWith(upgradeArgsStats[1], "3"))
-					{
-						std::cout << "Engine has been upgraded by 3\n";
-					}
+					player->getCar()->setEngineTier(std::stoi(upgradeArgsStats[1]));
 				}
 			}
 		}
 	}
-
 	playerProgress.close();
 }
 
-void Manager::savePlayerProgress()
+void Manager::savePlayerProgress(Player *player)
 {
 	std::fstream playerProgress; //input
 	std::string line;
 	std::string moneyString;
+	std::string nitroString;
+	std::string tireString;
+	std::string engineString;
+	int money = player->getMoney();
 
 	moneyString = std::to_string(money);
+	nitroString = std::to_string(player->getCar()->getNitroTier());
+	tireString = std::to_string(player->getCar()->getTireTier());
+	engineString = std::to_string(player->getCar()->getEngineTier());
 
-	playerProgress.open("playerProgress.txt", std::fstream::out | std::fstream::trunc);
+	playerProgress.open("Data\\playerProgress.txt", std::fstream::out | std::fstream::trunc);
 
 	if (playerProgress.is_open())
 	{
 		playerProgress << "Money=" << moneyString << "\n";
-			if (carOneUnlock == true)
+			if (player->getCarsUnlocked(1) == true)
 			{
 				playerProgress << "ID=1\n";
-				playerProgress << "Upgrade=" <<"\n";
 			}
-			if (carTwoUnlock == true)
+			if (player->getCarsUnlocked(2) == true)
 			{
 				playerProgress << "ID=2\n";
 			}
-			if (carThreeUnlock == true)
+			if (player->getCarsUnlocked(3) == true)
 			{
 				playerProgress << "ID=3\n";
 			}
+			if (player->getCarsUnlocked(4) == true)
+			{
+				playerProgress << "ID=4\n";
+			}
+			playerProgress << "Upgrade=Nitro:" << nitroString << ",Tire:" << tireString << ",Engine:" << engineString << "\n";
 	}
 	playerProgress.close();
 }
