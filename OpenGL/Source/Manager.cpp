@@ -14,10 +14,6 @@ Manager::Manager()
 	shaders["overlay"] = new ShaderProgram("Shader//UI.vert", "Shader//UI.frag");
 
 
-	//carOneUnlock = true;
-	//carTwoUnlock = false;
-	//carThreeUnlock = false;
-	//money = 0;
 
 	std::string path = "Data//Level";
 	for (const auto & entry : std::experimental::filesystem::directory_iterator(path)) {
