@@ -11,7 +11,7 @@ Player::Player(const char* meshName, Primitive* primitive, std::string input, un
 	this->input = input;
 
 	carFollowSpeed = 10.0;
-	walkSpeed = 3.0f;
+	walkSpeed = 5.0f;
 	isInVehicle = false;
 	cameraMode = FIRST_PERSON;
 
@@ -85,6 +85,8 @@ void Player::Update(double dt) {
 			rotation = targetRotation;
 		}
 
+		
+
 	}
 	else if (car != nullptr) {
 		// Update Position of the Player in the car according to the car's rotation
@@ -95,9 +97,14 @@ void Player::Update(double dt) {
 	}
 
 
+
 	// Set Camera's Position
 	if (cameraMode == FIRST_PERSON) {
+		
+	
+
 		firstPerson->position = position + Vector3(0.0f, 1.8f, 0.0f) + forward * 0.2f;
+
 	}
 	else if (cameraMode == FIXED_CAR) {
 		// Target = Camera's position
@@ -122,6 +129,19 @@ void Player::Update(double dt) {
 		fixedCar->position = Utility::Lerp(fixedCar->position, target, carFollowSpeed * dt);
 		fixedCar->setTarget(lookAtTarget);
 	}
+
+	std::string screenName = Manager::getInstance()->getLevel()->getScreenName();
+	if (!isInVehicle) {
+		if (screenName == "shop" || screenName == "confirmation" || screenName == "confirmationundo") {
+			setCameraMode(FIXED_CAR);
+			fixedCar->position = position + Vector3(0, 2.0, 0);
+			fixedCar->setTarget(Manager::getInstance()->getLevel()->getObject("displayCar")->position + Vector3(0, 2.0, 0));
+		}
+		else {
+			setCameraMode(FIRST_PERSON);
+		}
+	}
+
 
 	topdown->position = position + Vector3(0.1f, 30.0f, 0.0f);
 	topdown->setTarget(position);
@@ -152,7 +172,7 @@ void Player::getMoneyText(std::string& moneyString, Color& color)
 
 void Player::setMoney(int change)
 {
-	this->money += change;
+	this->money = change;
 }
 
 std::vector<CarUpgrade*>* Player::getUpgrades()

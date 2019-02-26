@@ -9,6 +9,20 @@
 #include "LightSource.h"
 #include "Waypoint.h"
 
+struct Object {
+	std::map<std::string, std::string> values;
+	void Set(std::string key, std::string value)
+	{
+		values[key] = value;
+	}
+
+	std::string Get(std::string key)
+	{
+		if (values.find(key) == values.end()) return "invalid";
+		return values[key];
+	}
+};
+
 class Level
 {
 public:

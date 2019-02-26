@@ -1,3 +1,5 @@
-Money=0
-ID=1
-Upgrade=
+money=950
+car=Blitz
+nitro=2
+engine=1
+tyre=1

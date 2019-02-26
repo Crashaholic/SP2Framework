@@ -44,6 +44,9 @@ Car::Car(const char* meshName, Primitive* primitive, std::string input, float ni
 	thrust = 0.0f;
 	torqueRot = 0.0f;
 	this->nitro = nitro;
+
+	shakeDuration = 0.0f;
+	shakeAmount = Vector3(0, 0, 0);
 }
 
 Car::Car()
@@ -105,7 +108,13 @@ void Car::Update(double dt)
 			thrustInput = 1.0f;
 			thrust = Utility::Lerp(thrust, 1.0f, 8.0f * dt);
 			thrusters -= thrust * dt * 20.0;
-			velocity.y += thrust * dt;
+
+
+			Vector3 moveUp = velocity + Vector3(0, thrust * dt, 0);
+			if (Collision::checkCollisionT(this, moveUp, { "ground" }).size() == 0) {
+				velocity.y += thrust * dt;
+			}
+
 			
 		}
 		else {
@@ -166,6 +175,11 @@ void Car::Update(double dt)
 				if (collided.size() == 0)
 				{
 					car->velocity += v;
+					float rX = -0.1f + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (0.1f - (-0.1f))));
+					float rY = -0.2f + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (0.2f - (-0.2f))));
+					float rZ = -0.1f + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (0.1f - (-0.1f))));
+					shakeAmount.Set(rX, rY, rZ);
+					shakeDuration = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / 0.5f));
 				}
 
 			}
@@ -174,13 +188,20 @@ void Car::Update(double dt)
 	}
 
 
+	if (shakeDuration > 0.0f) {
+		Camera* cam = Manager::getInstance()->getCamera();
+		cam->position += shakeAmount;
+		shakeDuration -= 5.0 * dt;
+	}
+	else {
+		shakeAmount = 0.0f;
+		shakeDuration = 0.0f;
+	}
 
-
-	std::cout << nitro << std::endl;
 	
 	
 	
-	collided = Collision::checkCollisionT(this, velocity, { "ground", "ramp", "rampsupport", "pad1" });
+	collided = Collision::checkCollisionT(this, velocity, { "ground", "ramp", "pad1" });
 	if (collided.size() == 0)
 	{
 		position += velocity;
@@ -195,13 +216,14 @@ void Car::Update(double dt)
 			else {
 				if (collided[i]->getType() == "environment" || collided[i]->getType() == "movingobstacle") {
 
-					if (velocity.Length() > 0.15f) {
+					if (velocity.Length() > 0.05f && abs(forward.Dot(collided[i]->getOBB()->getZ())) > 0.20f){
 						velocity.x = -velocity.x;
 						velocity.z = -velocity.z;
 
 					}
 
-					if (abs(forward.Dot(collided[i]->getOBB()->getZ())) < 0.08f) {
+					if (abs(forward.Dot(collided[i]->getOBB()->getZ())) <= 0.40f || 
+						abs(forward.Dot(collided[i]->getOBB()->getZ())) >= 0.60f) {
 						position += velocity;
 					}
 				}
@@ -262,11 +284,34 @@ Vector3 Car::calcAcceleration(float accInput, float steerInput, float dt)
 	//
 	Vector3 deltaRotation = Vector3(0, -newCurrentSteer - rotation.y, 0);
 
+	std::vector<Mesh*> collided = Collision::checkCollisionR(this, deltaRotation, { "ground", "ramp", "rampsupport", "pad1", "car2", "car" });
+
 	//// Rotate only if there is no collision
-	if (Collision::checkCollisionR(this, deltaRotation, { "ground", "ramp", "rampsupport", "pad1", "car2", "car" }).size() == 0) {
+	if (collided.size() == 0) {
 
 		rotation.y = -newCurrentSteer;
 		currentSteer = newCurrentSteer;
+	}
+	else {
+		for (int i = 0; i < collided.size(); i++) {
+
+			if (accInput != 0) {
+
+				if (collided[i]->getType() == "environment" || collided[i]->getType() == "movingobstacle") {
+
+					if (abs(forward.Dot(collided[i]->getOBB()->getZ())) < 0.1f ||
+						abs(forward.Dot(collided[i]->getOBB()->getZ())) > 0.95f) {
+						rotation.y = -newCurrentSteer;
+						currentSteer = newCurrentSteer;
+					}
+				}
+			}
+
+
+		
+
+
+		}
 	}
 
 
@@ -303,8 +348,6 @@ Vector3 Car::calcAcceleration(float accInput, float steerInput, float dt)
 	}
 
 
-	//if (velocity.Length() < 0.001f)
-	//	velocity.SetZero();
 
 	if (accInput == 1)
 	{

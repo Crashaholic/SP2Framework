@@ -44,6 +44,10 @@ protected:
 
 private:
 
+
+	float shakeDuration;
+	Vector3 shakeAmount;
+
 	std::string playerName;
 	void updateWaypoint();
 	bool finished;

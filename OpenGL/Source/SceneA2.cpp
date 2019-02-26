@@ -190,6 +190,18 @@ void SceneA2::GenerateText()
 
 			text = gui->renderText("default", 180, 580, "exit", 0.35f, Color(1, 1, 1), TEXT_ALIGN_MIDDLE);
 			level->getScreen()->addText(text);
+
+			text = gui->renderText("default", 535, 634, "Previous", 0.35f, Color(1, 1, 1), TEXT_ALIGN_MIDDLE);
+			level->getScreen()->addText(text);
+
+			text = gui->renderText("default", 784, 634, "Next", 0.35f, Color(1, 1, 1), TEXT_ALIGN_MIDDLE);
+			level->getScreen()->addText(text);
+
+
+			text = gui->renderText("default", 666, 519, manager->getShop()->getCar(), 0.4f, Color(0, 0, 0), TEXT_ALIGN_MIDDLE);
+			level->getScreen()->addText(text);
+
+
 		}else if (manager->getLevel()->getScreenName() == "confirmation") {
 			GUIText* text = gui->renderText("default", 512, 280, "Yes", 0.35f, Color(1, 1, 0), TEXT_ALIGN_MIDDLE);
 			Manager::getInstance()->getLevel()->getScreen()->addText(text);
@@ -425,7 +437,8 @@ void SceneA2::Update(double dt)
 	
 	if (manager->getGameState() == RACE_STARTING)
 		manager->updateStartCountdown(dt);
-		
+	
+
 
 	// Update logic for all objects
 	manager->getLevel()->Update(dt);

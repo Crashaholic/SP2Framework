@@ -41,9 +41,9 @@ void GUIScreen::Render()
 
 				Mesh* shop = Manager::getInstance()->getLevel()->getObject("shopkeeper");
 				if ((player->position - shop->position).Length() <= 3.0f) {
-					if (name == "shop")
-						Manager::getInstance()->getLevel()->setScreen("gameplay");
-					else
+					//if (name == "shop")
+					//	Manager::getInstance()->getLevel()->setScreen("gameplay");
+					//else
 						Manager::getInstance()->getLevel()->setScreen("shop");
 				}
 
@@ -82,6 +82,9 @@ void GUIScreen::Update(double dt)
 		if (manager->getGameState() == RACE_IDLE){
 			manager->setGameState(RACE_STARTING);
 		}
+	}
+	else if (name == "shop") {
+		manager->getShop()->Update(dt);
 	}
 
 	if (cursor != nullptr)
@@ -128,6 +131,7 @@ void GUIScreen::Update(double dt)
 						if (buttons[i]->getAction() == "newgame")
 						{
 							manager->setLevel("game");
+							manager->getShop()->spawnDisplayCar();
 						}
 						else if (buttons[i]->getAction() == "loadgame")
 						{
@@ -161,6 +165,18 @@ void GUIScreen::Update(double dt)
 						{
 							manager->getLevel()->setScreen("confirmationundo");
 						}
+
+						if (buttons[i]->getAction() == "exitshop") {
+							level->setScreen("gameplay");
+						}
+						else if (buttons[i]->getAction() == "prevcar") {
+							manager->getShop()->selectPrevCar();
+							cursor->setOnCooldown(0.15);
+						}
+						else if (buttons[i]->getAction() == "nextcar") {
+							manager->getShop()->selectNextCar();
+							cursor->setOnCooldown(0.15);
+						}
 					}
 					else if (name == "confirmation")
 					{
@@ -179,7 +195,7 @@ void GUIScreen::Update(double dt)
 					{
 						if (buttons[i]->getAction() == "confirmundo")
 						{
-							manager->getShop()->Undo(dynamic_cast<Player*>(manager->getLevel()->getObject("player")));
+							manager->getShop()->Undo(player);
 							manager->getLevel()->setScreen("shop");
 						}
 						else if (buttons[i]->getAction() == "denyundo")
@@ -189,17 +205,29 @@ void GUIScreen::Update(double dt)
 					}
 					else if (name == "carselection")
 					{
-						/*					if (buttons[i]->getAction() == "buycartwo")
-											{
-
-												if (!player->getUpgrade("car2"))
-												{
-													manager->getShop()->Buy(player, "car2", "nitro", 1);
-												}
-												level->setScreen("shop");
-
-											}
-					*/
+						if (buttons[i]->getAction() == "buycartwo")
+						{
+							if (!player->getUpgrade("Smite"))
+							{
+								manager->getShop()->BuyCar(player, "Smite");
+							}
+							level->setScreen("shop");
+						}else if (buttons[i]->getAction() == "buycarthree")
+						{
+							if (!player->getUpgrade("Flame"))
+							{
+								manager->getShop()->BuyCar(player, "Flame");
+							}
+							level->setScreen("shop");
+						}else if (buttons[i]->getAction() == "buycarfour")
+						{
+							if (!player->getUpgrade("Devastator"))
+							{
+								manager->getShop()->BuyCar(player, "Devastator");
+							}
+							level->setScreen("shop");
+						}
+					
 
 					}
 					else if (name == "playermode")

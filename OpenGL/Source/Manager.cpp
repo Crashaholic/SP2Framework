@@ -35,14 +35,15 @@ Manager::Manager()
 	raceStartCountdown = -1.0f;
 	gameState = RACE_IDLE;
 	shop = new Shop();
+	loadCars();
+	srand((unsigned)time(0));
 
-	loadPlayerProgress();
 }
 
 
 Manager::~Manager()
 {
-	savePlayerProgress();
+
 
 	delete shop;
 	delete mainmenu;
@@ -79,6 +80,7 @@ void Manager::setLevel(std::string name) {
 
 	if (name == "game" || name == "pregame") {
 
+		loadPlayerProgress();
 		Car* car = dynamic_cast<Car*>(levels[name]->getObject("car"));
 		if (car != nullptr) {
 			//delete levels[name];
@@ -169,131 +171,120 @@ std::vector<Waypoint*>* Manager::getWaypoints() {
 	return &waypoints;
 }
 
+void Manager::loadCars() {
+	std::ifstream handle("Data\\cars.txt");
+	if (!handle.is_open()) {
+		std::cout << "[Error] Could not load cars.txt!" << std::endl;
+	}
 
+	std::string line;
+
+	std::vector<Object*> collection;
+	std::string category = "";
+	Object* current = nullptr;
+	while (std::getline(handle, line))
+	{
+		std::vector<std::string> args = Utility::splitLine(line, '=');
+
+		if (Utility::startsWith(line, " ") || line == "")
+		{
+			continue;
+		}
+		else if (Utility::startsWith(line, "car"))
+		{
+			current = new Object();
+			collection.push_back(current);
+		}
+		current->Set(args[0], args[1]);
+
+	}
+
+	for (int i = 0; i < collection.size(); i++) {
+		Object* obj = collection[i];
+		shop->addItem(obj->Get("car"), std::stoi(obj->Get("price")));
+		std::cout << obj->Get("car") << ": " << obj->Get("price") << std::endl;
+	}
+
+
+	handle.close();
+}
 
 void Manager::loadPlayerProgress()
 {
 	Player* player = dynamic_cast<Player*>(levels[currentLevel]->getObject("player"));
-	if (player != nullptr) return;
+	if (player == nullptr) return;
 
-	return;
-
-	std::fstream playerProgress("Data\\playerprogress.txt", std::fstream::in);
-	std::string line;
-	int carID = 0;
-
-	if (!playerProgress.is_open())
-	{
-		std::cout << "[ERROR] Can't load Data\\\playerprogress.txt" << std::endl;
-		return;
+	std::ifstream handle("Data\\playerprogress.txt");
+	if (!handle.is_open()) {
+		std::cout << "[Error] Could not load playerprogress.txt!" << std::endl;
 	}
 
-	while (std::getline(playerProgress, line))
+	std::string line;
+	std::vector<Object*> collection;
+	std::string category = "";
+	Object* current = nullptr;
+	while (std::getline(handle, line))
 	{
 		std::vector<std::string> args = Utility::splitLine(line, '=');
 
-		if (Utility::startsWith(line, "Money"))
+		if (Utility::startsWith(line, " ") || line == "")
 		{
-			money = std::stoi(args[1]);
-			std::cout << "Money: " << money << std::endl;
+			continue;
 		}
-
-		if (Utility::startsWith(line, "ID"))
+		else if (Utility::startsWith(line, "money")) {
+			player->setMoney(std::stoi(args[1]));
+			continue;
+		}
+		else if (Utility::startsWith(line, "car"))
 		{
-
-			carID = std::stoi(args[1]);
-			std::cout << "Car ID " << carID << std::endl;
+			current = new Object();
+			collection.push_back(current);
 		}
+		current->Set(args[0], args[1]);
 
-		if (Utility::startsWith(line, "Upgrade"))
-		{
-			std::cout << "Car has been upgraded \n";
-			std::vector<std::string> upgradeArgs = Utility::splitLine(args[1], ',');
-			if (Utility::startsWith(upgradeArgs[0], "Nitro"))
-			{
-				std::vector<std::string> upgradeArgsStats = Utility::splitLine(upgradeArgs[0], ':');
-				if (Utility::startsWith(upgradeArgsStats[1], "1"))
-				{
-					std::cout << "Nitro has been upgraded by 1\n";
-				}
-				else if (Utility::startsWith(upgradeArgsStats[1], "2"))
-				{
-					std::cout << "Nitro has been upgraded by 2\n";
-				}
-				else if (Utility::startsWith(upgradeArgsStats[1], "3"))
-				{
-					std::cout << "Nitro has been upgraded by 3\n";
-				}
-			}
-			if (Utility::startsWith(upgradeArgs[1], "Tire"))
-			{
-				std::vector<std::string> upgradeArgsStats = Utility::splitLine(upgradeArgs[1], ':');
-				if (Utility::startsWith(upgradeArgsStats[1], "1"))
-				{
-					std::cout << "Tire has been upgraded by 1\n";
-				}
-				else if (Utility::startsWith(upgradeArgsStats[1], "2"))
-				{
-					std::cout << "Tire has been upgraded by 2\n";
-				}
-				else if (Utility::startsWith(upgradeArgsStats[1], "3"))
-				{
-					std::cout << "Tire has been upgraded by 3\n";
-				}
-			}
-			if (Utility::startsWith(upgradeArgs[2], "Engine"))
-			{
-				std::vector<std::string> upgradeArgsStats = Utility::splitLine(upgradeArgs[2], ':');
-				if (Utility::startsWith(upgradeArgsStats[1], "1"))
-				{
-					std::cout << "Engine has been upgraded by 1\n";
-				}
-				else if (Utility::startsWith(upgradeArgsStats[1], "2"))
-				{
-					std::cout << "Engine has been upgraded by 2\n";
-				}
-				else if (Utility::startsWith(upgradeArgsStats[1], "3"))
-				{
-					std::cout << "Engine has been upgraded by 3\n";
-				}
-			}
-		}
+	}
+
+	for (int i = 0; i < collection.size(); i++) {
+		Object* obj = collection[i];
+		std::vector<CarUpgrade*>* upgrades = player->getUpgrades();
+		upgrades->push_back(new CarUpgrade(obj->Get("car"), std::stoi(obj->Get("nitro")), std::stoi(obj->Get("engine")), std::stoi(obj->Get("tyre"))));
 	}
 	
+	std::vector<CarUpgrade*>* upgrades = player->getUpgrades();
+	for (int i = 0; i < upgrades->size(); i++) {
+		std::cout << upgrades->at(i)->getName() << ": N" << upgrades->at(i)->getTier("nitro")
+			<< ", E" << upgrades->at(i)->getTier("engine") << ", T" << upgrades->at(i)->getTier("tyre") << std::endl;
+	}
+	
+	
 
-	playerProgress.close();
+	handle.close();
 }
 
 void Manager::savePlayerProgress()
 {
+
 	Player* player = dynamic_cast<Player*>(levels[currentLevel]->getObject("player"));
-	if (player != nullptr) return;
+	if (player == nullptr) return;
 
-	std::fstream playerProgress("Data\\playerprogress.txt", std::fstream::out | std::fstream::trunc); //input
+	std::ofstream handle("Data\\playerprogress.txt");
 	std::string line;
-	std::string moneyString = std::to_string(money);
 
-	if (!playerProgress.is_open()){
+	if (!handle.is_open()){
 		std::cout << "[ERROR] Can't save to Data\\playerprogress.txt" << std::endl;
 		return;
 	}
 
-	playerProgress << "Money=" << moneyString << "\n";
-	if (carOneUnlock)
-	{
-		playerProgress << "ID=1\n";
-		playerProgress << "Upgrade=" <<"\n";
+	handle << "money=" << player->getMoney() << std::endl;
+
+	std::vector<CarUpgrade*>* upgrades = player->getUpgrades();
+	for (int i = 0; i < upgrades->size(); i++) {
+		handle << "car=" << upgrades->at(i)->getName() << std::endl;
+		handle << "nitro=" << upgrades->at(i)->getTier("nitro") << std::endl;
+		handle << "engine=" << upgrades->at(i)->getTier("engine") << std::endl;
+		handle << "tyre=" << upgrades->at(i)->getTier("tyre") << std::endl;
 	}
-	if (carTwoUnlock)
-	{
-		playerProgress << "ID=2\n";
-	}
-	if (carThreeUnlock)
-	{
-		playerProgress << "ID=3\n";
-	}
-	
-	playerProgress.close();
+	handle.close();
 }
 
 

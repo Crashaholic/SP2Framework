@@ -112,7 +112,7 @@ OpenGL render code
 /******************************************************************************/
 void Mesh::Render(MS& modelStack, MS& viewStack, MS& projectionStack, ShaderProgram* shader)
 {
-	
+	if (!isVisible) return;
 
 	Mtx44 MVP, modelView, modelView_inverse_tranpose, model;
 	MVP = projectionStack.Top() * viewStack.Top() * modelStack.Top();
@@ -165,6 +165,10 @@ void Mesh::Render(MS& modelStack, MS& viewStack, MS& projectionStack, ShaderProg
 std::vector<Mesh*>* Mesh::getChildren()
 {
 	return &children;
+}
+
+void Mesh::setVisible(bool visible) {
+	isVisible = visible;
 }
 
 void Mesh::onGroundCheck(double dt)

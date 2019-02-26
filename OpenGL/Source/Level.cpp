@@ -36,7 +36,7 @@ Level::~Level()
 
 void Level::setScreen(std::string screen) {
 	currentScreen = screen;
-	cursor->setOnCooldown(0.5);
+	cursor->setOnCooldown(0.3);
 	screens[screen]->setCursor(cursor);
 	
 	if (screen == "ingame")
@@ -57,19 +57,6 @@ void Level::Load(std::string path, std::vector<Waypoint*>* waypoints) {
 	}
 
 	std::string line;
-	struct Object {
-		std::map<std::string, std::string> values;
-		void Set(std::string key, std::string value)
-		{
-			values[key] = value;
-		}
-
-		std::string Get(std::string key)
-		{
-			if (values.find(key) == values.end()) return "invalid";
-			return values[key];
-		}
-	};
 
 	std::map<std::string, std::vector<Object*>> collection;
 	std::string category = "";
@@ -475,6 +462,8 @@ void Level::Update(double dt)
 	{
 		object.second->Update(dt);
 	}
+
+	
 
 	screens[currentScreen]->Update(dt);
 }

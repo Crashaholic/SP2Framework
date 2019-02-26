@@ -383,6 +383,25 @@ scale=135,36
 action=buycarfour
 type=button
 
+name=nextcar
+screen=shop
+texture=Image//mainmenubutton.tga
+hovertexture=Image//mainmenuhoverbutton.tga
+position=271,-248
+rotation=0
+scale=85,36
+action=nextcar
+type=button
+
+name=prevcar
+screen=shop
+texture=Image//mainmenubutton.tga
+hovertexture=Image//mainmenuhoverbutton.tga
+position=28,-248
+rotation=0
+scale=85,36
+action=prevcar
+type=button
 
 name=starttextbackground
 screen=ingame

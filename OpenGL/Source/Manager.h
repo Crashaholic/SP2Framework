@@ -14,6 +14,7 @@
 #include <iostream>
 #include "Waypoint.h"
 #include "Shop.h"
+#include <ctime>
 
 enum RACE_STATE {
 	RACE_IDLE,
@@ -32,7 +33,7 @@ public:
 	// Load & Save
 	void loadPlayerProgress();
 	void savePlayerProgress();
-
+	void loadCars();
 
 	// Racing
 	void setGameState(RACE_STATE state);

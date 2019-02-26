@@ -10,6 +10,7 @@ public:
 
 	CarUpgrade(std::string name);
 	CarUpgrade(std::string name, std::string category, int tier);
+	CarUpgrade(std::string name, int nitro, int tyre, int engine);
 	CarUpgrade();
 	~CarUpgrade();
 

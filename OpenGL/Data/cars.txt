@@ -1,0 +1,11 @@
+car=Blitz
+price=100
+
+car=Smite
+price=400
+
+car=Flame
+price=750
+
+car=Devastator
+price=1000

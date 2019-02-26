@@ -62,13 +62,17 @@ public:
 	virtual void Update(double dt);
 	void Init();
 
+	void setVisible(bool visible);
+
 private:
+
+
 	virtual void InitTexture();
 
 protected:
 
 	void onGroundCheck(double dt);
-
+	bool isVisible;
 	OBB* obb;
 	OBB* defaultObb;
 	std::vector<Mesh*> children;

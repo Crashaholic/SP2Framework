@@ -8,10 +8,17 @@ CarUpgrade::CarUpgrade(std::string name, std::string category, int tier)
 	setTier(category, tier);
 }
 
+CarUpgrade::CarUpgrade(std::string name, int nitro, int engine, int tyre) {
+	this->name = name;
+	this->nitro = nitro;
+	this->engine = engine;
+	this->tyre = tyre;
+}
 
 CarUpgrade::CarUpgrade(std::string name)
 {
 	this->name = name;
+	setOne();
 }
 
 
@@ -62,6 +69,7 @@ int CarUpgrade::getTier(std::string cat)
 
 std::string CarUpgrade::getUpgradedCategory()
 {
+
 	if (nitro != 0)
 		return "nitro";
 	else if (engine != 0)
