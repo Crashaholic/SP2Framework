@@ -33,8 +33,8 @@ Car::Car(const char* meshName, Primitive* primitive, std::string input, float ni
 	currentSteer = -90.0f;
 	torqueRot = 0.0f;
 	timer = 0.0;
-	waypointID = 0;
-	laps = 0;
+	waypointID = 10;
+	laps = -1;
 
 	start = false;
 
@@ -102,7 +102,6 @@ void Car::Update(double dt)
 		float thrustInput = 0.0f;
 
 		// Modify
-		std::cout << input[4] << std::endl;
 		if (Application::IsKeyPressed(input[4]) && thrusters > 0.0f) {
 			std::cout << thrusters << std::endl;
 			thrustInput = 1.0f;
@@ -175,9 +174,9 @@ void Car::Update(double dt)
 				if (collided.size() == 0)
 				{
 					car->velocity += v;
-					float rX = -0.1f + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (0.1f - (-0.1f))));
+					float rX = -0.05f + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (0.05f - (-0.05f))));
 					float rY = -0.2f + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (0.2f - (-0.2f))));
-					float rZ = -0.1f + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (0.1f - (-0.1f))));
+					float rZ = -0.05f + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (0.05f - (-0.05f))));
 					shakeAmount.Set(rX, rY, rZ);
 					shakeDuration = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / 0.5f));
 				}
@@ -222,10 +221,20 @@ void Car::Update(double dt)
 
 					}
 
-					if (abs(forward.Dot(collided[i]->getOBB()->getZ())) <= 0.40f || 
-						abs(forward.Dot(collided[i]->getOBB()->getZ())) >= 0.60f) {
-						position += velocity;
-					}
+					//if (abs(forward.Dot(collided[i]->getOBB()->getZ())) <= 0.40f || 
+					//	abs(forward.Dot(collided[i]->getOBB()->getZ())) >= 0.60f) {
+						Vector3 destn;
+						if (velocity.Length() * 170.0f > 10.0f)
+							destn = velocity * 1.1f;
+						else
+							destn = velocity;
+						destn.y = 0;
+						std::vector<Mesh*> mesh = Collision::checkCollisionT(this, destn, { "ground", "ramp", "pad1" });
+						if (mesh.size() == 0)
+							position += velocity;
+						else
+							std::cout << velocity.Length() * 170.0f << ", " << mesh[i]->name << std::endl;
+				/*	}*/
 				}
 
 				
@@ -253,9 +262,9 @@ void Car::updateWaypoint() {
 		if (Collision::checkCollision(*obb, *next->getOBB())) {
 			waypointID++;
 			if (waypointID == waypoints->size()) waypointID = 0;
-			if (waypointID == 1) laps++;
+			if (waypointID == 0) laps++;
 
-			if (laps > Manager::getInstance()->getLevel()->getTotalLaps()) {
+			if (laps == Manager::getInstance()->getLevel()->getTotalLaps()) {
 				finished = true;
 			}
 		}
@@ -353,13 +362,18 @@ Vector3 Car::calcAcceleration(float accInput, float steerInput, float dt)
 	{
 		Player* player = dynamic_cast<Player*>(Manager::getInstance()->getLevel()->getObject(playerName));
 		if (Application::IsKeyPressed(input[5]) && nitro > 0.0f) {
-			player->setCameraSpeed(4.0);
 			engineForward = forward * engineAcceleration * 25.0f * dt;
+			player->setCameraSpeed(6.0);
 			nitro -= 5.0f * dt;
 		}
 		else {
-			player->setCameraSpeed(5.0);
+			player->setCameraSpeed(8.0);
 			engineForward = forward * engineAcceleration * 20.0f * dt;
+		}
+
+		if (steerInput != 0)
+		{
+			player->setCameraSpeed(7.0);
 		}
 
 	}
@@ -381,7 +395,7 @@ Vector3 Car::calcAcceleration(float accInput, float steerInput, float dt)
 
 	if (fabs(steerAmount) > 0.05f)
 	{
-		engineForward *= 0.7f;
+		engineForward *= 0.5f;
 	}
 
 	// Determine forward acceleration

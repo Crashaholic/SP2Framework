@@ -198,7 +198,7 @@ void SceneA2::GenerateText()
 			level->getScreen()->addText(text);
 
 
-			text = gui->renderText("default", 666, 519, manager->getShop()->getCar(), 0.4f, Color(0, 0, 0), TEXT_ALIGN_MIDDLE);
+			text = gui->renderText("default", 666, 519, manager->getShop()->getCar(), 0.4f, Color(0.678f, 0, 0.22f), TEXT_ALIGN_MIDDLE);
 			level->getScreen()->addText(text);
 
 

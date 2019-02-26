@@ -50,7 +50,7 @@ int Level::getTotalLaps() {
 
 void Level::Load(std::string path, std::vector<Waypoint*>* waypoints) {
 
-	tree = new QuadTree(Vector3(-1500, 0, -1500), Vector3(1500, 0, 1500));
+	tree = new QuadTree(Vector3(-2000, 0, -2000), Vector3(2000, 0, 2000));
 	std::ifstream handle(path);
 	if (!handle.is_open()) {
 		std::cout << "[Error] Could not load level.txt!" << std::endl;
@@ -432,7 +432,7 @@ void Level::renderObjects()
 		std::string key = obj.first;
 		if (Utility::startsWith(key, "skybox") || key == "axes" || key == "playerAxes") continue;
 
-		if (obj.first == "ai" || obj.first == "car") {
+		if (obj.first == "ai" || obj.first == "car" || obj.first == "ground") {
 			glDisable(GL_CULL_FACE);
 		}
 
@@ -450,7 +450,7 @@ void Level::renderObjects()
 			glBindTexture(GL_TEXTURE_2D, 0);
 		modelStack.PopMatrix();
 
-		if (obj.first == "ai" || obj.first == "car") {
+		if (obj.first == "ai" || obj.first == "car" || obj.first == "ground") {
 			glEnable(GL_CULL_FACE);
 		}
 	}

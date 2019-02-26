@@ -25,19 +25,16 @@ void Shop::spawnDisplayCar() {
 	if (displayCar == nullptr) {
 		Level* level = Manager::getInstance()->getLevel();
 
-		for (int i = 0; i < 2; i++) {
-			//if (i >= 2) {
-			//	cars.push_back(nullptr);
-			//	continue;
-			//}
+		for (int i = 0; i < 4; i++) {
 			std::string modelPath = "Models//" + carNames[i] + ".obj";
 			std::string texPath = "Models//" + carNames[i] + ".tga";
-			cars.push_back(new Mesh("displayCar" + i, Primitives::loadModel(modelPath.c_str(), false), LoadTGA(texPath.c_str()), false, false));
+			cars.push_back(new Mesh(carNames[i].c_str(), Primitives::loadModel(modelPath.c_str(), false), LoadTGA(texPath.c_str()), false, false));
 			cars[i]->position.Set(0.0f, 1.62f, 104.315f);
 			level->spawnObject(cars[i]);
 			cars[i]->setVisible(false);
 		}
 
+		displayCar = cars[0];
 		cars[0]->setVisible(true);
 
 	}
@@ -159,9 +156,14 @@ std::string Shop::getCar() {
 }
 
 void Shop::selectNextCar() {
-	displayCar->setVisible(false);
-	currentSelectedCar++;
-	if (currentSelectedCar == carNames.size()) currentSelectedCar = 0;
+	if (displayCar != nullptr)
+		displayCar->setVisible(false);
+
+	if (currentSelectedCar == carNames.size() - 1)
+		currentSelectedCar = 0;
+	else
+		currentSelectedCar++;
+
 	displayCar = cars[currentSelectedCar];
 	if(displayCar != nullptr)
 		displayCar->setVisible(true);
@@ -169,7 +171,8 @@ void Shop::selectNextCar() {
 }
 
 void Shop::selectPrevCar() {
-	displayCar->setVisible(false);
+	if (displayCar != nullptr)
+		displayCar->setVisible(false);
 	if (currentSelectedCar < 0) currentSelectedCar = carNames.size() - 1;
 	displayCar = cars[currentSelectedCar];
 	if (displayCar != nullptr)

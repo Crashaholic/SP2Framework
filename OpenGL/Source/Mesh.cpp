@@ -22,6 +22,9 @@ Mesh::Mesh(const char* meshName, Primitive* primitive, unsigned int texID, bool 
 	: name(meshName)
 	, mode(drawMode), textureID(texID), collisionEnabled(collisionEnabled), gravityEnabled(gravityEnabled), type(type)
 {
+
+	isVisible = true;
+
 	// Generate Buffers
 	glGenBuffers(1, &vertexBuffer);
 	glGenBuffers(1, &indexBuffer);

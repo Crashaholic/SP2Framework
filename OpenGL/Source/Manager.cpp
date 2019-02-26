@@ -313,26 +313,26 @@ int Manager::getPlacement(std::string name) {
 	}
 	else {
 
-		int car2ID = 0;
-		if (car2->getWaypointID() == 0) {
-			if (car2->getLaps() != 1)
-				car2ID = 11;
-		}
-		else {
-			car2ID = car2->getWaypointID();
-		}
+		//int car2ID = -1;
+		//if (car2->getWaypointID() == waypoints.size() - 1) {
+		//	if (car2->getLaps() != 1)
+		//		car2ID = 11;
+		//}
+		//else {
+		//	car2ID = car2->getWaypointID();
+		//}
 
-		int carID = 0;
-		if (car1->getWaypointID() == 0) {
-			if (car1->getLaps() != 1)
-				carID = 11;
-		}
-		else {
-			carID = car1->getWaypointID();
-		}
+		//int carID = 0;
+		//if (car1->getWaypointID() == 0) {
+		//	if (car1->getLaps() != 1)
+		//		carID = 11;
+		//}
+		//else {
+		//	carID = car1->getWaypointID();
+		//}
 
 
-		int checkpointDiff = car2ID - carID;
+		int checkpointDiff = car2->getWaypointID() - car1->getWaypointID();
 		if (checkpointDiff > 0) {
 			return (name == "car") ? 2 : 1;
 		}

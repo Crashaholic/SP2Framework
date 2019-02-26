@@ -135,7 +135,7 @@ void Player::Update(double dt) {
 		if (screenName == "shop" || screenName == "confirmation" || screenName == "confirmationundo") {
 			setCameraMode(FIXED_CAR);
 			fixedCar->position = position + Vector3(0, 2.0, 0);
-			fixedCar->setTarget(Manager::getInstance()->getLevel()->getObject("displayCar")->position + Vector3(0, 2.0, 0));
+			fixedCar->setTarget(Manager::getInstance()->getLevel()->getObject(Manager::getInstance()->getShop()->getCar())->position + Vector3(0, 2.0, 0));
 		}
 		else {
 			setCameraMode(FIRST_PERSON);
