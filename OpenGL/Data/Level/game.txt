@@ -27,15 +27,6 @@ type=player
 
 
 
-name=ai
-collision=true
-gravity=true
-model=Models//car.obj
-position=171,0,128
-rotation=0,90,0
-texture=Models//bridge.tga
-type=ai
-
 name=innerbarrier
 collision=true
 gravity=false
@@ -109,7 +100,8 @@ model=Models//car.obj
 position=145.917,5,32.998
 rotation=0,90,0
 texture=Models//car.tga
-input=WASDV
+input=WASDVC
+nitro=100
 type=car
 
 name=car2
@@ -119,7 +111,8 @@ model=Models//car.obj
 position=145.917,5,56.067
 rotation=0,90,0
 texture=Models//car.tga
-input=IJKLP
+input=IJKLPO
+nitro=100
 type=car
 
 name=pad1
@@ -131,6 +124,17 @@ position=-168.711,1.117,42.339
 rotation=0,180,0
 texture=Models//building.tga
 type=pad
+
+name=movingobstacle1
+collision=true
+gravity=false
+model=Models//smallobstacle.obj
+texture=Models//smallobstacle.tga
+position=426.529,1.738,-85.977
+target=395.595,1.738,-85.977
+rotation=0,90,0
+moverate=1.2
+type=movingobstacle
 
 name=ramp
 collision=true

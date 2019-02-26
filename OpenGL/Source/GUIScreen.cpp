@@ -95,6 +95,22 @@ void GUIScreen::Update(double dt)
 
 			for (int i = 0; i < (int)buttons.size(); i++)
 			{
+
+				if (buttons[i]->isHover(cursor->getX(), cursor->getY()))
+				{
+					GUIText* text = nullptr;
+					if (buttons[i]->getAction() == "playsingleplayer")
+					{
+						text = GUIManager::getInstance()->renderText("consolas", 497, 217, "Race against time", 0.4f, Color(1, 1, 1), TEXT_ALIGN_LEFT);
+						level->getScreen()->addText(text);
+					}
+					else if (buttons[i]->getAction() == "playmultiplayer")
+					{
+						text = GUIManager::getInstance()->renderText("consolas", 497, 217, "Race against another player!", 0.4f, Color(1, 1, 1), TEXT_ALIGN_LEFT, 300);
+						level->getScreen()->addText(text);
+					}
+				}
+
 				if (buttons[i]->checkStatus(cursor->getX(), cursor->getY(), Application::winWidth, Application::winHeight))
 				{
 					if (name == "mainmenu")
@@ -126,20 +142,20 @@ void GUIScreen::Update(double dt)
 							manager->getLevel()->setScreen("carselection");
 						}
 						if (buttons[i]->getAction() == "upgradenitro")
-						{   //buy upgrade and push it to history
-							/*manager->getShop()->buyUpgrade(dynamic_cast<Player*>(manager->getLevel()->getObject("player")), 1);*/
-							//manager->getShop()->Buy(player, 
-							//manager->getLevel()->setScreen("confirmation");
+						{
+							manager->getShop()->Buy(player, "nitro");
+							manager->getLevel()->setScreen("confirmation");
 						}
 						if (buttons[i]->getAction() == "upgradetire")
 						{
-				/*			manager->getShop()->buyUpgrade(dynamic_cast<Player*>(manager->getLevel()->getObject("player")), 2);
-							manager->getLevel()->setScreen("confirmation");*/
+							manager->getShop()->Buy(player, "tyre");
+							manager->getLevel()->setScreen("confirmation");
 						}
 						if (buttons[i]->getAction() == "upgradeengine")
 						{
-					/*		manager->getShop()->buyUpgrade(dynamic_cast<Player*>(manager->getLevel()->getObject("player")), 3);
-							manager->getLevel()->setScreen("confirmation");*/
+							manager->getShop()->Buy(player, "engine");
+							manager->getLevel()->setScreen("confirmation");
+
 						}
 						if (buttons[i]->getAction() == "undo")
 						{
@@ -154,7 +170,7 @@ void GUIScreen::Update(double dt)
 						}
 						else if (buttons[i]->getAction() == "denypurchase")
 						{
-							manager->getShop()->Undo(dynamic_cast<Player*>(manager->getLevel()->getObject("player")));
+							manager->getShop()->Undo(player);
 							manager->getLevel()->setScreen("shop");
 
 						}
@@ -173,32 +189,18 @@ void GUIScreen::Update(double dt)
 					}
 					else if (name == "carselection")
 					{
-						if (buttons[i]->getAction() == "buycartwo")
-						{
+						/*					if (buttons[i]->getAction() == "buycartwo")
+											{
 
-							if (!player->getUpgrade("car2"))
-							{
-								manager->getShop()->Buy(player, "car2", "nitro", 1);
-							}
-							level->setScreen("shop");
+												if (!player->getUpgrade("car2"))
+												{
+													manager->getShop()->Buy(player, "car2", "nitro", 1);
+												}
+												level->setScreen("shop");
 
-						}
-						else if (buttons[i]->getAction() == "buycarthree")
-						{
-							if (!player->getUpgrade("car3"))
-							{
-								manager->getShop()->Buy(player, "car3", "nitro", 1);
-							}
-							level->setScreen("shop");
-						}
-						else if (buttons[i]->getAction() == "buycarfour")
-						{
-							if (!player->getUpgrade("car4"))
-							{
-								manager->getShop()->Buy(player, "car4", "nitro", 1);
-							}
-							level->setScreen("shop");
-						}
+											}
+					*/
+
 					}
 					else if (name == "playermode")
 					{
@@ -222,24 +224,11 @@ void GUIScreen::Update(double dt)
 							manager->getLevel()->setScreen("mainmenu");
 						}
 					}
-				}
 
+				}
 				
 
-				if (buttons[i]->isHover(cursor->getX(), cursor->getY()))
-				{
-					GUIText* text = nullptr;
-					if (buttons[i]->getAction() == "playsingleplayer")
-					{
-						text = GUIManager::getInstance()->renderText("consolas", 497, 217, "Race against time", 0.4f, Color(1, 1, 1), TEXT_ALIGN_LEFT);
-						level->getScreen()->addText(text);
-					}
-					else if (buttons[i]->getAction() == "playmultiplayer")
-					{
-						text = GUIManager::getInstance()->renderText("consolas", 497, 217, "Race against another player!", 0.4f, Color(1, 1, 1), TEXT_ALIGN_LEFT, 300);
-						level->getScreen()->addText(text);
-					}
-				}
+					
 			}
 		}
 	}

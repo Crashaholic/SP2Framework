@@ -2,7 +2,6 @@
 #include "Manager.h"
 #include "Player.h"
 #include "LevitationPad.h"
-#include "AICar.h"
 #include "Application.h"
 #include "MovingObstacle.h"
 
@@ -37,7 +36,7 @@ Level::~Level()
 
 void Level::setScreen(std::string screen) {
 	currentScreen = screen;
-	cursor->setOnCooldown(0.2);
+	cursor->setOnCooldown(0.5);
 	screens[screen]->setCursor(cursor);
 	
 	if (screen == "ingame")
@@ -123,21 +122,18 @@ void Level::Load(std::string path, std::vector<Waypoint*>* waypoints) {
 					m = new Player(current->Get("name").c_str(), primitive, current->Get("input"), textureID);
 				}
 				else if (type == "car") {
-					m = new Car(current->Get("name").c_str(), primitive, current->Get("input"), textureID);
+					m = new Car(current->Get("name").c_str(), primitive, current->Get("input"), std::stof(current->Get("nitro")), textureID);
 				}
 				else if (type == "pad") {
 					m = new LevitationPad(current->Get("name").c_str(), primitive, textureID, std::stof(current->Get("levitation")));
-				}
-				else if (type == "ai") {
-					m = new AICar(current->Get("name").c_str(), primitive, textureID);
 				}
 				else if (type == "movingobstacle")
 				{
 					std::vector<std::string> pos = Utility::splitLine(current->Get("position"), ',');
 					Vector3 position = Vector3(std::stof(pos[0]), std::stof(pos[1]), std::stof(pos[2]));
-					std::vector<std::string> end = Utility::splitLine(current->Get("targetposition"), ',');
+					std::vector<std::string> end = Utility::splitLine(current->Get("target"), ',');
 					Vector3 target = Vector3(std::stof(end[0]), std::stof(end[1]), std::stof(end[2]));
-					m = new MovingObstacle(current->Get("name").c_str(), primitive, position, target, textureID);
+					m = new MovingObstacle(current->Get("name").c_str(), primitive, position, target, std::stof(current->Get("moverate")), textureID);
 				}
 				else {
 					m = new Mesh(current->Get("name").c_str(), primitive, textureID, collision, gravity, type);

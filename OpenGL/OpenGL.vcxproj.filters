@@ -87,12 +87,6 @@
     <ClCompile Include="Source\QuadTree.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\AICar.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\AIWaypoint.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Car.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -219,12 +213,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Source\QuadNode.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\AIWaypoint.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\AICar.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Source\Car.h">

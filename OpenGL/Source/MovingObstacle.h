@@ -6,12 +6,13 @@
 class MovingObstacle : public Mesh
 {
 public:
-	MovingObstacle(const char* meshName, Primitive* primitive, Vector3 startPos, Vector3 endPos,
+	MovingObstacle(const char* meshName, Primitive* primitive, Vector3 startPos, Vector3 endPos, float moveRate,
 		unsigned int texID = 0, DRAW_MODE drawMode = DRAW_TRIANGLES);
 	MovingObstacle();
 	~MovingObstacle();
 	void Update(double dt);
 private:
+	float moveRate;
 	Vector3 target;
 	Vector3 startPos;
 	Vector3 endPos;

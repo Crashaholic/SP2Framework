@@ -90,8 +90,6 @@
     <ClCompile Include="Source\GUIButton.cpp" />
     <ClCompile Include="Source\GUIScreen.cpp" />
     <ClCompile Include="Source\LevitationPad.cpp" />
-    <ClCompile Include="Source\AICar.cpp" />
-    <ClCompile Include="Source\AIWaypoint.cpp" />
     <ClCompile Include="Source\QuadNode.cpp" />
     <ClCompile Include="Source\QuadTree.cpp" />
     <ClCompile Include="Source\Car.cpp" />
@@ -132,8 +130,6 @@
     <ClInclude Include="Source\GUIButton.h" />
     <ClInclude Include="Source\GUITexture.h" />
     <ClInclude Include="Source\IRender.h" />
-    <ClInclude Include="Source\AICar.h" />
-    <ClInclude Include="Source\AIWaypoint.h" />
     <ClInclude Include="Source\QuadNode.h" />
     <ClInclude Include="Source\QuadTree.h" />
     <ClInclude Include="Source\Car.h" />

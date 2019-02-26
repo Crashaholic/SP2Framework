@@ -18,12 +18,12 @@ enum soundEffects
 class Car : public Mesh
 {
 public:
-	Car(const char* meshName, Primitive* primitive, std::string input, unsigned int texID = 0, DRAW_MODE drawMode = DRAW_TRIANGLES);
+	Car(const char* meshName, Primitive* primitive, std::string input, float nitro, unsigned int texID = 0, DRAW_MODE drawMode = DRAW_TRIANGLES);
 	Car();
 	~Car();
 
 	virtual void Update(double dt);
-	void setOccupied(bool isOccupied);
+	void setOccupied(std::string name, bool isOccupied);
 	float currentSteer;
 	float angularVelocity;
 	Vector3 forward;
@@ -32,6 +32,7 @@ public:
 	int getLaps();
 	double getTiming();
 	bool hasFinished();
+
 
 	SoLoud::Soloud carEngine;
 	SoLoud::Wav carSounds[2];
@@ -43,6 +44,7 @@ protected:
 
 private:
 
+	std::string playerName;
 	void updateWaypoint();
 	bool finished;
 	int laps;
@@ -50,6 +52,7 @@ private:
 	std::string input;
 	float torqueRot;
 	int waypointID;
+
 
 	float engineAcceleration;
 	float reverseAcceleration;
@@ -65,6 +68,7 @@ private:
 	float steerAngle;
 	float thrust;
 	float thrusters = 300.0f;
+	float nitro;
 
 	// [DEBUG ONLY]
 	bool start;

@@ -1,7 +1,6 @@
 #include "Manager.h"
 #include "LoadTGA.h"
 #include "Player.h"
-#include "AICar.h"
 #include "LevitationPad.h"
 #include "GUIManager.h"
 
@@ -176,6 +175,8 @@ void Manager::loadPlayerProgress()
 {
 	Player* player = dynamic_cast<Player*>(levels[currentLevel]->getObject("player"));
 	if (player != nullptr) return;
+
+	return;
 
 	std::fstream playerProgress("Data\\playerprogress.txt", std::fstream::in);
 	std::string line;

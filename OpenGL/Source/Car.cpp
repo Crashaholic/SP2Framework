@@ -5,10 +5,9 @@
 #include "Collision.h"
 #include "Manager.h"
 #include "Player.h"
-#include "AICar.h"
 
 
-Car::Car(const char* meshName, Primitive* primitive, std::string input, unsigned int texID, DRAW_MODE drawMode)
+Car::Car(const char* meshName, Primitive* primitive, std::string input, float nitro, unsigned int texID, DRAW_MODE drawMode)
 	: Mesh(meshName, primitive, texID, true, true, "car", drawMode)
 {
 
@@ -44,6 +43,7 @@ Car::Car(const char* meshName, Primitive* primitive, std::string input, unsigned
 	thrusters = 300.0f;
 	thrust = 0.0f;
 	torqueRot = 0.0f;
+	this->nitro = nitro;
 }
 
 Car::Car()
@@ -56,8 +56,9 @@ Car::~Car()
 
 }
 
-void Car::setOccupied(bool isOccupied)
+void Car::setOccupied(std::string playerName, bool isOccupied)
 {
+	this->playerName = playerName;
 	this->isOccupied = isOccupied;
 	carEngine.play(carSounds[SFX_ENTEROREXIT]);
 }
@@ -98,6 +99,7 @@ void Car::Update(double dt)
 		float thrustInput = 0.0f;
 
 		// Modify
+		std::cout << input[4] << std::endl;
 		if (Application::IsKeyPressed(input[4]) && thrusters > 0.0f) {
 			std::cout << thrusters << std::endl;
 			thrustInput = 1.0f;
@@ -132,62 +134,51 @@ void Car::Update(double dt)
 
 			Vector3 target = car->velocity * 1.5f;
 
-				float kForwardDiff = 1.0f - abs(car->forward.Dot(-forward));
-				float finalVelCar = 0.0f;
-				float finalVelCar2 = 0.0f;
+			float kForwardDiff = 1.0f - abs(car->forward.Dot(-forward));
+			float finalVelCar = 0.0f;
+			float finalVelCar2 = 0.0f;
 
 
-				Collision::Collide(velocity.Length() * 6.5, car->velocity.Length(), 5, 3, finalVelCar, finalVelCar2, 10);
+			Collision::Collide(velocity.Length() * 6.5, car->velocity.Length(), 5, 3, finalVelCar, finalVelCar2, 10);
 
-				Vector3 vectorToCenter = car->position - position;
-				Vector3 diff = vectorToCenter - forward;
+			Vector3 vectorToCenter = car->position - position;
+			Vector3 diff = vectorToCenter - forward;
 
-				int t = 0;
-				if (diff.x > 0)
+			int t = 0;
+			if (diff.x > 0)
+			{
+				t = (diff.z > 0) ? -1 : 1;
+			}
+			else
+			{
+				t = (diff.z > 0) ? 1 : -1;
+			}
+
+			if (finalVelCar2 < 0.1f) finalVelCar2 = 0.1f;
+			//if(finalVelCar != 0.0f)
+			//	finalVelCar2 = finalVelCar2 * 0.60f;
+
+			if (finalVelCar2 != 0.0f) {
+
+				Vector3 v = (forward * finalVelCar2 * 1.0f) - car->velocity;
+				Vector3 v2 = v * 1.50;
+				std::vector<Mesh*> collided = Collision::checkCollisionT(car, v2, { "ground", "ramp", "rampsupport", "pad1" });
+				if (collided.size() == 0)
 				{
-					t = (diff.z > 0) ? -1 : 1;
-				}
-				else
-				{
-					t = (diff.z > 0) ? 1 : -1;
+					car->velocity += v;
 				}
 
-				if (finalVelCar2 < 0.1f) finalVelCar2 = 0.1f;
-				//if(finalVelCar != 0.0f)
-				//	finalVelCar2 = finalVelCar2 * 0.60f;
-
-				if (finalVelCar2 != 0.0f) {
-
-					Vector3 v = (forward * finalVelCar2 * 1.0f) - car->velocity;
-					Vector3 v2 = v * 1.50;
-					std::vector<Mesh*> collided = Collision::checkCollisionT(car, v2, { "ground", "ramp", "rampsupport", "pad1" });
-					if (collided.size() == 0)
-					{
-						car->velocity += v;
-					}
-					else {
-						for (int i = 0; i < collided.size(); i++) {
-
-
-							//if (collided[i]->getType() == "environment") {
-							//	if (car->velocity.Length() > 0.1f) {
-							//		car->velocity.x = -car->velocity.x;
-							//		car->velocity.z = -car->velocity.z;
-							//	}
-
-
-							//	//if (abs(forward.Dot(collided[i]->getOBB()->getZ())) < 0.5f) {
-							//	//	position += velocity;
-							//	//}
-							//}
-						}
-					}
-
-				}
+			}
 			
 		}
 	}
 
+
+
+
+	std::cout << nitro << std::endl;
+	
+	
 	
 	collided = Collision::checkCollisionT(this, velocity, { "ground", "ramp", "rampsupport", "pad1" });
 	if (collided.size() == 0)
@@ -202,15 +193,15 @@ void Car::Update(double dt)
 				velocity.x = velocity.z = 0;
 			}
 			else {
-				if (collided[i]->getType() == "environment") {
+				if (collided[i]->getType() == "environment" || collided[i]->getType() == "movingobstacle") {
 
-					if (velocity.Length() > 0.1f) {
+					if (velocity.Length() > 0.15f) {
 						velocity.x = -velocity.x;
 						velocity.z = -velocity.z;
 
 					}
 
-					if (abs(forward.Dot(collided[i]->getOBB()->getZ())) < 0.5f) {
+					if (abs(forward.Dot(collided[i]->getOBB()->getZ())) < 0.08f) {
 						position += velocity;
 					}
 				}
@@ -248,7 +239,6 @@ void Car::updateWaypoint() {
 		}
 
 	}
-	std::cout << name << ": " << laps << std::endl;
 
 }
 
@@ -318,7 +308,17 @@ Vector3 Car::calcAcceleration(float accInput, float steerInput, float dt)
 
 	if (accInput == 1)
 	{
-		engineForward = forward * engineAcceleration * 20.0f * dt;
+		Player* player = dynamic_cast<Player*>(Manager::getInstance()->getLevel()->getObject(playerName));
+		if (Application::IsKeyPressed(input[5]) && nitro > 0.0f) {
+			player->setCameraSpeed(4.0);
+			engineForward = forward * engineAcceleration * 25.0f * dt;
+			nitro -= 5.0f * dt;
+		}
+		else {
+			player->setCameraSpeed(5.0);
+			engineForward = forward * engineAcceleration * 20.0f * dt;
+		}
+
 	}
 	else if (accInput == -1)
 	{

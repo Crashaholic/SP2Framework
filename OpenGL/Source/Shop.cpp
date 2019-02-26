@@ -3,7 +3,7 @@
 
 Shop::Shop()
 {
-
+	currentSelectedCar = 0;
 }
 
 Shop::~Shop()
@@ -16,17 +16,20 @@ void Shop::addItem(std::string name, int cost)
 	costs[name] = cost;
 }
 
-void Shop::Buy(Player *player, std::string name, std::string category, int tier)
+void Shop::Buy(Player *player, std::string category)
 {
+	std::string name = carNames[currentSelectedCar];
+
 	// Return cost of car if tier 1, if not return tier price
-	float cost = (tier == 1) ? costs[name] : tier * 25.0f;
+	float cost = (player->getUpgrade(name) == nullptr) ? costs[name] : (player->getUpgrade(name)->getTier(category)+1) * 25.0f;
+	
 
 	// If can afford, purchase
 	if (player->getMoney() >= cost)
 	{
 		player->setMoney(player->getMoney() - cost);
 		// Get existing upgrade from player
-		CarUpgrade* upgrade = player->getUpgrade(category);
+		CarUpgrade* upgrade = player->getUpgrade(name);
 
 
 		// New purchase
@@ -40,8 +43,7 @@ void Shop::Buy(Player *player, std::string name, std::string category, int tier)
 		// Upgrade
 		else
 		{
-			CarUpgrade* pUpgrade = player->getUpgrade(name);
-			pUpgrade->setTier(category, tier);
+			upgrade->setTier(category, upgrade->getTier(category) + 1);
 		}
 
 		// Record purchase
@@ -93,5 +95,16 @@ int Shop::getCostOfCar(std::string name)
 	return costs[name];
 }
 
+std::string Shop::getCar() {
+	return carNames[currentSelectedCar];
+}
 
+void Shop::selectNextCar() {
+	currentSelectedCar++;
+	if (currentSelectedCar > carNames.size()) currentSelectedCar = 0;
+}
 
+void Shop::selectPrevCar() {
+	currentSelectedCar--;
+	if (currentSelectedCar < 0) currentSelectedCar = carNames.size() - 1;
+}

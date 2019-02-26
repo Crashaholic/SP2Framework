@@ -10,6 +10,7 @@ Player::Player(const char* meshName, Primitive* primitive, std::string input, un
 
 	this->input = input;
 
+	carFollowSpeed = 10.0;
 	walkSpeed = 3.0f;
 	isInVehicle = false;
 	cameraMode = FIRST_PERSON;
@@ -117,7 +118,8 @@ void Player::Update(double dt) {
 			target += anotherForward * -5.0f + Vector3(0.0f, 3.5f, 0.0f);
 			lookAtTarget = position + anotherForward * 2.5f + Vector3(0, 0.5f, 0.0);
 		}
-		fixedCar->position = Utility::Lerp(fixedCar->position, target, 0.9f);
+
+		fixedCar->position = Utility::Lerp(fixedCar->position, target, carFollowSpeed * dt);
 		fixedCar->setTarget(lookAtTarget);
 	}
 
@@ -134,7 +136,9 @@ void Player::Update(double dt) {
 }
 
 
-
+void Player::setCameraSpeed(float speed) {
+	carFollowSpeed = speed;
+}
 
 
 void Player::getMoneyText(std::string& moneyString, Color& color)
@@ -171,7 +175,7 @@ CarUpgrade* Player::getUpgrade(std::string car)
 void Player::setCar(Car* car) {
 	this->car = car;
 	isInVehicle = true;
-	car->setOccupied(true);
+	car->setOccupied(name, true);
 	collisionEnabled = false;
 	setCameraMode(FIXED_CAR);
 }

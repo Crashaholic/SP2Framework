@@ -26,6 +26,8 @@ public:
 	void setCar(Car* car);
 	Car* getCar();
 
+	void setCameraSpeed(float speed);
+
 	void switchCameraMode();
 	bool isInVehicle;
 
@@ -39,6 +41,7 @@ public:
 
 private:
 
+	float carFollowSpeed;
 	Car* car;
 	std::vector<CarUpgrade*> upgrades;
 

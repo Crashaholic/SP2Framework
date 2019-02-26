@@ -8,7 +8,6 @@
 #include "ShaderProgram.h"
 #include "Collision.h"
 #include "QuadTree.h"
-#include "AICar.h"
 #include "LevitationPad.h"
 
 SceneA2::SceneA2()
