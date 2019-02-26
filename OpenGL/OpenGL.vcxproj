@@ -84,6 +84,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Source\CarUpgrade.cpp" />
+    <ClCompile Include="Source\MovingObstacle.cpp" />
     <ClCompile Include="Source\Level.cpp" />
     <ClCompile Include="Source\GUIButton.cpp" />
     <ClCompile Include="Source\GUIScreen.cpp" />
@@ -117,13 +119,12 @@
     <ClCompile Include="Source\Application.cpp" />
     <ClCompile Include="Source\main.cpp" />
     <ClCompile Include="Source\Shop.cpp" />
-    <ClCompile Include="Source\ShopNode.cpp" />
     <ClCompile Include="Source\Utility.cpp" />
-    <ClCompile Include="Source\Texture.cpp" />
-    <ClCompile Include="Source\Transformation.cpp" />
     <ClCompile Include="Source\Waypoint.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Source\CarUpgrade.h" />
+    <ClInclude Include="Source\MovingObstacle.h" />
     <ClInclude Include="Source\Level.h" />
     <ClInclude Include="Source\GUIScreen.h" />
     <ClInclude Include="Source\LevitationPad.h" />
@@ -159,11 +160,8 @@
     <ClInclude Include="Source\Scene.h" />
     <ClInclude Include="Source\shader.hpp" />
     <ClInclude Include="Source\Shop.h" />
-    <ClInclude Include="Source\ShopNode.h" />
     <ClInclude Include="Source\Vertex.h" />
     <ClInclude Include="Source\Utility.h" />
-    <ClInclude Include="Source\Texture.h" />
-    <ClInclude Include="Source\Transformation.h" />
     <ClInclude Include="Source\Waypoint.h" />
   </ItemGroup>
   <ItemGroup>

@@ -3,6 +3,7 @@
 
 #include "Car.h"
 #include "FreeLookCamera.h"
+#include "CarUpgrade.h"
 
 enum CAMERA_MODE {
 	FIRST_PERSON = 0,
@@ -19,9 +20,7 @@ public:
 
 	void Update(double dt);
 	void setCameraMode(CAMERA_MODE mode);
-	void unlockCar(int carSelected);
-	void lockCar(int carSelected);
-	void setMoney(int change);
+
 	Camera* getCamera();
 	Camera* getTopdownCamera();
 	void setCar(Car* car);
@@ -30,15 +29,22 @@ public:
 	void switchCameraMode();
 	bool isInVehicle;
 
+	CarUpgrade* getUpgrade(std::string car);
+	std::vector<CarUpgrade*>* getUpgrades();
+	void setMoney(int change);
 	int getMoney();
+
 	void getMoneyText(std::string& moneyString, Color& color);
-	bool getCarsUnlocked(int carID); 
 
 
 private:
+
+	Car* car;
+	std::vector<CarUpgrade*> upgrades;
+
 	std::string input;
 	Vector3 racePosition;
-	Car* car;
+
 	CAMERA_MODE cameraMode;
 	FreeLookCamera* firstPerson;
 	Camera* topdown;
@@ -46,10 +52,7 @@ private:
 	float walkSpeed;
 	int money;
 
-	bool carOneUnlock;
-	bool carTwoUnlock;
-	bool carThreeUnlock;
-	bool carFourUnlock;
+
 };
 
 #endif

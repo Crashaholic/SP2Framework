@@ -1,3 +1,0 @@
-Money=600
-ID=1
-Upgrade=Nitro:1,Tire:1,Engine:1

@@ -89,6 +89,9 @@ void GUIScreen::Update(double dt)
 		if (cursor->updateVars(Application::mouse_x, Application::mouse_y, Application::winWidth, Application::winHeight, dt))
 		{
 			Level* level = manager->getLevel();
+			Player* player;
+			if (manager->getLevelName() == "game")
+				player = dynamic_cast<Player*>(level->getObject("player"));
 
 			for (int i = 0; i < (int)buttons.size(); i++)
 			{
@@ -116,24 +119,27 @@ void GUIScreen::Update(double dt)
 						}
 					}
 					else if (name == "shop") {
+
+
 						if (buttons[i]->getAction() == "buycar")
 						{
 							manager->getLevel()->setScreen("carselection");
 						}
 						if (buttons[i]->getAction() == "upgradenitro")
 						{   //buy upgrade and push it to history
-							manager->getShop()->buyUpgrade(dynamic_cast<Player*>(manager->getLevel()->getObject("player")), 1);
-							manager->getLevel()->setScreen("confirmation");
+							/*manager->getShop()->buyUpgrade(dynamic_cast<Player*>(manager->getLevel()->getObject("player")), 1);*/
+							//manager->getShop()->Buy(player, 
+							//manager->getLevel()->setScreen("confirmation");
 						}
 						if (buttons[i]->getAction() == "upgradetire")
 						{
-							manager->getShop()->buyUpgrade(dynamic_cast<Player*>(manager->getLevel()->getObject("player")), 2);
-							manager->getLevel()->setScreen("confirmation");
+				/*			manager->getShop()->buyUpgrade(dynamic_cast<Player*>(manager->getLevel()->getObject("player")), 2);
+							manager->getLevel()->setScreen("confirmation");*/
 						}
 						if (buttons[i]->getAction() == "upgradeengine")
 						{
-							manager->getShop()->buyUpgrade(dynamic_cast<Player*>(manager->getLevel()->getObject("player")), 3);
-							manager->getLevel()->setScreen("confirmation");
+					/*		manager->getShop()->buyUpgrade(dynamic_cast<Player*>(manager->getLevel()->getObject("player")), 3);
+							manager->getLevel()->setScreen("confirmation");*/
 						}
 						if (buttons[i]->getAction() == "undo")
 						{
@@ -148,8 +154,9 @@ void GUIScreen::Update(double dt)
 						}
 						else if (buttons[i]->getAction() == "denypurchase")
 						{
-							manager->getLevel()->setScreen("shop");
 							manager->getShop()->Undo(dynamic_cast<Player*>(manager->getLevel()->getObject("player")));
+							manager->getLevel()->setScreen("shop");
+
 						}
 					}
 					else if (name == "confirmationundo")
@@ -168,39 +175,29 @@ void GUIScreen::Update(double dt)
 					{
 						if (buttons[i]->getAction() == "buycartwo")
 						{
-							if (dynamic_cast<Player*>(manager->getLevel()->getObject("player"))->getCarsUnlocked(2) == false)
+
+							if (!player->getUpgrade("car2"))
 							{
-								manager->getShop()->buyCar(dynamic_cast<Player*>(manager->getLevel()->getObject("player")), 2);
-								manager->getLevel()->setScreen("shop");
+								manager->getShop()->Buy(player, "car2", "nitro", 1);
 							}
-							else
-							{
-								manager->getLevel()->setScreen("shop");
-							}
+							level->setScreen("shop");
+
 						}
 						else if (buttons[i]->getAction() == "buycarthree")
 						{
-							if (dynamic_cast<Player*>(manager->getLevel()->getObject("player"))->getCarsUnlocked(3) == false)
+							if (!player->getUpgrade("car3"))
 							{
-								manager->getShop()->buyCar(dynamic_cast<Player*>(manager->getLevel()->getObject("player")), 3);
-								manager->getLevel()->setScreen("shop");
+								manager->getShop()->Buy(player, "car3", "nitro", 1);
 							}
-							else
-							{
-								manager->getLevel()->setScreen("shop");
-							}
+							level->setScreen("shop");
 						}
 						else if (buttons[i]->getAction() == "buycarfour")
 						{
-							if (dynamic_cast<Player*>(manager->getLevel()->getObject("player"))->getCarsUnlocked(4) == false)
+							if (!player->getUpgrade("car4"))
 							{
-								manager->getShop()->buyCar(dynamic_cast<Player*>(manager->getLevel()->getObject("player")), 4);
-								manager->getLevel()->setScreen("shop");
+								manager->getShop()->Buy(player, "car4", "nitro", 1);
 							}
-							else
-							{
-								manager->getLevel()->setScreen("shop");
-							}
+							level->setScreen("shop");
 						}
 					}
 					else if (name == "playermode")

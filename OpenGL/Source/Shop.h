@@ -1,24 +1,23 @@
 #ifndef SHOP_H
 #define SHOP_H
-//#include "Player.h"
+
 #include "Car.h"
 #include "Player.h"
-#include "ShopNode.h"
+
 class Shop
 {
 public:
+	
 	Shop();
 	~Shop();
-	void enterShop();
-	void buyCar(Player *player, int carSelected);
-	void buyUpgrade(Player *player, int choice);
-	void addUpgradeToTransactionHistory(int tier, char type, int moneySpent);
-	void addCarToTransactionHistory(int carType, int moneySpent);
 
+	int getCostOfCar(std::string name);
+	void addItem(std::string name, int cost);
+	void Buy(Player* player, std::string name, std::string category, int tier);
 	void Undo(Player *player);
-	void exitShop();
+
 private:
-	shopNode* head;
-	shopNode* tail;
+	std::map<std::string, int> costs;
+	std::vector<CarUpgrade*> purchases;
 };
 #endif

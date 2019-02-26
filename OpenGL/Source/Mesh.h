@@ -6,7 +6,6 @@
 #include "Material.h"
 #include "Primitives.h"
 #include "MatrixStack.h"
-#include "Transformation.h"
 #include "ShaderProgram.h"
 #include "OBB.h"
 
@@ -52,7 +51,6 @@ public:
 	Material material;
 	std::vector<Mesh*>* getChildren();
 	OBB* getOBB();
-	std::vector<Transformation*> transformations;
 	std::string getType();
 
 	void Render(MS& modelStack, MS& viewStack, MS& projectionStack, ShaderProgram* shader);

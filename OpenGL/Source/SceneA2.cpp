@@ -58,7 +58,7 @@ void SceneA2::Init()
 void SceneA2::loadProgress() {
 	if (loadFlag == false && dynamic_cast<Player*>(manager->getLevel()->getObject("player")) != nullptr)
 	{
-		manager->loadPlayerProgress(dynamic_cast<Player*>(manager->getLevel()->getObject("player")));
+		manager->loadPlayerProgress();
 		loadFlag = true;
 	}
 }
@@ -135,29 +135,29 @@ void SceneA2::GenerateText()
 
 			}
 
-			std::string money;
-			std::string carStats;
+			//std::string money = manager->getMoney();
+			//std::string carStats;
 			Color color;
 
 			//R: Player UI (Money)
-			dynamic_cast<Player*>(manager->getLevel()->getObject("player"))->getMoneyText(money, color);
-			GUIText* playerMoney = gui->renderText("digital", 40, Application::winHeight / 2.0f - 100, money, 0.4f, color, TEXT_ALIGN_TOP);
-			Manager::getInstance()->getLevel()->getScreen()->addText(playerMoney);
+			//dynamic_cast<Player*>(manager->getLevel()->getObject("player"))->getMoneyText(money, color);
+			//GUIText* playerMoney = gui->renderText("digital", 40, Application::winHeight / 2.0f - 100, money, 0.4f, color, TEXT_ALIGN_TOP);
+			//Manager::getInstance()->getLevel()->getScreen()->addText(playerMoney);
 
-			//R: Player UI (Engine)
-			dynamic_cast<Car*>(manager->getLevel()->getObject("car"))->getEngineTierText(carStats, color);
-			GUIText* carTierStats = gui->renderText("digital", 20, Application::winHeight / 2.0f - 120, carStats, 0.2f, color, TEXT_ALIGN_LEFT);
-			Manager::getInstance()->getLevel()->getScreen()->addText(carTierStats);
+			////R: Player UI (Engine)
+			//dynamic_cast<Car*>(manager->getLevel()->getObject("car"))->getEngineTierText(carStats, color);
+			//GUIText* carTierStats = gui->renderText("digital", 20, Application::winHeight / 2.0f - 120, carStats, 0.2f, color, TEXT_ALIGN_LEFT);
+			//Manager::getInstance()->getLevel()->getScreen()->addText(carTierStats);
 
-			//R: Player UI (Nitro)
-			dynamic_cast<Car*>(manager->getLevel()->getObject("car"))->getNitroTierText(carStats, color);
-			carTierStats = gui->renderText("digital", 20, Application::winHeight / 2.0f - 140, carStats, 0.2f, color, TEXT_ALIGN_LEFT);
-			Manager::getInstance()->getLevel()->getScreen()->addText(carTierStats);
+			////R: Player UI (Nitro)
+			//dynamic_cast<Car*>(manager->getLevel()->getObject("car"))->getNitroTierText(carStats, color);
+			//carTierStats = gui->renderText("digital", 20, Application::winHeight / 2.0f - 140, carStats, 0.2f, color, TEXT_ALIGN_LEFT);
+			//Manager::getInstance()->getLevel()->getScreen()->addText(carTierStats);
 
-			//R: Player UI (Tires)
-			dynamic_cast<Car*>(manager->getLevel()->getObject("car"))->getTireTierText(carStats, color);
-			carTierStats = gui->renderText("digital", 20, Application::winHeight / 2.0f - 160, carStats, 0.2f, color, TEXT_ALIGN_LEFT);
-			Manager::getInstance()->getLevel()->getScreen()->addText(carTierStats);
+			////R: Player UI (Tires)
+			//dynamic_cast<Car*>(manager->getLevel()->getObject("car"))->getTireTierText(carStats, color);
+			//carTierStats = gui->renderText("digital", 20, Application::winHeight / 2.0f - 160, carStats, 0.2f, color, TEXT_ALIGN_LEFT);
+			//Manager::getInstance()->getLevel()->getScreen()->addText(carTierStats);
 
 
 
@@ -361,7 +361,7 @@ void SceneA2::GenerateText()
 
 void SceneA2::InitShaderProperties()
 {
-	lit = manager->getShader("lit");
+	ShaderProgram* lit = manager->getShader("lit");
 	lit->use();
 	std::vector<LightSource*>* lightSources = manager->getLevel()->getLightSources();
 	for (int i = 0; i < (int)lightSources->size(); i++) {
@@ -423,7 +423,6 @@ void SceneA2::Update(double dt)
 	
 	}
 
-	//manager->loadPlayerProgress()
 	
 	if (manager->getGameState() == RACE_STARTING)
 		manager->updateStartCountdown(dt);
@@ -449,13 +448,12 @@ void SceneA2::Update(double dt)
 
 void SceneA2::Exit()
 {
-	//manager->savePlayerProgress();
+	
 	Engine.deinit();
 	delete manager;
 	delete gui;
 
 	glDeleteVertexArrays(1, &m_vertexArrayID);
-	glDeleteProgram(lit->getID());
 }
 
 

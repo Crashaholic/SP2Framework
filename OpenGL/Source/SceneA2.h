@@ -23,6 +23,8 @@
 #include "soloud_wav.h"
 
 
+
+
 class SceneA2 : public Scene
 {
 
@@ -34,6 +36,7 @@ public:
 	virtual void Render();
 	virtual void Update(double dt);
 	virtual void Exit();
+
 private:
 
 
@@ -44,7 +47,6 @@ private:
 	void loadProgress();
 
 	bool loadFlag;
-
 	unsigned m_vertexArrayID;
 
 	float bounceTimeCounter = 0.0f;
@@ -52,16 +54,12 @@ private:
 	int framesPerSecond = 0;
 	int lastFramesPerSecond = 0;
 	float elapsedTimeCounter = 0.0f;
-
 	bool state_MainMenu;
 	bool state_InGame;
 	bool state_Race;
 
 	Manager *manager;
-	Player* player;
-	Car* car;
 	GUIManager *gui;
-	ShaderProgram* lit;
 
 	SoLoud::Soloud Engine;
 	SoLoud::Wav Music[6];

@@ -28,13 +28,19 @@ public:
 	~Manager();
 	static Manager* getInstance();
 
-	void loadPlayerProgress(Player* player);
-	void savePlayerProgress(Player* player);
 
+	// Load & Save
+	void loadPlayerProgress();
+	void savePlayerProgress();
+
+
+	// Racing
 	void setGameState(RACE_STATE state);
 	RACE_STATE getGameState();
 	double getRaceStartCountdown();
 	void updateStartCountdown(double dt);
+	std::vector<Waypoint*>* getWaypoints();
+	int getPlacement(std::string name);
 
 	Level* getLevel();
 	void setLevel(std::string name);
@@ -44,15 +50,15 @@ public:
 
 	ShaderProgram* getShader(std::string name);
 	std::map<std::string, ShaderProgram*>* getShaders();
-	std::vector<Waypoint*>* getWaypoints();
-	int getPlacement(std::string name);
+
+
 	Shop* getShop();
+	int getMoney();
 
 private:
 
 	Manager();
 	static Manager* instance;
-
 
 	double raceStartCountdown;
 	Camera* mainmenu;

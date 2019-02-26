@@ -18,10 +18,6 @@ Player::Player(const char* meshName, Primitive* primitive, std::string input, un
 	fixedCar = new Camera(position + Vector3(0.0f, 8.0f, -6.0f));
 	topdown = new Camera(position + Vector3(0.0f, 8.0f, -6.0f));
 	
-	carOneUnlock = true;
-	carTwoUnlock = false;
-	carThreeUnlock = false;
-	carFourUnlock = false;
 }
 
 Player::Player()
@@ -137,17 +133,9 @@ void Player::Update(double dt) {
 
 }
 
-bool Player::getCarsUnlocked(int carID)
-{
-	if (carID == 1)
-		return carOneUnlock;
-	if (carID == 2)
-		return carTwoUnlock;
-	if (carID == 3)
-		return carThreeUnlock;
-	if (carID == 4)
-		return carFourUnlock;
-}
+
+
+
 
 void Player::getMoneyText(std::string& moneyString, Color& color)
 {
@@ -163,37 +151,21 @@ void Player::setMoney(int change)
 	this->money += change;
 }
 
-void Player::unlockCar(int carSelected)
+std::vector<CarUpgrade*>* Player::getUpgrades()
 {
-	if (carSelected == 2)
-	{
-		carTwoUnlock = true;
-	}
-	if (carSelected == 3)
-	{
-		carThreeUnlock = true;
-	}
-	if (carSelected == 4)
-	{
-		carFourUnlock = true;
-	}
+	return &upgrades;
 }
 
-void Player::lockCar(int carSelected)
+CarUpgrade* Player::getUpgrade(std::string car)
 {
-	if (carSelected == 2)
+	for (int i = 0; i < upgrades.size(); i++)
 	{
-		carTwoUnlock = false;
+		if (upgrades[i]->getName() == car)
+			return upgrades[i];
 	}
-	if (carSelected == 3)
-	{
-		carThreeUnlock = false;
-	}
-	if (carSelected == 4)
-	{
-		carFourUnlock = false;
-	}
+	return nullptr;
 }
+
 
 
 void Player::setCar(Car* car) {

@@ -4,6 +4,7 @@
 #include "LevitationPad.h"
 #include "AICar.h"
 #include "Application.h"
+#include "MovingObstacle.h"
 
 
 Level::Level(const char* levelPath, std::vector<Waypoint*>* waypoints)
@@ -15,7 +16,6 @@ Level::Level(const char* levelPath, std::vector<Waypoint*>* waypoints)
 
 	for (int i = 0; i < 2; i++)
 		lightSources.push_back(new LightSource());
-
 
 	
 }
@@ -131,6 +131,14 @@ void Level::Load(std::string path, std::vector<Waypoint*>* waypoints) {
 				else if (type == "ai") {
 					m = new AICar(current->Get("name").c_str(), primitive, textureID);
 				}
+				else if (type == "movingobstacle")
+				{
+					std::vector<std::string> pos = Utility::splitLine(current->Get("position"), ',');
+					Vector3 position = Vector3(std::stof(pos[0]), std::stof(pos[1]), std::stof(pos[2]));
+					std::vector<std::string> end = Utility::splitLine(current->Get("targetposition"), ',');
+					Vector3 target = Vector3(std::stof(end[0]), std::stof(end[1]), std::stof(end[2]));
+					m = new MovingObstacle(current->Get("name").c_str(), primitive, position, target, textureID);
+				}
 				else {
 					m = new Mesh(current->Get("name").c_str(), primitive, textureID, collision, gravity, type);
 				}
@@ -232,6 +240,20 @@ void Level::Load(std::string path, std::vector<Waypoint*>* waypoints) {
 
 				
 				waypoints->push_back(new Waypoint(position, scal));
+
+
+			}
+		}
+		else if (c.first == "shop"){
+			std::vector<Object*>* objs = &c.second;
+			for (int i = 0; i < (int)objs->size(); i++)
+			{
+				current = objs->at(i);
+
+				std::string name = current->Get("car");
+				int cost = std::stoi(current->Get("cost"));
+
+				Manager::getInstance()->getShop()->addItem(name, cost);
 
 
 			}

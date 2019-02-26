@@ -33,9 +33,6 @@
     <ClCompile Include="Source\SceneA2.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Texture.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Primitives.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -46,9 +43,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\Primitive.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Transformation.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\Manager.cpp">
@@ -129,7 +123,10 @@
     <ClCompile Include="Source\Shop.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\ShopNode.cpp">
+    <ClCompile Include="Source\CarUpgrade.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\MovingObstacle.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -161,9 +158,6 @@
     <ClInclude Include="Source\SceneA2.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Texture.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Primitives.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -174,9 +168,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Source\Primitive.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Transformation.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Source\Manager.h">
@@ -257,7 +248,10 @@
     <ClInclude Include="Source\Shop.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Source\ShopNode.h">
+    <ClInclude Include="Source\CarUpgrade.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\MovingObstacle.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
