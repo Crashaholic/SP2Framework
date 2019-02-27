@@ -30,7 +30,7 @@ GUIScreen::~GUIScreen()
 void GUIScreen::Render()
 {
 
-	if (Manager::getInstance()->getLevelName() == "game") {
+	if (Manager::getInstance()->getLevelName() == "game" || Manager::getInstance()->getLevelName() == "singleplayer") {
 
 
 		Player* player = dynamic_cast<Player*>(Manager::getInstance()->getLevel()->getObject("player"));
@@ -93,7 +93,7 @@ void GUIScreen::Update(double dt)
 		{
 			Level* level = manager->getLevel();
 			Player* player;
-			if (manager->getLevelName() == "game")
+			if (manager->getLevelName() == "game" || manager->getLevelName() == "singleplayer" || manager->getLevelName() == "tutorial")
 				player = dynamic_cast<Player*>(level->getObject("player"));
 
 			for (int i = 0; i < (int)buttons.size(); i++)
@@ -124,13 +124,21 @@ void GUIScreen::Update(double dt)
 							level->setScreen("gameselection");
 							/*Manager::getInstance()->setLevel("game");*/
 						}
+						else if (buttons[i]->getAction() == "playtutorial") {
+							manager->setLevel("tutorial");
+							level = manager->getLevel();
+							level->setScreen("gameplay");
+							dynamic_cast<Player*>(manager->getLevel()->getObject("player"))->setCar(dynamic_cast<Car*>(level->getObject("car")));
+						}
 
 					}
 					else if (name == "gameselection")
 					{
 						if (buttons[i]->getAction() == "newgame")
 						{
+							
 							manager->setLevel("game");
+							
 							manager->getShop()->spawnDisplayCar();
 						}
 						else if (buttons[i]->getAction() == "loadgame")
@@ -143,7 +151,8 @@ void GUIScreen::Update(double dt)
 
 						if (buttons[i]->getAction() == "buycar")
 						{
-							manager->getLevel()->setScreen("carselection");
+							if(!player->getUpgrade(manager->getShop()->getCar()))
+								manager->getShop()->BuyCar(player);
 						}
 						if (buttons[i]->getAction() == "upgradenitro")
 						{
@@ -203,43 +212,22 @@ void GUIScreen::Update(double dt)
 							manager->getLevel()->setScreen("shop");
 						}
 					}
-					else if (name == "carselection")
-					{
-						if (buttons[i]->getAction() == "buycartwo")
-						{
-							if (!player->getUpgrade("Smite"))
-							{
-								manager->getShop()->BuyCar(player, "Smite");
-							}
-							level->setScreen("shop");
-						}else if (buttons[i]->getAction() == "buycarthree")
-						{
-							if (!player->getUpgrade("Flame"))
-							{
-								manager->getShop()->BuyCar(player, "Flame");
-							}
-							level->setScreen("shop");
-						}else if (buttons[i]->getAction() == "buycarfour")
-						{
-							if (!player->getUpgrade("Devastator"))
-							{
-								manager->getShop()->BuyCar(player, "Devastator");
-							}
-							level->setScreen("shop");
-						}
-					
-
-					}
 					else if (name == "playermode")
 					{
 
 						if (buttons[i]->getAction() == "playsingleplayer")
 						{
+							manager->setGameType(RACE_SINGLEPLAYER);
+							manager->setLevel("singleplayer");
+
+							level = manager->getLevel();
+							level->setScreen("ingame");
+							dynamic_cast<Player*>(level->getObject("player"))->setCar(dynamic_cast<Car*>(level->getObject("car")));
 
 						}
 						else if (buttons[i]->getAction() == "playmultiplayer")
 						{
-							std::cout << "works" << std::endl;
+							manager->setGameType(RACE_MULTIPLAYER);
 							level->setScreen("ingame");
 							dynamic_cast<Player*>(level->getObject("player"))->setCar(dynamic_cast<Car*>(level->getObject("car")));
 							dynamic_cast<Player*>(level->getObject("player2"))->setCar(dynamic_cast<Car*>(level->getObject("car2")));
@@ -312,6 +300,7 @@ void GUIScreen::addButton(GUIButton* button)
 	renderables.push_back(button->getIRender());
 	buttons.push_back(button);
 }
+
 
 
 void GUIScreen::addTexture(GUITexture* texture)

@@ -25,7 +25,6 @@ public:
 	virtual void Update(double dt);
 	void setOccupied(std::string name, bool isOccupied);
 	float currentSteer;
-	float angularVelocity;
 	Vector3 forward;
 	void getVelocity(std::string& vel, Color& color);
 	int getWaypointID();
@@ -33,6 +32,8 @@ public:
 	double getTiming();
 	bool hasFinished();
 
+	std::string getNitro();
+	std::string getThruster();	
 
 	SoLoud::Soloud carEngine;
 	SoLoud::Wav carSounds[2];

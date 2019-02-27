@@ -23,6 +23,11 @@ enum RACE_STATE {
 	RACE_COMPLETED,
 };
 
+enum RACE_TYPE {
+	RACE_SINGLEPLAYER,
+	RACE_MULTIPLAYER,
+};
+
 class Manager
 {
 public:
@@ -38,6 +43,10 @@ public:
 	// Racing
 	void setGameState(RACE_STATE state);
 	RACE_STATE getGameState();
+
+	void setGameType(RACE_TYPE type);
+	RACE_TYPE getGameType();
+
 	double getRaceStartCountdown();
 	void updateStartCountdown(double dt);
 	std::vector<Waypoint*>* getWaypoints();
@@ -54,7 +63,6 @@ public:
 
 
 	Shop* getShop();
-	int getMoney();
 
 private:
 
@@ -65,10 +73,7 @@ private:
 	Camera* mainmenu;
 	Shop* shop;
 	RACE_STATE gameState;
-	bool carOneUnlock;
-	bool carTwoUnlock;
-	bool carThreeUnlock;
-	int money;
+	RACE_TYPE gameType;
 
 	std::string currentLevel;
 	std::map<std::string, Level*> levels;

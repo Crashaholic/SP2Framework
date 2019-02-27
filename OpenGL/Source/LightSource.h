@@ -10,6 +10,7 @@
 class LightSource
 {
 public:
+	LightSource(int type, Vector3 position, Vector3 color, float power, float exponent, Vector3 spotDir);
 	LightSource();
 	~LightSource();
 	static int lightCount;

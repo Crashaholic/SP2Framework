@@ -16,7 +16,7 @@ public:
 	void Update(double dt);
 
 	void addItem(std::string name, int cost);
-	void BuyCar(Player* player, std::string car);
+	void BuyCar(Player* player);
 	void Buy(Player* player, std::string category);
 	void Undo(Player *player);
 

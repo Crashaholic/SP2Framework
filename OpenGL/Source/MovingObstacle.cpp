@@ -27,7 +27,7 @@ void MovingObstacle::Update(double dt)
 {
 	Vector3 targetThisFrame = Utility::Lerp(position, target, moveRate * dt);
 
-	Vector3 delta = 1.2f * (targetThisFrame - position);
+	Vector3 delta = 1.3f * (targetThisFrame - position);
 	if (Collision::checkCollisionType(this, delta, { "car" }).size() == 0) {
 
 		position = targetThisFrame;

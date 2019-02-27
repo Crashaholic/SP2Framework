@@ -6,8 +6,8 @@
 struct Light {
 
 	enum LIGHT_TYPE {
-		LIGHT_POINT = 0,
-		LIGHT_DIRECTIONAL = 1,
+		LIGHT_DIRECTIONAL = 0,
+		LIGHT_POINT = 1,
 		LIGHT_SPOT,
 
 	};

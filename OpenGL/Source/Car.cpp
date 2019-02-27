@@ -34,7 +34,7 @@ Car::Car(const char* meshName, Primitive* primitive, std::string input, float ni
 	torqueRot = 0.0f;
 	timer = 0.0;
 	waypointID = 10;
-	laps = -1;
+	laps = 0;
 
 	start = false;
 
@@ -83,7 +83,7 @@ void Car::Update(double dt)
 		// Input 2 - S / K
 		// Input 3 - D / L
 
-		if (Manager::getInstance()->getGameState() == RACE_STARTED)
+		if (Manager::getInstance()->getGameState() == RACE_STARTED || Manager::getInstance()->getLevelName() == "tutorial")
 		{
 
 			if (Application::IsKeyPressed(input[0]))
@@ -102,11 +102,12 @@ void Car::Update(double dt)
 		float thrustInput = 0.0f;
 
 		// Modify
-		if (Application::IsKeyPressed(input[4]) && thrusters > 0.0f) {
+		if (Application::IsKeyPressed(input[4]) && thrusters > 0.0f){
 			std::cout << thrusters << std::endl;
 			thrustInput = 1.0f;
 			thrust = Utility::Lerp(thrust, 1.0f, 8.0f * dt);
 			thrusters -= thrust * dt * 20.0;
+			if (thrusters <= 0.0f) thrusters = 0.0f;
 
 
 			Vector3 moveUp = velocity + Vector3(0, thrust * dt, 0);
@@ -170,7 +171,7 @@ void Car::Update(double dt)
 
 				Vector3 v = (forward * finalVelCar2 * 1.0f) - car->velocity;
 				Vector3 v2 = v * 1.50;
-				std::vector<Mesh*> collided = Collision::checkCollisionT(car, v2, { "ground", "ramp", "rampsupport", "pad1" });
+				std::vector<Mesh*> collided = Collision::checkCollisionT(car, v2, { "ground", "ground2", "ground3", "ramp", "ramp2", "ramp3", "rampsupport", "rampsupport2", "rampsupport3", "pad1" });
 				if (collided.size() == 0)
 				{
 					car->velocity += v;
@@ -179,6 +180,9 @@ void Car::Update(double dt)
 					float rZ = -0.05f + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (0.05f - (-0.05f))));
 					shakeAmount.Set(rX, rY, rZ);
 					shakeDuration = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / 0.5f));
+				}
+				else {
+					car->velocity = -car->velocity;
 				}
 
 			}
@@ -200,7 +204,7 @@ void Car::Update(double dt)
 	
 	
 	
-	collided = Collision::checkCollisionT(this, velocity, { "ground", "ramp", "pad1" });
+	collided = Collision::checkCollisionT(this, velocity, { "ground", "ground2", "ground3", "ramp", "ramp2", "ramp3", "rampsupport", "rampsupport2", "rampsupport3", "pad1" });
 	if (collided.size() == 0)
 	{
 		position += velocity;
@@ -215,7 +219,7 @@ void Car::Update(double dt)
 			else {
 				if (collided[i]->getType() == "environment" || collided[i]->getType() == "movingobstacle") {
 
-					if (velocity.Length() > 0.05f && abs(forward.Dot(collided[i]->getOBB()->getZ())) > 0.20f){
+					if (velocity.Length() > 0.05f/* && abs(forward.Dot(collided[i]->getOBB()->getZ())) > 0.20f*/){
 						velocity.x = -velocity.x;
 						velocity.z = -velocity.z;
 
@@ -224,16 +228,14 @@ void Car::Update(double dt)
 					//if (abs(forward.Dot(collided[i]->getOBB()->getZ())) <= 0.40f || 
 					//	abs(forward.Dot(collided[i]->getOBB()->getZ())) >= 0.60f) {
 						Vector3 destn;
-						if (velocity.Length() * 170.0f > 10.0f)
-							destn = velocity * 1.1f;
+						if (velocity.Length() * 170.0f > 15.0f)
+							destn = velocity * 1.15f;
 						else
 							destn = velocity;
 						destn.y = 0;
-						std::vector<Mesh*> mesh = Collision::checkCollisionT(this, destn, { "ground", "ramp", "pad1" });
+						std::vector<Mesh*> mesh = Collision::checkCollisionT(this, destn, { "ground", "ground2", "ground3", "ramp", "ramp2", "ramp3", "rampsupport", "rampsupport2", "rampsupport3", "pad1" });
 						if (mesh.size() == 0)
 							position += velocity;
-						else
-							std::cout << velocity.Length() * 170.0f << ", " << mesh[i]->name << std::endl;
 				/*	}*/
 				}
 
@@ -261,12 +263,16 @@ void Car::updateWaypoint() {
 
 		if (Collision::checkCollision(*obb, *next->getOBB())) {
 			waypointID++;
-			if (waypointID == waypoints->size()) waypointID = 0;
-			if (waypointID == 0) laps++;
-
+			if (waypointID == waypoints->size()) {
+				waypointID = 0;
+				laps++;
+			}
+			
+			
 			if (laps == Manager::getInstance()->getLevel()->getTotalLaps()) {
 				finished = true;
 			}
+			std::cout << name << ":" << laps << std::endl;
 		}
 
 	}
@@ -365,6 +371,7 @@ Vector3 Car::calcAcceleration(float accInput, float steerInput, float dt)
 			engineForward = forward * engineAcceleration * 25.0f * dt;
 			player->setCameraSpeed(6.0);
 			nitro -= 5.0f * dt;
+			if (nitro <= 0.0f) nitro = 0.0f;
 		}
 		else {
 			player->setCameraSpeed(8.0);
@@ -450,9 +457,7 @@ void Car::getVelocity(std::string& vel, Color& color) {
 	Vector3 v = velocity * 170.0f;
 	v.y = 0;
 	vel = std::to_string(v.Length());
-	vel = vel.substr(0, 2);
-	if (vel[1] == '.')
-		vel = vel[0];
+	vel = vel.substr(0, vel.find('.'));
 
 	float ratioGreen = v.Length() / 70.0f;
 	int ratioWhite = v.Length() / 20.0f;
@@ -493,3 +498,14 @@ bool Car::hasFinished() {
 	return finished;
 }
 
+std::string Car::getNitro() {
+	std::string n = std::to_string(nitro);
+	n = n.substr(0, n.find('.'));
+	return n;
+}
+
+std::string Car::getThruster() {
+	std::string n = std::to_string(thrusters);
+	n = n.substr(0, n.find('.'));
+	return n;
+}

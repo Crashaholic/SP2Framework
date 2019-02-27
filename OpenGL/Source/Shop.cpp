@@ -45,8 +45,8 @@ void Shop::Update(double dt) {
 		displayCar->rotation.y += dt * rotateY;
 }
 
-void Shop::BuyCar(Player* player, std::string car) {
-	if (std::find(carNames.begin(), carNames.end(), car) == carNames.end()) return;
+void Shop::BuyCar(Player* player) {
+	std::string car = carNames[currentSelectedCar];
 	float cost = costs[car];
 
 	if (player->getMoney() >= cost) {
@@ -173,7 +173,10 @@ void Shop::selectNextCar() {
 void Shop::selectPrevCar() {
 	if (displayCar != nullptr)
 		displayCar->setVisible(false);
-	if (currentSelectedCar < 0) currentSelectedCar = carNames.size() - 1;
+	if (currentSelectedCar == 0)
+		currentSelectedCar = carNames.size() - 1;
+	else
+		currentSelectedCar--;
 	displayCar = cars[currentSelectedCar];
 	if (displayCar != nullptr)
 		displayCar->setVisible(true);

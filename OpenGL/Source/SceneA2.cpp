@@ -90,10 +90,10 @@ void SceneA2::GenerateText()
 	Level* level = manager->getLevel();
 	GUIText* fps = gui->renderText("bahnschrift", 0, 10, "FPS: " + std::to_string(lastFramesPerSecond), 0.4f, Color(0, 1, 0));
 	Manager::getInstance()->getLevel()->getScreen()->addText(fps);
+	RACE_TYPE gameType = manager->getGameType();
 
 
-
-	if (manager->getLevelName() == "game")
+	if (manager->getLevelName() == "game" || manager->getLevelName() == "singleplayer")
 	{
 		if (level->getScreenName() == "gameplay")
 		{
@@ -134,31 +134,6 @@ void SceneA2::GenerateText()
 
 			}
 
-			//std::string money = manager->getMoney();
-			//std::string carStats;
-			Color color;
-
-			//R: Player UI (Money)
-			//dynamic_cast<Player*>(manager->getLevel()->getObject("player"))->getMoneyText(money, color);
-			//GUIText* playerMoney = gui->renderText("digital", 40, Application::winHeight / 2.0f - 100, money, 0.4f, color, TEXT_ALIGN_TOP);
-			//Manager::getInstance()->getLevel()->getScreen()->addText(playerMoney);
-
-			////R: Player UI (Engine)
-			//dynamic_cast<Car*>(manager->getLevel()->getObject("car"))->getEngineTierText(carStats, color);
-			//GUIText* carTierStats = gui->renderText("digital", 20, Application::winHeight / 2.0f - 120, carStats, 0.2f, color, TEXT_ALIGN_LEFT);
-			//Manager::getInstance()->getLevel()->getScreen()->addText(carTierStats);
-
-			////R: Player UI (Nitro)
-			//dynamic_cast<Car*>(manager->getLevel()->getObject("car"))->getNitroTierText(carStats, color);
-			//carTierStats = gui->renderText("digital", 20, Application::winHeight / 2.0f - 140, carStats, 0.2f, color, TEXT_ALIGN_LEFT);
-			//Manager::getInstance()->getLevel()->getScreen()->addText(carTierStats);
-
-			////R: Player UI (Tires)
-			//dynamic_cast<Car*>(manager->getLevel()->getObject("car"))->getTireTierText(carStats, color);
-			//carTierStats = gui->renderText("digital", 20, Application::winHeight / 2.0f - 160, carStats, 0.2f, color, TEXT_ALIGN_LEFT);
-			//Manager::getInstance()->getLevel()->getScreen()->addText(carTierStats);
-
-
 
 		}else if (level->getScreenName() == "playermode") {
 			text = gui->renderText("default", 500, 83, "Level Selection", 0.5f, Color(1, 1, 1), TEXT_ALIGN_MIDDLE);
@@ -198,8 +173,37 @@ void SceneA2::GenerateText()
 			level->getScreen()->addText(text);
 
 
-			text = gui->renderText("default", 666, 519, manager->getShop()->getCar(), 0.4f, Color(0.678f, 0, 0.22f), TEXT_ALIGN_MIDDLE);
+			Player* player = dynamic_cast<Player*>(level->getObject("player"));
+			text = gui->renderText("default", 505, 50, std::to_string(player->getMoney()), 0.35f, Color(0, 0, 0), TEXT_ALIGN_MIDDLE);
 			level->getScreen()->addText(text);
+
+			CarUpgrade* upgrade = player->getUpgrade(manager->getShop()->getCar());
+
+			if (upgrade != nullptr) {
+
+				IRender* grayTexture = level->getScreen()->getItem("locked");
+				if (grayTexture->isEnabled()) grayTexture->setEnabled(false);
+
+				text = gui->renderText("default", 630, 50, std::to_string(upgrade->getTier("nitro")), 0.35f, Color(0,0,0), TEXT_ALIGN_MIDDLE);
+				level->getScreen()->addText(text);
+
+				text = gui->renderText("default", 790, 50, std::to_string(upgrade->getTier("tyre")), 0.35f, Color(0, 0, 0), TEXT_ALIGN_MIDDLE);
+				level->getScreen()->addText(text);
+
+				text = gui->renderText("default", 960, 50, std::to_string(upgrade->getTier("engine")), 0.35f, Color(0, 0, 0), TEXT_ALIGN_MIDDLE);
+				level->getScreen()->addText(text);
+
+				text = gui->renderText("default", 666, 519, manager->getShop()->getCar(), 0.4f, Color(0.678f, 0, 0.22f), TEXT_ALIGN_MIDDLE);
+				level->getScreen()->addText(text);
+			}
+			else {
+				IRender* grayTexture = level->getScreen()->getItem("locked");
+				if (!grayTexture->isEnabled()) grayTexture->setEnabled(true);
+				text = gui->renderText("default", 675, 384, "LOCKED", 0.4f, Color(1,0,0), TEXT_ALIGN_MIDDLE);
+				level->getScreen()->addText(text);
+			}
+
+
 
 
 		}else if (manager->getLevel()->getScreenName() == "confirmation") {
@@ -227,9 +231,46 @@ void SceneA2::GenerateText()
 			Manager::getInstance()->getLevel()->getScreen()->addText(text);
 		}
 
-		else if (level->getScreenName() == "ingame")
+		else if (manager->getLevel()->getScreenName() == "ingame")
 		{
 			RACE_STATE state = manager->getGameState();
+			
+			Car* car1 = dynamic_cast<Car*>(level->getObject("car"));
+
+
+			text = gui->renderText("default", 316, 707, car1->getThruster(), 0.45f, Color(1, 1, 1), TEXT_ALIGN_MIDDLE);
+			level->getScreen()->addText(text);
+
+
+
+			text = gui->renderText("default", 512, 707, car1->getNitro(), 0.45f, Color(1, 1, 1), TEXT_ALIGN_MIDDLE);
+			level->getScreen()->addText(text);
+
+			std::string vel;
+			Color color;
+			car1->getVelocity(vel, color);
+			text = gui->renderText("default", 760, 707, vel, 0.45f, color, TEXT_ALIGN_MIDDLE);
+			level->getScreen()->addText(text);
+
+			if (gameType == RACE_MULTIPLAYER) {
+
+				Car* car2 = dynamic_cast<Car*>(level->getObject("car2"));
+
+				text = gui->renderText("default", 316, 322, car2->getThruster(), 0.45f, Color(1, 1, 1), TEXT_ALIGN_MIDDLE);
+				level->getScreen()->addText(text);
+
+				text = gui->renderText("default", 512, 322, car2->getNitro(), 0.45f, Color(1, 1, 1), TEXT_ALIGN_MIDDLE);
+				level->getScreen()->addText(text);
+
+				car2->getVelocity(vel, color);
+				text = gui->renderText("default", 760, 322, vel, 0.45f, color, TEXT_ALIGN_MIDDLE);
+				level->getScreen()->addText(text);
+
+
+
+			}
+
+			
 
 			if (state == RACE_STARTING)
 			{
@@ -267,40 +308,51 @@ void SceneA2::GenerateText()
 
 				if (car->hasFinished()) {
 
-					IRender* grayTexture = level->getScreen()->getItem("endgamebot");
+					std::string black = (gameType == RACE_SINGLEPLAYER) ? "endgameblack" : "endgametop";
+
+					IRender* grayTexture = level->getScreen()->getItem(black);
 					if (!grayTexture->isEnabled()) grayTexture->setEnabled(true);
 
-
+					
 					text = gui->renderText("digital", Application::winWidth / 2.0f - 10.0f,
-						100, std::to_string(car->getTiming()), 0.5f, Color(1, 0, 0), TEXT_ALIGN_MIDDLE);
+						Application::winHeight / 2.0f + 100, std::to_string(car->getTiming()), 0.5f, Color(1, 0, 0), TEXT_ALIGN_MIDDLE);
 					level->getScreen()->addText(text);
 				}
-				else {
+				else if (gameType == RACE_MULTIPLAYER){
 					text = gui->renderText("digital", Application::winWidth / 2.0f - 10.0f,
-						100, std::to_string(manager->getPlacement("car")), 0.5f, Color(1, 0, 0), TEXT_ALIGN_MIDDLE);
+						Application::winHeight / 2.0f + 100, std::to_string(manager->getPlacement("car")), 0.5f, Color(1, 0, 0), TEXT_ALIGN_MIDDLE);
 					level->getScreen()->addText(text);
 
 				}
 
 				Car* car2 = dynamic_cast<Car*>(level->getObject("car2"));
-				if (car2->hasFinished()) {
 
-					IRender* grayTexture = level->getScreen()->getItem("endgametop");
-					if (!grayTexture->isEnabled()) grayTexture->setEnabled(true);
+				if (gameType == RACE_MULTIPLAYER) {
 
-					text = gui->renderText("digital", Application::winWidth / 2.0f - 10.0f,
-						Application::winHeight / 2.0f + 100, std::to_string(car2->getTiming()), 0.5f, Color(1, 0, 0), TEXT_ALIGN_MIDDLE);
-					level->getScreen()->addText(text);
+
+					if (car2->hasFinished()) {
+
+						IRender* grayTexture = level->getScreen()->getItem("endgamebot");
+						if (!grayTexture->isEnabled()) grayTexture->setEnabled(true);
+
+						text = gui->renderText("digital", Application::winWidth / 2.0f - 10.0f,
+							100, std::to_string(car2->getTiming()), 0.5f, Color(1, 0, 0), TEXT_ALIGN_MIDDLE);
+						level->getScreen()->addText(text);
+					}
+					else {
+
+						text = gui->renderText("digital", Application::winWidth / 2.0f - 10.0f,
+							100, std::to_string(manager->getPlacement("car2")), 0.5f, Color(1, 0, 0), TEXT_ALIGN_MIDDLE);
+						level->getScreen()->addText(text);
+
+					}
+
+
+
 				}
-				else {
 
-					text = gui->renderText("digital", Application::winWidth / 2.0f - 10.0f,
-						Application::winHeight / 2.0f + 100, std::to_string(manager->getPlacement("car2")), 0.5f, Color(1, 0, 0), TEXT_ALIGN_MIDDLE);
-					level->getScreen()->addText(text);
-
-				}
-
-				if (car->hasFinished() && car2->hasFinished()) {
+				if ((gameType == RACE_SINGLEPLAYER && car->hasFinished()) 
+					|| (gameType == RACE_MULTIPLAYER && car->hasFinished() && car2->hasFinished())) {
 					level->setScreen("endgame");
 					manager->setGameState(RACE_COMPLETED);
 				}
@@ -310,21 +362,26 @@ void SceneA2::GenerateText()
 		}
 		else if (level->getScreenName() == "endgame") {
 			Car* car = dynamic_cast<Car*>(level->getObject("car"));
-			Car* car2 = dynamic_cast<Car*>(level->getObject("car2"));
-			std::string winner = (car->getTiming() < car2->getTiming()) ? "Player1 wins!" : "Player2 wins!";
 
-			text = gui->renderText("digital", Application::winWidth / 2.0f - 20,
-				100, winner, 0.5f, Color(1, 1, 1), TEXT_ALIGN_MIDDLE);
-			level->getScreen()->addText(text);
-			
+			if (gameType == RACE_MULTIPLAYER) {
+
+				Car* car2 = dynamic_cast<Car*>(level->getObject("car2"));
+				std::string winner = (car->getTiming() < car2->getTiming()) ? "Player1 wins!" : "Player2 wins!";
+
+				text = gui->renderText("digital", Application::winWidth / 2.0f - 20,
+					100, winner, 0.5f, Color(1, 1, 1), TEXT_ALIGN_MIDDLE);
+				level->getScreen()->addText(text);
+
+
+				text = gui->renderText("digital", Application::winWidth / 2.0f - 70,
+					Application::winHeight / 2.0f + 25, "Player Two's Timing: " + std::to_string(car2->getTiming()), 0.3f, Color(1, 1, 0), TEXT_ALIGN_MIDDLE);
+				level->getScreen()->addText(text);
+
+			}
+
 			text = gui->renderText("digital", Application::winWidth / 2.0f - 70,
 				Application::winHeight / 2.0f - 25, "Player One's Timing: " + std::to_string(car->getTiming()), 0.3f, Color(1, 1, 0), TEXT_ALIGN_MIDDLE);
 			level->getScreen()->addText(text);
-
-			text = gui->renderText("digital", Application::winWidth / 2.0f - 70,
-				Application::winHeight / 2.0f + 25, "Player Two's Timing: " + std::to_string(car2->getTiming()), 0.3f, Color(1, 1, 0), TEXT_ALIGN_MIDDLE);
-			level->getScreen()->addText(text);
-			
 
 			text = gui->renderText("default", 502, 565, "Next Level", 0.4f, Color(1, 1, 1), TEXT_ALIGN_MIDDLE);
 			level->getScreen()->addText(text);
@@ -372,14 +429,7 @@ void SceneA2::GenerateText()
 
 void SceneA2::InitShaderProperties()
 {
-	ShaderProgram* lit = manager->getShader("lit");
-	lit->use();
-	std::vector<LightSource*>* lightSources = manager->getLevel()->getLightSources();
-	for (int i = 0; i < (int)lightSources->size(); i++) {
-		lightSources->at(i)->setProperties();
-	}
-	lit->setUniform("numLights", LightSource::lightCount);
-	lit->updateUniforms();
+
 }
 
 void SceneA2::playMusic()

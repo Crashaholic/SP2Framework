@@ -13,9 +13,6 @@ Level::Level(const char* levelPath, std::vector<Waypoint*>* waypoints)
 	projectionStack.LoadMatrix(proj);
 	Load(levelPath, waypoints);
 
-	for (int i = 0; i < 2; i++)
-		lightSources.push_back(new LightSource());
-
 	
 }
 
@@ -36,7 +33,11 @@ Level::~Level()
 
 void Level::setScreen(std::string screen) {
 	currentScreen = screen;
-	cursor->setOnCooldown(0.3);
+
+	if (screen == "ingame")
+		cursor->setOnCooldown(0.3);
+	else
+		cursor->setOnCooldown(0.1);
 	screens[screen]->setCursor(cursor);
 	
 	if (screen == "ingame")
@@ -241,6 +242,29 @@ void Level::Load(std::string path, std::vector<Waypoint*>* waypoints) {
 
 			}
 		}
+		else if (c.first == "lights") {
+			std::vector<Object*>* objs = &c.second;
+			for (int i = 0; i < (int)objs->size(); i++)
+			{
+				current = objs->at(i);
+
+				std::vector<std::string> pos = Utility::splitLine(current->Get("position"), ',');
+				Vector3 position = Vector3(std::stof(pos[0]), std::stof(pos[1]), std::stof(pos[2]));
+
+				std::vector<std::string> colorArgs = Utility::splitLine(current->Get("color"), ',');
+				Vector3 color = Vector3(std::stof(colorArgs[0]), std::stof(colorArgs[1]), std::stof(colorArgs[2]));
+
+				std::vector<std::string> spot = Utility::splitLine(current->Get("spotdir"), ',');
+				Vector3 spotDir = Vector3(std::stof(spot[0]), std::stof(spot[1]), std::stof(spot[2]));
+				//std::vector<std::string>  = Utility::splitLine(current->Get("color"), ',');
+				//Vector3 color = Vector3(std::stof(colorArgs[0]), std::stof(colorArgs[1]), std::stof(colorArgs[2]));
+
+				lightSources.push_back(new LightSource(std::stoi(current->Get("type")), position, color, std::stof(current->Get("power")),
+					std::stof(current->Get("exponent")), spotDir));
+
+
+			}
+		}
 	}
 
 	setScreen(currentScreen);
@@ -271,14 +295,14 @@ void Level::renderSkybox()
 	modelStack.Rotate(-90.0f, 0, 1, 0);
 	modelStack.Rotate(90.0f, 1, 0, 0);
 	modelStack.Scale(length, length, 1.0f);
-	renderMesh(objects["skyboxTop"]);
+	renderMesh(objects["skyboxTop"], false);
 	modelStack.PopMatrix();
 
 	modelStack.PushMatrix();
 	modelStack.Translate(0.0f, -length / 2, 0.0f);
 	modelStack.Rotate(-90.0f, 1, 0, 0);
 	modelStack.Scale(length, length, 1.0f);
-	renderMesh(objects["skyboxBottom"]);
+	renderMesh(objects["skyboxBottom"], false);
 	modelStack.PopMatrix();
 
 	modelStack.PushMatrix();
@@ -286,33 +310,33 @@ void Level::renderSkybox()
 	modelStack.Rotate(180.0f, 1, 1, 0);
 	modelStack.Rotate(-90.0f, 0, 0, 1);
 	modelStack.Scale(length, length, 1.0f);
-	renderMesh(objects["skyboxFront"]);
+	renderMesh(objects["skyboxFront"], false);
 	modelStack.PopMatrix();
 
 	modelStack.PushMatrix();
 	modelStack.Translate(0.0f, 0.0f, -length / 2);
 	modelStack.Scale(length, length, 1.0f);
-	renderMesh(objects["skyboxBack"]);
+	renderMesh(objects["skyboxBack"], false);
 	modelStack.PopMatrix();
 
 	modelStack.PushMatrix();
 	modelStack.Translate(-length / 2, 0.0f, 0.0f);
 	modelStack.Rotate(90.0f, 0, 1, 0);
 	modelStack.Scale(length, length, 1.0f);
-	renderMesh(objects["skyboxLeft"]);
+	renderMesh(objects["skyboxLeft"], false);
 	modelStack.PopMatrix();
 
 	modelStack.PushMatrix();
 	modelStack.Translate(length / 2, 0.0f, 0.0f);
 	modelStack.Rotate(-90.0f, 0, 1, 0);
 	modelStack.Scale(length, length, 1.0f);
-	renderMesh(objects["skyboxRight"]);
+	renderMesh(objects["skyboxRight"], false);
 	modelStack.PopMatrix();
 
 	modelStack.PopMatrix();
 }
 
-void Level::renderMesh(Mesh* mesh)
+void Level::renderMesh(Mesh* mesh, bool enableLight)
 {
 	Mtx44 MVP, modelView, modelView_inverse_tranpose;
 	MVP = projectionStack.Top() * viewStack.Top() * modelStack.Top();
@@ -320,7 +344,6 @@ void Level::renderMesh(Mesh* mesh)
 	ShaderProgram* lit = Manager::getInstance()->getShader("lit");
 	lit->use();
 
-	bool enableLight = true;
 	if (enableLight)
 	{
 		modelView_inverse_tranpose = modelView.GetInverse().GetTranspose();
@@ -350,6 +373,11 @@ void Level::renderMesh(Mesh* mesh)
 		lit->setUniform("colorTextureEnabled", 0);
 	}
 
+
+	lit->setUniform("MVP", MVP);
+	lit->setUniform("MV", modelView);
+	lit->setUniform("model", modelStack.Top());
+
 	lit->updateUniforms();
 
 	mesh->Render(modelStack, viewStack, projectionStack, lit);
@@ -363,10 +391,10 @@ void Level::Render()
 
 
 	glEnable(GL_DEPTH_TEST);
-	if (levelName == "game")
+	if (levelName == "game" || levelName == "singleplayer")
 	{
 		Player* player = dynamic_cast<Player*>(objects["player"]);
-		if (!player->isInVehicle) {
+		if (!player->isInVehicle || Manager::getInstance()->getGameType() == RACE_SINGLEPLAYER) {
 
 			modelStack.LoadIdentity();
 			glViewport(0, 0, Application::winWidth, Application::winHeight);
@@ -381,7 +409,7 @@ void Level::Render()
 
 			modelStack.LoadIdentity();
 			glViewport(0, 0, Application::winWidth, Application::winHeight / 2.0f);
-			viewStack.LoadMatrix(dynamic_cast<Player*>(objects["player2"])->getCamera()->LookAt());
+			viewStack.LoadMatrix(dynamic_cast<Player*>(objects["player"])->getCamera()->LookAt());
 
 			for (int i = 0; i < (int)lightSources.size(); i++)
 				lightSources.at(i)->updateAttributes(viewStack);
@@ -390,7 +418,7 @@ void Level::Render()
 
 			modelStack.LoadIdentity();
 			glViewport(0, Application::winHeight / 2.0f, Application::winWidth, Application::winHeight / 2.0f);
-			viewStack.LoadMatrix(dynamic_cast<Player*>(objects["player"])->getCamera()->LookAt());
+			viewStack.LoadMatrix(dynamic_cast<Player*>(objects["player2"])->getCamera()->LookAt());
 
 			for (int i = 0; i < (int)lightSources.size(); i++)
 				lightSources.at(i)->updateAttributes(viewStack);
@@ -412,8 +440,20 @@ void Level::Render()
 
 		renderObjects();
 	}
+	else if (levelName == "tutorial") {
+		modelStack.LoadIdentity();
+		glViewport(0, 0, Application::winWidth, Application::winHeight);
+		viewStack.LoadMatrix(dynamic_cast<Player*>(objects["player"])->getCamera()->LookAt());
+
+
+		for (int i = 0; i < (int)lightSources.size(); i++)
+			lightSources.at(i)->updateAttributes(viewStack);
+
+		renderObjects();
+	}
 
 	glViewport(0, 0, Application::winWidth, Application::winHeight);
+
 
 	glDisable(GL_DEPTH_TEST);
 	renderGUI();
@@ -444,7 +484,7 @@ void Level::renderObjects()
 		m->Rotate(modelStack, m->rotation.z, 0, 0, 1);
 
 
-		renderMesh(m);
+		renderMesh(m, true);
 
 		if (m->textureID > 0)
 			glBindTexture(GL_TEXTURE_2D, 0);

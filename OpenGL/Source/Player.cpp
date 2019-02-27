@@ -70,7 +70,7 @@ void Player::Update(double dt) {
 
 
 		// Only translate if there is no collision
-		std::vector<Mesh*> collided = Collision::checkCollisionT(this, translation, { "ground", "pad1" });
+		std::vector<Mesh*> collided = Collision::checkCollisionT(this, translation, { "ground", "ground2", "ground3", "pad1"});
 		if (translation != Vector3(0,0,0) && collided.size() == 0) {
 			position += translation;
 		}

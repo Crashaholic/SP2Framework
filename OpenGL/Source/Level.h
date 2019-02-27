@@ -49,7 +49,7 @@ public:
 private:
 
 	void renderSkybox();
-	void renderMesh(Mesh* mesh);
+	void renderMesh(Mesh* mesh, bool enableLight);
 	int totalLaps;
 	Cursor* cursor;
 	QuadTree* tree;

@@ -27,7 +27,7 @@ void LevitationPad::Update(double dt)
 {
 
 	Mesh::Update(dt);
-	Vector3 levitate = Vector3(0, levitationForce, 0) * 4.15 * dt;
+	Vector3 levitate = Vector3(0, levitationForce, 0) * 6.0 * dt;
 	std::vector<Mesh*> collided = Collision::checkCollisionAbove(this, 35.0f, {"ground"});
 	Manager* manager = Manager::getInstance();
 	

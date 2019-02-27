@@ -13,10 +13,6 @@ Manager::Manager()
 	shaders["overlay"] = new ShaderProgram("Shader//UI.vert", "Shader//UI.frag");
 
 
-	carOneUnlock = true;
-	carTwoUnlock = false;
-	carThreeUnlock = false;
-	money = 0;
 
 
 
@@ -28,12 +24,17 @@ Manager::Manager()
 	}
 
 
+
 	currentLevel = "pregame";
 	setLevel("pregame");
 	mainmenu = new Camera(Vector3(1, 8, 1));
 	levels[currentLevel]->setScreen(levels[currentLevel]->getScreenName());
 	raceStartCountdown = -1.0f;
+
+
+	gameType = RACE_MULTIPLAYER;
 	gameState = RACE_IDLE;
+
 	shop = new Shop();
 	loadCars();
 	srand((unsigned)time(0));
@@ -78,29 +79,39 @@ void Manager::setLevel(std::string name) {
 
 	currentLevel = name;
 
-	if (name == "game" || name == "pregame") {
 
-		loadPlayerProgress();
-		Car* car = dynamic_cast<Car*>(levels[name]->getObject("car"));
-		if (car != nullptr) {
-			//delete levels[name];
-			//levels[name] = new Level("Data//Level//game.txt", &waypoints);
-		}
 
-		Primitive* quad = Primitives::generateQuad(Color(1, 1, 1));
-		levels[currentLevel]->spawnObject(new Mesh("skyboxFront", quad, LoadTGA("Image//front.tga")));
-		levels[currentLevel]->spawnObject(new Mesh("skyboxTop", quad, LoadTGA("Image//top.tga")));
-		levels[currentLevel]->spawnObject(new Mesh("skyboxBottom", quad, LoadTGA("Image//bottom.tga")));
-		levels[currentLevel]->spawnObject(new Mesh("skyboxLeft", quad, LoadTGA("Image//left.tga")));
-		levels[currentLevel]->spawnObject(new Mesh("skyboxRight", quad, LoadTGA("Image//right.tga")));
-		levels[currentLevel]->spawnObject(new Mesh("skyboxBack", quad, LoadTGA("Image//back.tga")));
-
-		Primitive* axes = Primitives::generateAxes();
-		levels[currentLevel]->spawnObject(new Mesh("axes", axes, 0, false, false, "environment", Mesh::DRAW_LINES));
-		levels[currentLevel]->spawnObject(new Mesh("playerAxes", axes, 0, false, false, "environment", Mesh::DRAW_LINES));
-
-		
+	loadPlayerProgress();
+	Car* car = dynamic_cast<Car*>(levels[name]->getObject("car"));
+	if (car != nullptr) {
+		//delete levels[name];
+		//levels[name] = new Level("Data//Level//game.txt", &waypoints);
 	}
+
+	//LightSource::lightCount = levels[name]->getLightSources()->size();
+
+	Primitive* quad = Primitives::generateQuad(Color(1, 1, 1));
+	levels[currentLevel]->spawnObject(new Mesh("skyboxFront", quad, LoadTGA("Image//front.tga")));
+	levels[currentLevel]->spawnObject(new Mesh("skyboxTop", quad, LoadTGA("Image//top.tga")));
+	levels[currentLevel]->spawnObject(new Mesh("skyboxBottom", quad, LoadTGA("Image//bottom.tga")));
+	levels[currentLevel]->spawnObject(new Mesh("skyboxLeft", quad, LoadTGA("Image//left.tga")));
+	levels[currentLevel]->spawnObject(new Mesh("skyboxRight", quad, LoadTGA("Image//right.tga")));
+	levels[currentLevel]->spawnObject(new Mesh("skyboxBack", quad, LoadTGA("Image//back.tga")));
+
+	Primitive* axes = Primitives::generateAxes();
+	levels[currentLevel]->spawnObject(new Mesh("axes", axes, 0, false, false, "environment", Mesh::DRAW_LINES));
+	levels[currentLevel]->spawnObject(new Mesh("playerAxes", axes, 0, false, false, "environment", Mesh::DRAW_LINES));
+
+	ShaderProgram* lit = shaders["lit"];
+	lit->use();
+	std::vector<LightSource*>* lightSources = levels[name]->getLightSources();
+	for (int i = 0; i < (int)lightSources->size(); i++) {
+		lightSources->at(i)->setProperties();
+	}
+	lit->setUniform("numLights", LightSource::lightCount);
+	lit->updateUniforms();
+
+
 
 	
 }
@@ -109,8 +120,14 @@ void Manager::setGameState(RACE_STATE state)
 {
 	gameState = state;
 	if (state == RACE_STARTING) {
-		levels[currentLevel]->getScreen()->getItem("endgametop")->setEnabled(false);
-		levels[currentLevel]->getScreen()->getItem("endgamebot")->setEnabled(false);
+		if (gameType == RACE_SINGLEPLAYER) {
+			levels[currentLevel]->getScreen()->getItem("endgameblack")->setEnabled(false);
+		}
+		else if (gameType == RACE_MULTIPLAYER) {
+			levels[currentLevel]->getScreen()->getItem("endgametop")->setEnabled(false);
+			levels[currentLevel]->getScreen()->getItem("endgamebot")->setEnabled(false);
+		}
+
 		raceStartCountdown = 6.0f;
 	}
 }
@@ -118,6 +135,14 @@ void Manager::setGameState(RACE_STATE state)
 RACE_STATE Manager::getGameState()
 {
 	return gameState;
+}
+
+void Manager::setGameType(RACE_TYPE type) {
+	gameType = type;
+}
+
+RACE_TYPE Manager::getGameType() {
+	return gameType;
 }
 
 double Manager::getRaceStartCountdown()
@@ -155,7 +180,7 @@ std::map<std::string, ShaderProgram*>* Manager::getShaders()
 }
 
 Camera* Manager::getCamera() {
-	if (currentLevel == "game") {
+	if (currentLevel == "game" || currentLevel == "singleplayer" || currentLevel == "tutorial") {
 		return dynamic_cast<Player*>(levels[currentLevel]->getObject("player"))->getCamera();
 	}
 	else if (currentLevel == "pregame") {
@@ -250,11 +275,6 @@ void Manager::loadPlayerProgress()
 		upgrades->push_back(new CarUpgrade(obj->Get("car"), std::stoi(obj->Get("nitro")), std::stoi(obj->Get("engine")), std::stoi(obj->Get("tyre"))));
 	}
 	
-	std::vector<CarUpgrade*>* upgrades = player->getUpgrades();
-	for (int i = 0; i < upgrades->size(); i++) {
-		std::cout << upgrades->at(i)->getName() << ": N" << upgrades->at(i)->getTier("nitro")
-			<< ", E" << upgrades->at(i)->getTier("engine") << ", T" << upgrades->at(i)->getTier("tyre") << std::endl;
-	}
 	
 	
 

@@ -6,7 +6,30 @@
 
 int LightSource::lightCount = 0;
 
+LightSource::LightSource(int type, Vector3 position, Vector3 color, float power, float exponent, Vector3 spotDir) {
+	UID = lightCount++;
+	if (type == 0)
+		light.type = Light::LIGHT_POINT;
+	else if (type == 1)
+		light.type = Light::LIGHT_DIRECTIONAL;
+	else
+		light.type = Light::LIGHT_SPOT;
 
+	light.position.Set(position.x, position.y, position.z);
+	light.color.Set(color.x, color.y, color.z);
+	light.power = power;
+	light.exponent = exponent;
+	light.spotDirection = spotDir;
+	//ShaderProgram* shader = Manager::getInstance()->getShader("lit");
+	//shader->use();
+
+	//shader->setUniform(getPropertyName("type"), light.type);
+	//shader->setUniform(getPropertyName("color"), light.color.r, light.color.g, light.color.b);
+	//shader->setUniform(getPropertyName("power"), light.power);
+	//shader->setUniform(getPropertyName("spotDirection"), light.spotDirection);
+	//shader->setUniform(getPropertyName("exponent"), light.exponent);
+	//shader->updateUniforms();
+}
 
 LightSource::~LightSource()
 {
@@ -25,31 +48,31 @@ void LightSource::setProperties() {
 
 	if (UID == 0) {
 
-		light.type = Light::LIGHT_POINT;
-		light.position.Set(1.0f, 1.0f, 1.0f);
-		light.color.Set(1, 1, 1);
-		light.power = 1.0f;
-		light.kC = 1.0f;
-		light.kL = 0.01f;
-		light.kQ = 0.001f;
-		light.exponent = 1.0f;
-		light.cosCutoff = cos(Math::DegreeToRadian(45));
-		light.cosInner = cos(Math::DegreeToRadian(30));
-		light.spotDirection.Set(0.0f, 1.0f, 0.0f);
+		//light.type = Light::LIGHT_POINT;
+		//light.position.Set(1.0f, 1.0f, 1.0f);
+		//light.color.Set(1, 1, 1);
+		//light.power = 1.0f;
+		//light.kC = 1.0f;
+		//light.kL = 0.01f;
+		//light.kQ = 0.001f;
+		//light.exponent = 1.0f;
+		//light.cosCutoff = cos(Math::DegreeToRadian(45));
+		//light.cosInner = cos(Math::DegreeToRadian(30));
+		//light.spotDirection.Set(0.0f, 1.0f, 0.0f);
 	}
 	else if (UID == 1)
 	{
-		light.position.Set(4.5f, 18.0f, 0.0f);
-		light.type = Light::LIGHT_SPOT;
-		light.color.Set(1, 1, 0);
-		light.power = 2.0f;
-		light.kC = 1.0f;
-		light.kL = 0.01f;
-		light.kQ = 0.001f;
-		light.exponent = 1.0f;
-		light.cosCutoff = cos(Math::DegreeToRadian(30));
-		light.cosInner = cos(Math::DegreeToRadian(15));
-		light.spotDirection.Set(-0.3f, 1.0f, 0.0f);
+		//light.position.Set(4.5f, 18.0f, 0.0f);
+		//light.type = Light::LIGHT_SPOT;
+		//light.color.Set(1, 1, 0);
+		//light.power = 2.0f;
+		//light.kC = 1.0f;
+		//light.kL = 0.01f;
+		//light.kQ = 0.001f;
+		//light.exponent = 1.0f;
+		//light.cosCutoff = cos(Math::DegreeToRadian(30));
+		//light.cosInner = cos(Math::DegreeToRadian(15));
+		//light.spotDirection.Set(-0.3f, 1.0f, 0.0f);
 	}
 
 

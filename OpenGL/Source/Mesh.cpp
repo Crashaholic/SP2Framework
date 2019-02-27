@@ -90,7 +90,8 @@ Mesh::~Mesh()
 
 void Mesh::Update(double dt)
 {
-	if (Manager::getInstance()->getLevelName() == "game")
+	if (Manager::getInstance()->getLevelName() == "game" || Manager::getInstance()->getLevelName() == "singleplayer"
+		|| Manager::getInstance()->getLevelName() == "tutorial")
 	{
 		if (collisionEnabled)
 		{
@@ -117,16 +118,16 @@ void Mesh::Render(MS& modelStack, MS& viewStack, MS& projectionStack, ShaderProg
 {
 	if (!isVisible) return;
 
-	Mtx44 MVP, modelView, modelView_inverse_tranpose, model;
-	MVP = projectionStack.Top() * viewStack.Top() * modelStack.Top();
-	model = modelStack.Top();
-	modelView = viewStack.Top() * modelStack.Top();
+	//Mtx44 MVP, modelView, modelView_inverse_tranpose, model;
+	//MVP = projectionStack.Top() * viewStack.Top() * modelStack.Top();
+	//model = modelStack.Top();
+	//modelView = viewStack.Top() * modelStack.Top();
 
-	shader->use();
-	shader->setUniform("MVP", MVP);
-	shader->setUniform("MV", modelView);
-	shader->setUniform("model", model);
-	shader->updateUniforms();
+	//shader->use();
+	//shader->setUniform("MVP", MVP);
+	//shader->setUniform("MV", modelView);
+	//shader->setUniform("model", model);
+	//shader->updateUniforms();
 
 	// Enable and allocate attributes for Position, Color, Normal, Tex Coords
 	glEnableVertexAttribArray(0);
@@ -182,6 +183,7 @@ void Mesh::onGroundCheck(double dt)
 
 	// Check whether player is above a LevitationPad
 	std::vector<Mesh*> collidePad = Collision::checkCollisionAbove(this, -35.0f, {});
+
 	bool hasPad = std::find(collidePad.begin(), collidePad.end(), Manager::getInstance()->getLevel()->getObject("pad1")) != collidePad.end();
 
 

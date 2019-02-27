@@ -215,6 +215,7 @@ std::vector<Mesh*> Collision::checkCollisionT(Mesh* mesh, Vector3& translation, 
 	//for (auto& object : *objects)
 	{
 		Mesh* obj = objects[i];
+		if (obj == nullptr) continue;
 		// Skip self and collision-disabled objects
 		if (obj == mesh || !obj->collisionEnabled ||
 			std::find(exceptions.begin(), exceptions.end(), obj->name) != exceptions.end()) continue;
@@ -231,7 +232,7 @@ std::vector<Mesh*> Collision::checkCollisionR(Mesh* mesh, Vector3& rotation, std
 {
 	Manager* manager = Manager::getInstance();
 	std::vector<Mesh*> objects = manager->getLevel()->getTree()->queryMesh(mesh->position, 50.0f, 50.0f);
-	objects.push_back(manager->getLevel()->getObject("ground"));
+	//objects.push_back(manager->getLevel()->getObject("ground"));
 	//std::map<std::string, Mesh*>* objects = manager->getObjects();
 
 	std::vector<Mesh*> collided;
@@ -242,6 +243,7 @@ std::vector<Mesh*> Collision::checkCollisionR(Mesh* mesh, Vector3& rotation, std
 	for (int i = 0; i < objects.size(); i++)
 	{
 		Mesh* obj = objects[i];
+		if (obj == nullptr) continue;
 		// Skip self and collision-disabled objects
 		if (obj == mesh || !obj->collisionEnabled ||
 			std::find(exceptions.begin(), exceptions.end(), obj->name) != exceptions.end()) continue;
@@ -258,7 +260,7 @@ std::vector<Mesh*> Collision::checkCollisionAbove(Mesh* mesh, float distance, st
 {
 	Manager* manager = Manager::getInstance();
 	std::vector<Mesh*> objects = manager->getLevel()->getTree()->queryMesh(mesh->position, 50.0f, 50.0f);
-	objects.push_back(manager->getLevel()->getObject("ground"));
+	//objects.push_back(manager->getLevel()->getObject("ground"));
 
 
 	std::vector<Mesh*> collided;
@@ -293,7 +295,7 @@ std::vector<Mesh*> Collision::checkCollisionTypes(Mesh* mesh, Vector3& translati
 
 	Manager* manager = Manager::getInstance();
 	std::vector<Mesh*> objects = manager->getLevel()->getTree()->queryMesh(mesh->position, 50.0f, 50.0f);
-	objects.push_back(manager->getLevel()->getObject("ground"));
+	//objects.push_back(manager->getLevel()->getObject("ground"));
 	//std::map<std::string, Mesh*>* objects = manager->getObjects();
 
 	std::vector<Mesh*> collided;
