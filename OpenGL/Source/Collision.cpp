@@ -37,7 +37,6 @@ Vector3 Collision::getMTV(OBB& box, OBB& other)
 		if (minA <= maxB && maxA >= minB)
 		{
 			float overlap = min(maxA, maxB) - max(minA, minB);
-			std::cout << overlap << std::endl;
 			if (overlap != 0 && overlap < minimumOverlap)
 			{
 				minimumOverlap = overlap;

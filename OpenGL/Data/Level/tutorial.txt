@@ -1,4 +1,13 @@
 defaultscreen=gameplay
+category=lights
+
+name=dirlight
+type=0
+position=1,1,1
+color=1,1,1
+power=2
+exponent=1
+spotdir=0,1,0
 category=objects
 
 name=ground2
@@ -41,7 +50,7 @@ name=ramp3
 collision=true
 gravity=false
 model=Models//ramp3.obj
-position=45.589,53.741,-205.591
+position=45.589,51.741,-205.591
 rotation=0,0,0
 texture=Image//rock.tga
 type=environment
@@ -50,7 +59,7 @@ name=ground3
 collision=true
 gravity=false
 model=Models//ground3.obj
-position=-26.537,67.107,-507.89
+position=-26.537,64.107,-507.89
 rotation=0,0,0
 texture=Image//rock.tga
 type=environment
@@ -59,9 +68,9 @@ name=track2
 collision=false
 gravity=false
 model=Models//track2.obj
-position=-29.584,-0.4,418.616
+position=-29.584,-2.0,418.616
 rotation=0,0,0
-texture=Image//rock.tga
+texture=Models//track.tga
 type=environment
 
 
@@ -69,20 +78,21 @@ name=track3
 collision=false
 gravity=false
 model=Models//track3.obj
-position=-18.102,85.715,-508.901
+position=-17.102,83.715,-417.947
 rotation=0,0,0
-texture=Image//rock.tga
+texture=Models//track.tga
 type=environment
 
 
 name=pad1
 collision=true
 gravity=false
+levitation=5.0
 model=Models//levitationpad.obj
-position=46.798,47.3,-53.018
+position=47.312,-0.5,103.31
 rotation=0,90,0
 texture=Image//water.tga
-type=environment
+type=pad
 
 name=player
 collision=true
@@ -98,8 +108,8 @@ name=car
 collision=true
 gravity=true
 model=Models//car.obj
-position=-11.044,20d,731
-rotation=0,90,0
+position=-11.044,20,731
+rotation=0,0,0
 texture=Models//car.tga
 input=WASDVC
 nitro=100
@@ -146,3 +156,45 @@ position=20,286
 rotation=0
 scale=45,45
 type=texture
+
+category=checkpoints
+
+id=0
+position=0,165.365,717.732
+scale=198.674,515.12,102.365
+
+id=1
+position=-3.357,165.365,586.16
+scale=111.042,515.12,158.192
+
+id=2
+position=-114.572,165.365,485.566
+scale=111.042,515.12,158.192
+
+id=3
+position=40.952,165.365,455.766
+scale=111.042,515.12,82.094
+
+id=4
+position=-48.923,165.365,325.592
+scale=96.955,515.12,155.818
+
+id=5
+position=49.575,185.853,138.998
+scale=79.395,504.986,120.09
+
+id=6
+position=49.575,185.853,-52.222
+scale=235.73,504.986,161.074
+
+id=7
+position=20.951,185.853,-323.416
+scale=235.73,504.986,256.221
+
+id=8
+position=-27.864,185.853,-488.042
+scale=430.853,504.986,61.788
+
+id=9
+position=-11.948,185.853,-600.022
+scale=754.336,504.986,150.616

@@ -19,25 +19,14 @@ Manager::Manager()
 	std::string path = "Data//Level";
 	for (const auto & entry : std::experimental::filesystem::directory_iterator(path)) {
 		currentLevel = Utility::splitLine(entry.path().filename().string(), '.')[0];
-		std::cout << currentLevel << std::endl;
-		levels[currentLevel] = new Level(entry.path().string().c_str(), &waypoints);
+		levels[currentLevel] = new Level(entry.path().string().c_str());
 	}
 
 
-
-	currentLevel = "pregame";
-	setLevel("pregame");
-	mainmenu = new Camera(Vector3(1, 8, 1));
-	levels[currentLevel]->setScreen(levels[currentLevel]->getScreenName());
-	raceStartCountdown = -1.0f;
+	for (int i = 0; i < 5; i++)
+		soundPlaying[i] = false;
 
 
-	gameType = RACE_MULTIPLAYER;
-	gameState = RACE_IDLE;
-
-	shop = new Shop();
-	loadCars();
-	srand((unsigned)time(0));
 
 }
 
@@ -45,15 +34,25 @@ Manager::Manager()
 Manager::~Manager()
 {
 
+	if (currentSaveFile != "")
+	{
+		if (isNewGame)
+		{
+			if (std::experimental::filesystem::exists("Data\\save1.txt") && std::experimental::filesystem::exists("Data\\save2.txt"))
+			{
+				savePlayerProgress("Data\\save1.txt");
+			}
+
+		}
+		else
+		{
+			savePlayerProgress(currentSaveFile);
+		}
+	}
 
 	delete shop;
 	delete mainmenu;
 
-
-
-	for (int i = 0; i < waypoints.size(); i++)
-		if(waypoints[i] != nullptr)
-			delete waypoints[i];
 
 	for (auto const& shader : shaders)
 		if (shader.second != nullptr)
@@ -75,20 +74,38 @@ Manager* Manager::getInstance()
 
 
 
+void Manager::Init()
+{
+	currentLevel = "pregame";
+	setLevel("pregame");
+	mainmenu = new Camera(Vector3(1, 8, 1));
+	levels[currentLevel]->setScreen(levels[currentLevel]->getScreenName());
+	raceStartCountdown = -1.0f;
+
+	currentSaveFile = "";
+	isNewGame = true;
+	gameType = RACE_MULTIPLAYER;
+	gameState = RACE_IDLE;
+
+	shop = new Shop();
+	loadCars();
+	srand((unsigned)time(0));
+}
+
+
+void Manager::reloadLevel(std::string name)
+{
+
+	delete levels[name];
+	std::string path = "Data\\Level\\" + name;
+	levels[name] = new Level(path.c_str());
+	setLevel(name);
+}
+
 void Manager::setLevel(std::string name) {
 
 	currentLevel = name;
 
-
-
-	loadPlayerProgress();
-	Car* car = dynamic_cast<Car*>(levels[name]->getObject("car"));
-	if (car != nullptr) {
-		//delete levels[name];
-		//levels[name] = new Level("Data//Level//game.txt", &waypoints);
-	}
-
-	//LightSource::lightCount = levels[name]->getLightSources()->size();
 
 	Primitive* quad = Primitives::generateQuad(Color(1, 1, 1));
 	levels[currentLevel]->spawnObject(new Mesh("skyboxFront", quad, LoadTGA("Image//front.tga")));
@@ -98,14 +115,21 @@ void Manager::setLevel(std::string name) {
 	levels[currentLevel]->spawnObject(new Mesh("skyboxRight", quad, LoadTGA("Image//right.tga")));
 	levels[currentLevel]->spawnObject(new Mesh("skyboxBack", quad, LoadTGA("Image//back.tga")));
 
-	Primitive* axes = Primitives::generateAxes();
-	levels[currentLevel]->spawnObject(new Mesh("axes", axes, 0, false, false, "environment", Mesh::DRAW_LINES));
-	levels[currentLevel]->spawnObject(new Mesh("playerAxes", axes, 0, false, false, "environment", Mesh::DRAW_LINES));
+	//Primitive* axes = Primitives::generateAxes();
+	//levels[currentLevel]->spawnObject(new Mesh("axes", axes, 0, false, false, "environment", Mesh::DRAW_LINES));
+	//levels[currentLevel]->spawnObject(new Mesh("playerAxes", axes, 0, false, false, "environment", Mesh::DRAW_LINES));
+
+
+
+	
 
 	ShaderProgram* lit = shaders["lit"];
 	lit->use();
+	
 	std::vector<LightSource*>* lightSources = levels[name]->getLightSources();
+	LightSource::lightCount = lightSources->size();
 	for (int i = 0; i < (int)lightSources->size(); i++) {
+		lightSources->at(i)->resetAttributes();
 		lightSources->at(i)->setProperties();
 	}
 	lit->setUniform("numLights", LightSource::lightCount);
@@ -180,7 +204,7 @@ std::map<std::string, ShaderProgram*>* Manager::getShaders()
 }
 
 Camera* Manager::getCamera() {
-	if (currentLevel == "game" || currentLevel == "singleplayer" || currentLevel == "tutorial") {
+	if (currentLevel == "game" || currentLevel == "game2" || currentLevel == "singleplayer" || currentLevel == "tutorial") {
 		return dynamic_cast<Player*>(levels[currentLevel]->getObject("player"))->getCamera();
 	}
 	else if (currentLevel == "pregame") {
@@ -192,9 +216,7 @@ std::string& Manager::getLevelName() {
 	return currentLevel;
 }
 
-std::vector<Waypoint*>* Manager::getWaypoints() {
-	return &waypoints;
-}
+
 
 void Manager::loadCars() {
 	std::ifstream handle("Data\\cars.txt");
@@ -224,11 +246,12 @@ void Manager::loadCars() {
 
 	}
 
-	for (int i = 0; i < collection.size(); i++) {
+	for (int i = 0; i < collection.size(); i++)
+	{
 		Object* obj = collection[i];
 		shop->addItem(obj->Get("car"), std::stoi(obj->Get("price")));
-		std::cout << obj->Get("car") << ": " << obj->Get("price") << std::endl;
 	}
+
 
 
 	handle.close();
@@ -239,9 +262,9 @@ void Manager::loadPlayerProgress()
 	Player* player = dynamic_cast<Player*>(levels[currentLevel]->getObject("player"));
 	if (player == nullptr) return;
 
-	std::ifstream handle("Data\\playerprogress.txt");
+	std::ifstream handle(currentSaveFile);
 	if (!handle.is_open()) {
-		std::cout << "[Error] Could not load playerprogress.txt!" << std::endl;
+		std::cout << "[Error] Could not load " << currentSaveFile << "!" << std::endl;
 	}
 
 	std::string line;
@@ -281,17 +304,17 @@ void Manager::loadPlayerProgress()
 	handle.close();
 }
 
-void Manager::savePlayerProgress()
+void Manager::savePlayerProgress(std::string path)
 {
 
 	Player* player = dynamic_cast<Player*>(levels[currentLevel]->getObject("player"));
 	if (player == nullptr) return;
 
-	std::ofstream handle("Data\\playerprogress.txt");
+	std::ofstream handle(path);
 	std::string line;
 
 	if (!handle.is_open()){
-		std::cout << "[ERROR] Can't save to Data\\playerprogress.txt" << std::endl;
+		std::cout << "[ERROR] Can't save to " << path << std::endl;
 		return;
 	}
 
@@ -305,6 +328,27 @@ void Manager::savePlayerProgress()
 		handle << "tyre=" << upgrades->at(i)->getTier("tyre") << std::endl;
 	}
 	handle.close();
+}
+
+std::string Manager::getSaveFilePath()
+{
+	return currentSaveFile;
+}
+
+void Manager::createNewGame()
+{
+	isNewGame = true;
+	if(std::experimental::filesystem::exists("Data//save1.txt"))
+		currentSaveFile = "Data\\save2.txt";
+	else
+		currentSaveFile = "Data\\save1.txt";
+}
+
+void Manager::loadSaveFile(std::string name)
+{
+	isNewGame = false;
+	currentSaveFile = name;
+	loadPlayerProgress();
 }
 
 
@@ -360,10 +404,13 @@ int Manager::getPlacement(std::string name) {
 			return (name == "car") ? 1 : 2;
 		}
 		else {
-			int nextWaypoint = (car1->getWaypointID() + 1 == waypoints.size() ? 0 : car1->getWaypointID() + 1);
-			Vector3 carDiff = waypoints[nextWaypoint]->getOBB()->getPos() - car1->position;
+
+			std::vector<Waypoint*>* waypoints = levels[currentLevel]->getWaypoints();
+
+			int nextWaypoint = (car1->getWaypointID() + 1 == waypoints->size() ? 0 : car1->getWaypointID() + 1);
+			Vector3 carDiff = waypoints->at(nextWaypoint)->getOBB()->getPos() - car1->position;
 			carDiff.y = 0;
-			Vector3 car2Diff = waypoints[nextWaypoint]->getOBB()->getPos() - car2->position;
+			Vector3 car2Diff = waypoints->at(nextWaypoint)->getOBB()->getPos() - car2->position;
 			car2Diff.y = 0;
 			if (carDiff.Length() < car2Diff.Length()) {
 				return (name == "car") ? 1 : 2;
@@ -373,4 +420,14 @@ int Manager::getPlacement(std::string name) {
 			}
 		}
 	}
+}
+
+void Manager::setPlayMusic(Sounds sound, bool flag)
+{
+	soundPlaying[sound] = flag;
+}
+
+bool Manager::isPlayingMusic(Sounds sound)
+{
+	return soundPlaying[sound];
 }

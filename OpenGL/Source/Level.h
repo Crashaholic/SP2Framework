@@ -26,10 +26,10 @@ struct Object {
 class Level
 {
 public:
-	Level(const char* levelPath, std::vector<Waypoint*>* waypoints);
+	Level(const char* levelPath);
 	~Level();
 
-	void Load(std::string levelPath, std::vector<Waypoint*>* waypoints);
+	void Load(std::string levelPath);
 	void setScreen(std::string screen);
 	void spawnObject(Mesh* m);
 
@@ -45,6 +45,7 @@ public:
 	GUIScreen* getScreen();
 	std::string getScreenName();
 	int getTotalLaps();
+	std::vector<Waypoint*>* getWaypoints();
 
 private:
 
@@ -54,6 +55,7 @@ private:
 	Cursor* cursor;
 	QuadTree* tree;
 	std::string currentScreen;
+	std::vector<Waypoint*> waypoints;
 	std::vector<LightSource*> lightSources;
 	std::map<std::string, GUIScreen*> screens;
 	std::map<std::string, Mesh*> objects;

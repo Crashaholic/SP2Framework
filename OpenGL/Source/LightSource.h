@@ -16,6 +16,7 @@ public:
 	static int lightCount;
 	void setProperties();
 	void updateAttributes(MS& viewStack);
+	void resetAttributes();
 	void setPower(float f);
 	void setSpotDirection(Vector3 spot);
 	void setPosition(Vector3 pos);

@@ -81,9 +81,6 @@
     <ClCompile Include="Source\FreeLookCamera.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\QuadNode.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Source\QuadTree.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -210,9 +207,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Source\QuadTree.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\QuadNode.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Source\Car.h">

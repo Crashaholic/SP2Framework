@@ -34,8 +34,11 @@ Car::Car(const char* meshName, Primitive* primitive, std::string input, float ni
 	torqueRot = 0.0f;
 	timer = 0.0;
 	waypointID = 10;
-	laps = 0;
+	laps = -1;
 
+	nitroTier = engineTier = tyreTier = 0;
+
+	isSoundPlaying = false;
 	start = false;
 
 	previousInputs[0] = previousInputs[1] = 0;
@@ -47,6 +50,8 @@ Car::Car(const char* meshName, Primitive* primitive, std::string input, float ni
 
 	shakeDuration = 0.0f;
 	shakeAmount = Vector3(0, 0, 0);
+
+	isVisible = true;
 }
 
 Car::Car()
@@ -56,7 +61,7 @@ Car::Car()
 
 Car::~Car()
 {
-
+	carEngine.deinit();
 }
 
 void Car::setOccupied(std::string playerName, bool isOccupied)
@@ -64,6 +69,33 @@ void Car::setOccupied(std::string playerName, bool isOccupied)
 	this->playerName = playerName;
 	this->isOccupied = isOccupied;
 	carEngine.play(carSounds[SFX_ENTEROREXIT]);
+
+	Player* player = dynamic_cast<Player*>(Manager::getInstance()->getLevel()->getObject("player"));
+	std::string carName = Manager::getInstance()->getShop()->getCar();
+	CarUpgrade* upgrade = player->getUpgrade(carName);
+	
+
+	if (upgrade != nullptr)
+	{
+		nitroTier = upgrade->getTier("nitro");
+		engineTier = upgrade->getTier("engine");
+		tyreTier = upgrade->getTier("tyre");
+
+		std::string modelPath = "Models//" + carName + ".obj";
+		std::string texPath = "Models//" + carName + ".tga";
+		setModel(Primitives::loadModel(modelPath.c_str()));
+		textureID = LoadTGA(texPath.c_str());
+	}
+	
+}
+
+void Car::setModel(Primitive* primitive)
+{
+	glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
+	glBufferData(GL_ARRAY_BUFFER, primitive->getVertices()->size() * sizeof(Vertex), &primitive->getVertices()->at(0), GL_STATIC_DRAW);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, primitive->getIndices()->size() * sizeof(unsigned int), &primitive->getIndices()->at(0), GL_STATIC_DRAW);
+	indexSize = primitive->getIndices()->size();
 }
 
 
@@ -102,8 +134,7 @@ void Car::Update(double dt)
 		float thrustInput = 0.0f;
 
 		// Modify
-		if (Application::IsKeyPressed(input[4]) && thrusters > 0.0f){
-			std::cout << thrusters << std::endl;
+		if (Application::IsKeyPressed(input[4]) && (thrusters > 0.0f || Manager::getInstance()->getLevelName() == "tutorial")){
 			thrustInput = 1.0f;
 			thrust = Utility::Lerp(thrust, 1.0f, 8.0f * dt);
 			thrusters -= thrust * dt * 20.0;
@@ -228,8 +259,8 @@ void Car::Update(double dt)
 					//if (abs(forward.Dot(collided[i]->getOBB()->getZ())) <= 0.40f || 
 					//	abs(forward.Dot(collided[i]->getOBB()->getZ())) >= 0.60f) {
 						Vector3 destn;
-						if (velocity.Length() * 170.0f > 15.0f)
-							destn = velocity * 1.15f;
+						if (velocity.Length() * 170.0f > 5.0f)
+							destn = velocity * 1.2f;
 						else
 							destn = velocity;
 						destn.y = 0;
@@ -247,7 +278,26 @@ void Car::Update(double dt)
 
 	}
 	
-	//std::cout << "V: " << velocity << std::endl;
+	Vector3 horizontalVel = 170.0f * velocity;
+	horizontalVel.y = 0;
+	if (horizontalVel.Length() > 10.0f && isSoundPlaying == false)
+	{
+		isSoundPlaying = true;
+		carSounds[SFX_DRIVING].setLooping(1);
+		carEngine.play(carSounds[SFX_DRIVING], -2.0f, 1);
+		
+		carEngine.seek(carEngine.play(carSounds[SFX_DRIVING], 0.0f, 1), 1.0f);
+		carEngine.setPause(carEngine.play(carSounds[SFX_DRIVING]), 0);
+
+	}
+	else if ((horizontalVel.Length() < 2.0f) && isSoundPlaying == true)
+	{
+		carSounds[SFX_DRIVING].stop();
+		isSoundPlaying = false;
+	}
+
+	carSounds[SFX_DRIVING].setVolume(-horizontalVel.Length() / 40.0f);
+
 	Manager::getInstance()->getLevel()->getTree()->Update(this);
 
 	if(isOccupied)
@@ -255,7 +305,7 @@ void Car::Update(double dt)
 }
 
 void Car::updateWaypoint() {
-	std::vector<Waypoint*>* waypoints = Manager::getInstance()->getWaypoints();
+	std::vector<Waypoint*>* waypoints = Manager::getInstance()->getLevel()->getWaypoints();
 	int nextWaypoint = (waypointID == waypoints->size() - 1) ? 0 : waypointID + 1;
 
 	Waypoint* next = waypoints->at(nextWaypoint);
@@ -272,7 +322,6 @@ void Car::updateWaypoint() {
 			if (laps == Manager::getInstance()->getLevel()->getTotalLaps()) {
 				finished = true;
 			}
-			std::cout << name << ":" << laps << std::endl;
 		}
 
 	}
@@ -299,7 +348,8 @@ Vector3 Car::calcAcceleration(float accInput, float steerInput, float dt)
 	//
 	Vector3 deltaRotation = Vector3(0, -newCurrentSteer - rotation.y, 0);
 
-	std::vector<Mesh*> collided = Collision::checkCollisionR(this, deltaRotation, { "ground", "ramp", "rampsupport", "pad1", "car2", "car" });
+	std::vector<Mesh*> collided = Collision::checkCollisionR(this, deltaRotation, { "ground", "ground2", "ground3",
+		"ramp", "ramp2", "ramp3", "rampsupport", "rampsupport2", "rampsupport3", "pad1", "car2", "car" });
 
 	//// Rotate only if there is no collision
 	if (collided.size() == 0) {
@@ -367,15 +417,38 @@ Vector3 Car::calcAcceleration(float accInput, float steerInput, float dt)
 	if (accInput == 1)
 	{
 		Player* player = dynamic_cast<Player*>(Manager::getInstance()->getLevel()->getObject(playerName));
+
+		float multiplier = 20.0f;
+		if (engineTier == 2)
+		{
+			multiplier = 25.0f;
+		}
+		else if(multiplier > 2)
+		{
+			multiplier = 30.0f;
+		}
+		
+
 		if (Application::IsKeyPressed(input[5]) && nitro > 0.0f) {
-			engineForward = forward * engineAcceleration * 25.0f * dt;
+			engineForward = forward * engineAcceleration * (multiplier+5.0f) * dt;
 			player->setCameraSpeed(6.0);
-			nitro -= 5.0f * dt;
+
+			float nitroMultiplier = 5.0f;
+			if (nitroTier == 2)
+			{
+				nitroMultiplier = 5.5f;
+			}
+			else if (nitroTier > 2)
+			{
+				nitroMultiplier = 6.0f;
+			}
+
+			nitro -= nitroMultiplier * dt;
 			if (nitro <= 0.0f) nitro = 0.0f;
 		}
 		else {
 			player->setCameraSpeed(8.0);
-			engineForward = forward * engineAcceleration * 20.0f * dt;
+			engineForward = forward * engineAcceleration * multiplier * dt;
 		}
 
 		if (steerInput != 0)
@@ -482,6 +555,11 @@ void Car::getVelocity(std::string& vel, Color& color) {
 }
 double Car::getTiming() {
 	return timer;
+}
+
+void Car::setWaypointID(int n)
+{
+	waypointID = n;
 }
 
 int Car::getWaypointID() {

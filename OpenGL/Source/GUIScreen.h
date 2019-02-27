@@ -23,6 +23,7 @@ public:
 	void addTexture(GUITexture* texture);
 	void removeItem(std::string name);
 	IRender* getItem(std::string name);
+	void hideAllItems();
 	void addText(GUIText* text);
 	void setCursor(Cursor* cursor);
 

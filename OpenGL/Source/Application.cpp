@@ -76,7 +76,7 @@ void Application::Init()
 
 
 	//Create a window and create its OpenGL context
-	m_window = glfwCreateWindow(Application::winWidth, Application::winHeight, "Test Window", NULL, NULL);
+	m_window = glfwCreateWindow(Application::winWidth, Application::winHeight, "Race For Pace: The Origins", NULL, NULL);
 
 	//If the window couldn't be created
 	if (!m_window)

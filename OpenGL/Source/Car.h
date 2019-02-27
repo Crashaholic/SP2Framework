@@ -28,6 +28,7 @@ public:
 	Vector3 forward;
 	void getVelocity(std::string& vel, Color& color);
 	int getWaypointID();
+	void setWaypointID(int n);
 	int getLaps();
 	double getTiming();
 	bool hasFinished();
@@ -35,8 +36,8 @@ public:
 	std::string getNitro();
 	std::string getThruster();	
 
-	SoLoud::Soloud carEngine;
-	SoLoud::Wav carSounds[2];
+
+
 
 protected:
 
@@ -45,7 +46,12 @@ protected:
 
 private:
 
+	SoLoud::Soloud carEngine;
+	SoLoud::Wav carSounds[2];
+	
+	bool isSoundPlaying;
 
+	void setModel(Primitive* primitive);
 	float shakeDuration;
 	Vector3 shakeAmount;
 
@@ -74,6 +80,10 @@ private:
 	float thrust;
 	float thrusters = 300.0f;
 	float nitro;
+
+	int nitroTier;
+	int engineTier;
+	int tyreTier;
 
 	// [DEBUG ONLY]
 	bool start;

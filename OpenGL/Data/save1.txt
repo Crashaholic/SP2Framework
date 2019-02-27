@@ -1,0 +1,5 @@
+money=800
+car=Blitz
+nitro=1
+engine=1
+tyre=1

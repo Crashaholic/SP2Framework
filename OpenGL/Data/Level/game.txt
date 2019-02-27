@@ -1,5 +1,5 @@
 defaultscreen=gameplay
-laps=1
+laps=3
 category=lights
 
 name=dirlight
@@ -17,6 +17,15 @@ color=1,1,0
 power=1
 exponent=1
 spotdir=0,1,0
+
+name=spotlight3
+type=2
+position=426.529,8,-85.977
+color=0,1,0
+power=1
+exponent=1
+spotdir=0,1,0
+
 
 category=objects
 
@@ -168,7 +177,7 @@ name=ramp
 collision=true
 gravity=false
 model=Models//ramp.obj
-position=63.701,25.927,-196.218
+position=63.701,19,-183.154
 rotation=0,0,0
 texture=Models//ramp.tga
 type=environment
@@ -177,7 +186,7 @@ name=rampsupport
 collision=true
 gravity=false
 model=Models//rampsupport.obj
-position=329.779,12.225,-252.839
+position=344.402,-1.5,-184.724
 rotation=0,0,0
 texture=Models//ramp.tga
 type=environment
@@ -186,7 +195,7 @@ name=rampleftbarrier
 collision=true
 gravity=false
 model=Models//rampleftbarrier.obj
-position=63.577,27.441,-160.603
+position=63.577,22,-160.603
 rotation=0,0,0
 texture=Models//ramp.tga
 type=environment
@@ -196,7 +205,7 @@ name=ramprightbarrier
 collision=true
 gravity=false
 model=Models//ramprightbarrier.obj
-position=62.466,27.441,-207.146
+position=62.466,22,-207.146
 rotation=0,0,0
 texture=Models//ramp.tga
 type=environment
@@ -281,7 +290,7 @@ gravity=true
 model=Models//human_body.obj
 position=7.419,5,112.277
 rotation=0,0,0
-texture=Image//water.tga
+texture=Models//human.tga
 type=npc
 
 name=racenpc
@@ -290,7 +299,7 @@ gravity=true
 model=Models//human_body.obj
 position=-8.299,5,112.277
 rotation=0,0,0
-texture=Image//rock.tga
+texture=Models//human.tga
 type=npc
 
 
@@ -619,15 +628,6 @@ scale=111,36
 action=backtomainmenu
 type=button
 
-name=nextlevel
-screen=endgame
-texture=Image//mainmenubutton.tga
-hovertexture=Image//mainmenuhoverbutton.tga
-position=0,-180
-rotation=0
-scale=255,36
-action=nextlevel
-type=button
 
 
 

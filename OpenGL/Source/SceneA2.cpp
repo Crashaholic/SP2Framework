@@ -10,11 +10,11 @@
 #include "QuadTree.h"
 #include "LevitationPad.h"
 
+bool SceneA2::hideFPS = false;
+
 SceneA2::SceneA2()
 {
-	state_MainMenu = true;
-	state_InGame = true;
-	state_Race = false;
+
 }
 
 
@@ -26,21 +26,20 @@ void SceneA2::Init()
 {
 
 	manager = Manager::getInstance();
+	manager->Init();
 
 	Engine.init();
 	Music[BGM_MAIN].load("Music//BGM_MainMenu.wav");
 	Music[BGM_INGAME].load("Music//BGM_InGame.wav");
+	Music[BGM_RACE].load("Music//BGM_Racing.wav");
+	Music[BGM_RACE].setVolume(-1.2);
 
-
-	/*manager->loadPlayerProgress();*/
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 	elapsedTimeCounter = bounceTimeCounter = lastTimed = 0.0f;
 	lastFramesPerSecond = framesPerSecond = 1;
 
 	glGenVertexArrays(1, &m_vertexArrayID);
 	glBindVertexArray(m_vertexArrayID);
-
-	InitShaderProperties();
 
 
 	glEnable(GL_DEPTH_TEST);
@@ -50,17 +49,9 @@ void SceneA2::Init()
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	loadFlag = false;
-
 }
 
-void SceneA2::loadProgress() {
-	if (loadFlag == false && dynamic_cast<Player*>(manager->getLevel()->getObject("player")) != nullptr)
-	{
-		manager->loadPlayerProgress();
-		loadFlag = true;
-	}
-}
+
 
 void SceneA2::Render()
 {
@@ -88,13 +79,42 @@ void SceneA2::GenerateText()
 
 	GUIText* text = nullptr;
 	Level* level = manager->getLevel();
-	GUIText* fps = gui->renderText("bahnschrift", 0, 10, "FPS: " + std::to_string(lastFramesPerSecond), 0.4f, Color(0, 1, 0));
-	Manager::getInstance()->getLevel()->getScreen()->addText(fps);
+	
+	if (!hideFPS)
+	{
+		GUIText* fps = gui->renderText("bahnschrift", 0, 10, "FPS: " + std::to_string(lastFramesPerSecond), 0.4f, Color(0, 1, 0));
+		Manager::getInstance()->getLevel()->getScreen()->addText(fps);
+	}
 	RACE_TYPE gameType = manager->getGameType();
 
 
-	if (manager->getLevelName() == "game" || manager->getLevelName() == "singleplayer")
+	if (manager->getLevelName() == "game" || manager->getLevelName() == "singleplayer" || manager->getLevelName() == "game2")
 	{
+		if(level->getScreenName() == "gameplay" || level->getScreenName() == "playermode" || level->getScreenName() == "shop"){
+			if (!manager->isPlayingMusic(BGM_INGAME))
+			{
+				Music[BGM_MAIN].stop();
+				manager->setPlayMusic(BGM_MAIN, false);
+				manager->setPlayMusic(BGM_INGAME, true);
+				Engine.play(Music[BGM_INGAME]);
+				Music[BGM_INGAME].setLooping(true);
+
+			}
+		}
+		else if (level->getScreenName() == "ingame" || level->getScreenName() == "endgame")
+		{
+			if (!manager->isPlayingMusic(BGM_RACE))
+			{
+				Music[BGM_INGAME].stop();
+				manager->setPlayMusic(BGM_INGAME, false);
+				manager->setPlayMusic(BGM_RACE, true);
+				Engine.play(Music[BGM_RACE]);
+				Music[BGM_RACE].setLooping(true);
+
+			}
+		}
+
+
 		if (level->getScreenName() == "gameplay")
 		{
 
@@ -366,7 +386,7 @@ void SceneA2::GenerateText()
 			if (gameType == RACE_MULTIPLAYER) {
 
 				Car* car2 = dynamic_cast<Car*>(level->getObject("car2"));
-				std::string winner = (car->getTiming() < car2->getTiming()) ? "Player1 wins!" : "Player2 wins!";
+				std::string winner = (car->getTiming() < car2->getTiming()) ? "Player2 wins!" : "Player1 wins!";
 
 				text = gui->renderText("digital", Application::winWidth / 2.0f - 20,
 					100, winner, 0.5f, Color(1, 1, 1), TEXT_ALIGN_MIDDLE);
@@ -374,16 +394,13 @@ void SceneA2::GenerateText()
 
 
 				text = gui->renderText("digital", Application::winWidth / 2.0f - 70,
-					Application::winHeight / 2.0f + 25, "Player Two's Timing: " + std::to_string(car2->getTiming()), 0.3f, Color(1, 1, 0), TEXT_ALIGN_MIDDLE);
+					Application::winHeight / 2.0f - 25, "Player One's Timing: " + std::to_string(car2->getTiming()), 0.3f, Color(1, 1, 0), TEXT_ALIGN_MIDDLE);
 				level->getScreen()->addText(text);
 
 			}
 
 			text = gui->renderText("digital", Application::winWidth / 2.0f - 70,
-				Application::winHeight / 2.0f - 25, "Player One's Timing: " + std::to_string(car->getTiming()), 0.3f, Color(1, 1, 0), TEXT_ALIGN_MIDDLE);
-			level->getScreen()->addText(text);
-
-			text = gui->renderText("default", 502, 565, "Next Level", 0.4f, Color(1, 1, 1), TEXT_ALIGN_MIDDLE);
+				Application::winHeight / 2.0f + 25, "Player Two's Timing: " + std::to_string(car->getTiming()), 0.3f, Color(1, 1, 0), TEXT_ALIGN_MIDDLE);
 			level->getScreen()->addText(text);
 
 			text = gui->renderText("default", 356, 664, "Restart", 0.4f, Color(1, 1, 1), TEXT_ALIGN_MIDDLE);
@@ -392,10 +409,20 @@ void SceneA2::GenerateText()
 			text = gui->renderText("default", 656, 664, "Main Menu", 0.4f, Color(1, 1, 1), TEXT_ALIGN_MIDDLE);
 			level->getScreen()->addText(text);
 
-			
+			Player* player = dynamic_cast<Player*>(Manager::getInstance()->getLevel()->getObject("player"));
+			player->setMoney(player->getMoney() + 500);
+			manager->savePlayerProgress(manager->getSaveFilePath());
 		}
 	}
 	else if (manager->getLevelName() == "pregame") {
+
+		if (!manager->isPlayingMusic(BGM_MAIN))
+		{
+			manager->setPlayMusic(BGM_MAIN, true);
+			Engine.play(Music[BGM_MAIN]);
+			Music[BGM_MAIN].setLooping(true);
+		}
+	
 
 		if (level->getScreenName() == "mainmenu") {
 
@@ -418,6 +445,87 @@ void SceneA2::GenerateText()
 
 			text = gui->renderText("default", 196, 315, "Load Game", 0.35f, Color(1, 1, 1), TEXT_ALIGN_MIDDLE);
 			Manager::getInstance()->getLevel()->getScreen()->addText(text);
+
+			text = gui->renderText("default", 196, 645, "Back", 0.35f, Color(1, 1, 1), TEXT_ALIGN_MIDDLE);
+			level->getScreen()->addText(text);
+		}
+		else if (level->getScreenName() == "gamesave")
+		{
+			text = gui->renderText("default", 196, 150, "Save 1", 0.35f, Color(1, 1, 1), TEXT_ALIGN_MIDDLE);
+			Manager::getInstance()->getLevel()->getScreen()->addText(text);
+
+			text = gui->renderText("default", 196, 315, "Save 2", 0.35f, Color(1, 1, 1), TEXT_ALIGN_MIDDLE);
+			Manager::getInstance()->getLevel()->getScreen()->addText(text);
+
+			text = gui->renderText("default", 196, 645, "Back", 0.35f, Color(1, 1, 1), TEXT_ALIGN_MIDDLE);
+			level->getScreen()->addText(text);
+		}
+		else if (level->getScreenName() == "options")
+		{
+			text = gui->renderText("default", 196, 150, "Hide FPS", 0.35f, Color(1, 1, 1), TEXT_ALIGN_MIDDLE);
+			Manager::getInstance()->getLevel()->getScreen()->addText(text);
+
+
+			text = gui->renderText("default", 196, 645, "Back", 0.35f, Color(1, 1, 1), TEXT_ALIGN_MIDDLE);
+			level->getScreen()->addText(text);
+		}
+
+	}
+	else if (manager->getLevelName() == "tutorial")
+	{
+
+		int id = dynamic_cast<Car*>(level->getObject("car"))->getWaypointID();
+
+		// Prompt W
+		if (id == 0)
+		{
+			text = gui->renderText("default", 490, 159, "Hold [W] to accelerate", 0.4f, Color(1, 1, 1), TEXT_ALIGN_MIDDLE);
+			level->getScreen()->addText(text);
+		}
+		else if (id == 1)
+		{
+			text = gui->renderText("default", 490, 159, "Hold [A] to steer left", 0.4f, Color(1, 1, 1), TEXT_ALIGN_MIDDLE);
+			level->getScreen()->addText(text);
+		}
+		else if (id == 2)
+		{
+			text = gui->renderText("default", 490, 159, "Hold [D] to steer right", 0.4f, Color(1, 1, 1), TEXT_ALIGN_MIDDLE);
+			level->getScreen()->addText(text);
+		}
+		else if (id == 3)
+		{
+			text = gui->renderText("default", 490, 159, "Hold [C] to use nitro!", 0.4f, Color(1, 1, 1), TEXT_ALIGN_MIDDLE);
+			level->getScreen()->addText(text);
+		}
+		else if (id == 4)
+		{
+			text = gui->renderText("default", 490, 159, "Release [W] for a brief movement while steering to drift", 0.30f, Color(1, 1, 1), TEXT_ALIGN_MIDDLE, 200.0f);
+			level->getScreen()->addText(text);
+		}
+		else if (id == 5)
+		{
+			
+			text = gui->renderText("default", 490, 159, "Use the levitation pad to fly up", 0.30f, Color(1, 1, 1), TEXT_ALIGN_MIDDLE, 200.0f);
+			level->getScreen()->addText(text);
+		}
+		else if (id == 6)
+		{
+			text = gui->renderText("default", 490, 159, "Hold [V] to thrust upwards, keep in mind that there's a limit!", 0.30f, Color(1, 1, 1), TEXT_ALIGN_MIDDLE, 75.0f);
+			level->getScreen()->addText(text);
+		}
+		else if (id == 7)
+		{
+			text = gui->renderText("default", 490, 159, "Try making this sharp turn!", 0.30f, Color(1, 1, 1), TEXT_ALIGN_MIDDLE, 200.0f);
+			level->getScreen()->addText(text);
+		}
+		else if (id == 8)
+		{
+			text = gui->renderText("default", 490, 159, "You learn quick fast don't you? Drive forward to start playing!", 0.30f, Color(1, 1, 1), TEXT_ALIGN_MIDDLE, 700.0f);
+			level->getScreen()->addText(text);
+		}
+		else if (id == 9)
+		{
+			manager->setLevel("pregame");
 		}
 	}
 }
@@ -425,31 +533,6 @@ void SceneA2::GenerateText()
 
 
 
-
-
-void SceneA2::InitShaderProperties()
-{
-
-}
-
-void SceneA2::playMusic()
-{
-	if (state_MainMenu)
-	{
-		Engine.play(Music[BGM_MAIN]);
-		state_MainMenu = false;
-	}
-	if (state_InGame)
-	{
-		Engine.play(Music[BGM_INGAME]);
-		state_InGame = false;
-	}
-	if (!state_Race)
-	{
-		Engine.play(Music[BGM_RACE]);
-	}
-
-}
 
 
 void SceneA2::Update(double dt)
@@ -489,6 +572,7 @@ void SceneA2::Update(double dt)
 		manager->updateStartCountdown(dt);
 	
 
+	
 
 	// Update logic for all objects
 	manager->getLevel()->Update(dt);

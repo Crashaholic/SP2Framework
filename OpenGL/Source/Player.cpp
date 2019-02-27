@@ -44,6 +44,8 @@ void Player::Update(double dt) {
 
 	if (!isInVehicle) {
 
+		if (!isVisible)
+			isVisible = true;
 		Vector3 translation = Vector3(0, 0, 0);
 
 		// Input 0 - W / I
@@ -140,6 +142,10 @@ void Player::Update(double dt) {
 		else {
 			setCameraMode(FIRST_PERSON);
 		}
+	}
+	else
+	{
+		isVisible = false;
 	}
 
 

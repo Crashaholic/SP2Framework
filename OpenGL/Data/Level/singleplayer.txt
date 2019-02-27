@@ -1,4 +1,15 @@
 defaultscreen=gameplay
+laps=3
+category=lights
+
+name=dirlight
+type=0
+position=0.141,5,129.925
+color=1,1,1
+power=1
+exponent=1
+spotdir=0,1,0
+
 category=objects
 laps=1
 
@@ -106,7 +117,7 @@ name=ramp
 collision=true
 gravity=false
 model=Models//ramp.obj
-position=63.701,25.927,-196.218
+position=63.701,19,-183.154
 rotation=0,0,0
 texture=Models//ramp.tga
 type=environment
@@ -115,7 +126,7 @@ name=rampsupport
 collision=true
 gravity=false
 model=Models//rampsupport.obj
-position=329.779,12.225,-252.839
+position=344.402,-1.5,-184.724
 rotation=0,0,0
 texture=Models//ramp.tga
 type=environment
@@ -124,7 +135,17 @@ name=rampleftbarrier
 collision=true
 gravity=false
 model=Models//rampleftbarrier.obj
-position=63.577,27.441,-160.603
+position=63.577,22,-160.603
+rotation=0,0,0
+texture=Models//ramp.tga
+type=environment
+
+
+name=ramprightbarrier
+collision=true
+gravity=false
+model=Models//ramprightbarrier.obj
+position=62.466,22,-207.146
 rotation=0,0,0
 texture=Models//ramp.tga
 type=environment

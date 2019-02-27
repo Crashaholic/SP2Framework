@@ -6,12 +6,12 @@
 #include "MovingObstacle.h"
 
 
-Level::Level(const char* levelPath, std::vector<Waypoint*>* waypoints)
+Level::Level(const char* levelPath)
 {
 	Mtx44 proj;
 	proj.SetToPerspective(45.0f, (float)Application::winWidth / (float)Application::winHeight, 0.1f, 10000.0f);
 	projectionStack.LoadMatrix(proj);
-	Load(levelPath, waypoints);
+	Load(levelPath);
 
 	
 }
@@ -27,6 +27,9 @@ Level::~Level()
 		if (object.second != nullptr)
 			delete object.second;
 
+	for (int i = 0; i < (int)waypoints.size(); i++)
+		delete waypoints[i];
+
 	for (int i = 0; i < (int)lightSources.size(); i++)
 		delete lightSources[i];
 }
@@ -38,6 +41,7 @@ void Level::setScreen(std::string screen) {
 		cursor->setOnCooldown(0.3);
 	else
 		cursor->setOnCooldown(0.1);
+
 	screens[screen]->setCursor(cursor);
 	
 	if (screen == "ingame")
@@ -49,7 +53,7 @@ int Level::getTotalLaps() {
 }
 
 
-void Level::Load(std::string path, std::vector<Waypoint*>* waypoints) {
+void Level::Load(std::string path) {
 
 	tree = new QuadTree(Vector3(-2000, 0, -2000), Vector3(2000, 0, 2000));
 	std::ifstream handle(path);
@@ -111,6 +115,7 @@ void Level::Load(std::string path, std::vector<Waypoint*>* waypoints) {
 				}
 				else if (type == "car") {
 					m = new Car(current->Get("name").c_str(), primitive, current->Get("input"), std::stof(current->Get("nitro")), textureID);
+					
 				}
 				else if (type == "pad") {
 					m = new LevitationPad(current->Get("name").c_str(), primitive, textureID, std::stof(current->Get("levitation")));
@@ -223,7 +228,7 @@ void Level::Load(std::string path, std::vector<Waypoint*>* waypoints) {
 				Vector3 scal = Vector3(std::stof(scale[0]), std::stof(scale[1]), std::stof(scale[2]));
 
 				
-				waypoints->push_back(new Waypoint(position, scal));
+				waypoints.push_back(new Waypoint(position, scal));
 
 
 			}
@@ -287,7 +292,7 @@ void Level::renderSkybox()
 
 	ShaderProgram* lit = Manager::getInstance()->getShader("lit");
 	lit->use();
-	float length = 1000.0f;
+	float length = 2000.0f;
 	modelStack.PushMatrix();
 
 	modelStack.PushMatrix();
@@ -391,7 +396,7 @@ void Level::Render()
 
 
 	glEnable(GL_DEPTH_TEST);
-	if (levelName == "game" || levelName == "singleplayer")
+	if (levelName == "game" || levelName == "singleplayer" || levelName == "game2")
 	{
 		Player* player = dynamic_cast<Player*>(objects["player"]);
 		if (!player->isInVehicle || Manager::getInstance()->getGameType() == RACE_SINGLEPLAYER) {
@@ -547,4 +552,9 @@ std::map<std::string, Mesh*>* Level::getObjects()
 
 std::string Level::getScreenName() {
 	return currentScreen;
+}
+
+std::vector<Waypoint*>* Level::getWaypoints()
+{
+	return &waypoints;
 }

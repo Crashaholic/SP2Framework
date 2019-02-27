@@ -2,6 +2,7 @@
 #include "Manager.h"
 #include "GUIManager.h"
 #include "Player.h"
+#include "SceneA2.h"
 
 GUIScreen::GUIScreen(std::string name) {
 	this->name = name;
@@ -29,8 +30,8 @@ GUIScreen::~GUIScreen()
 
 void GUIScreen::Render()
 {
-
-	if (Manager::getInstance()->getLevelName() == "game" || Manager::getInstance()->getLevelName() == "singleplayer") {
+	std::string levelName = Manager::getInstance()->getLevelName();
+	if (levelName == "game" || levelName == "singleplayer" || levelName == "game2") {
 
 
 		Player* player = dynamic_cast<Player*>(Manager::getInstance()->getLevel()->getObject("player"));
@@ -55,6 +56,17 @@ void GUIScreen::Render()
 			}
 		}
 
+	}
+	else if (levelName == "tutorial")
+	{
+
+		Car* car = dynamic_cast<Car*>(Manager::getInstance()->getLevel()->getObject("car"));
+		int id = car->getWaypointID();
+
+		if (id == 0)
+		{
+
+		}
 	}
 
 	for (int i = 0; i < (int) renderables.size(); i++){
@@ -93,7 +105,7 @@ void GUIScreen::Update(double dt)
 		{
 			Level* level = manager->getLevel();
 			Player* player;
-			if (manager->getLevelName() == "game" || manager->getLevelName() == "singleplayer" || manager->getLevelName() == "tutorial")
+			if (manager->getLevelName() == "game" || manager->getLevelName() == "game2" || manager->getLevelName() == "singleplayer" || manager->getLevelName() == "tutorial")
 				player = dynamic_cast<Player*>(level->getObject("player"));
 
 			for (int i = 0; i < (int)buttons.size(); i++)
@@ -124,11 +136,19 @@ void GUIScreen::Update(double dt)
 							level->setScreen("gameselection");
 							/*Manager::getInstance()->setLevel("game");*/
 						}
-						else if (buttons[i]->getAction() == "playtutorial") {
+						else if (buttons[i]->getAction() == "playtutorial")
+						{
 							manager->setLevel("tutorial");
 							level = manager->getLevel();
 							level->setScreen("gameplay");
-							dynamic_cast<Player*>(manager->getLevel()->getObject("player"))->setCar(dynamic_cast<Car*>(level->getObject("car")));
+							level->getScreen()->hideAllItems();
+							Car* car = dynamic_cast<Car*>(level->getObject("car"));
+							car->currentSteer = -180.0f;
+							car->setWaypointID(0);
+							dynamic_cast<Player*>(manager->getLevel()->getObject("player"))->setCar(car);
+						}
+						else if (buttons[i]->getAction() == "openoptions"){
+							level->setScreen("options");
 						}
 
 					}
@@ -136,14 +156,58 @@ void GUIScreen::Update(double dt)
 					{
 						if (buttons[i]->getAction() == "newgame")
 						{
-							
+
 							manager->setLevel("game");
-							
+							Player* player = dynamic_cast<Player*>(manager->getLevel()->getObject("player"));
+							std::vector<CarUpgrade*>* upgrades = player->getUpgrades();
+							upgrades->push_back(new CarUpgrade("Blitz", 1, 1, 1));
+							dynamic_cast<Player*>(manager->getLevel()->getObject("player"))->setMoney(800);
+							manager->createNewGame();
 							manager->getShop()->spawnDisplayCar();
 						}
 						else if (buttons[i]->getAction() == "loadgame")
 						{
+							level->setScreen("gamesave");
+						}
+						else if (buttons[i]->getAction() == "backtomainmenu")
+						{
+							level->setScreen("mainmenu");
+						}
+					}
+					else if (name == "gamesave")
+					{
+						if (buttons[i]->getAction() == "loadsave1")
+						{
+							if (std::experimental::filesystem::exists("Data//save1.txt")){
+								manager->setLevel("game");
+								manager->loadSaveFile("Data//save1.txt");
+								manager->getShop()->spawnDisplayCar();
+							}
+						}
+						else if (buttons[i]->getAction() == "loadsave2")
+						{
+							if (std::experimental::filesystem::exists("Data//save2.txt"))
+							{
+								manager->setLevel("game");
+								manager->loadSaveFile("Data//save2.txt");
+								manager->getShop()->spawnDisplayCar();
+							}
+						}
+						else if (buttons[i]->getAction() == "backtoload")
+						{
+							level->setScreen("gamesave");
+						}
+					}
+					else if (name == "options")
+					{
 
+						if (buttons[i]->getAction() == "hidefps")
+						{
+							SceneA2::hideFPS = true;
+						}
+						else if (buttons[i]->getAction() == "backtomainmenu")
+						{
+							level->setScreen("mainmenu");
 						}
 					}
 					else if (name == "shop") {
@@ -234,8 +298,13 @@ void GUIScreen::Update(double dt)
 						}
 					}
 					else if (name == "endgame") {
-
 						if (buttons[i]->getAction() == "backtomainmenu") {
+							manager->setLevel("pregame");
+							manager->getLevel()->setScreen("mainmenu");
+						}
+						else if (buttons[i]->getAction() == "replaylevel")
+						{
+							//manager->reloadLevel("game");
 							manager->setLevel("pregame");
 							manager->getLevel()->setScreen("mainmenu");
 						}
@@ -281,6 +350,12 @@ IRender* GUIScreen::getItem(std::string name) {
 		}
 	}
 	return nullptr;
+}
+
+void GUIScreen::hideAllItems()
+{
+	for (int i = 0; i < renderables.size(); i++)
+		renderables[i]->setEnabled(false);
 }
 
 void GUIScreen::removeItem(std::string name)

@@ -41,41 +41,18 @@ LightSource::LightSource()
 	UID = lightCount++;
 }
 
+void LightSource::resetAttributes()
+{
+	ShaderProgram* shader = Manager::getInstance()->getShader("lit");
+	shader->use();
+	shader->setUniform(getPropertyName("type"), 2);
+	shader->setUniform(getPropertyName("power"), 0.0f);
+	shader->updateUniforms();
+}
 
 void LightSource::setProperties() {
 	ShaderProgram* shader = Manager::getInstance()->getShader("lit");
 	shader->use();
-
-	if (UID == 0) {
-
-		//light.type = Light::LIGHT_POINT;
-		//light.position.Set(1.0f, 1.0f, 1.0f);
-		//light.color.Set(1, 1, 1);
-		//light.power = 1.0f;
-		//light.kC = 1.0f;
-		//light.kL = 0.01f;
-		//light.kQ = 0.001f;
-		//light.exponent = 1.0f;
-		//light.cosCutoff = cos(Math::DegreeToRadian(45));
-		//light.cosInner = cos(Math::DegreeToRadian(30));
-		//light.spotDirection.Set(0.0f, 1.0f, 0.0f);
-	}
-	else if (UID == 1)
-	{
-		//light.position.Set(4.5f, 18.0f, 0.0f);
-		//light.type = Light::LIGHT_SPOT;
-		//light.color.Set(1, 1, 0);
-		//light.power = 2.0f;
-		//light.kC = 1.0f;
-		//light.kL = 0.01f;
-		//light.kQ = 0.001f;
-		//light.exponent = 1.0f;
-		//light.cosCutoff = cos(Math::DegreeToRadian(30));
-		//light.cosInner = cos(Math::DegreeToRadian(15));
-		//light.spotDirection.Set(-0.3f, 1.0f, 0.0f);
-	}
-
-
 
 	shader->setUniform(getPropertyName("type"), light.type);
 	shader->setUniform(getPropertyName("color"), light.color.r, light.color.g, light.color.b);

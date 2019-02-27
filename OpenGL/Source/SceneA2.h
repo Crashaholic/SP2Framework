@@ -31,7 +31,7 @@ class SceneA2 : public Scene
 public:
 	SceneA2();
 	~SceneA2();
-
+	static bool hideFPS;
 	virtual void Init();
 	virtual void Render();
 	virtual void Update(double dt);
@@ -42,11 +42,6 @@ private:
 
 	void RenderScene();
 	void GenerateText();
-	void InitShaderProperties();
-	void playMusic();
-	void loadProgress();
-
-	bool loadFlag;
 	unsigned m_vertexArrayID;
 
 	float bounceTimeCounter = 0.0f;
@@ -54,9 +49,8 @@ private:
 	int framesPerSecond = 0;
 	int lastFramesPerSecond = 0;
 	float elapsedTimeCounter = 0.0f;
-	bool state_MainMenu;
-	bool state_InGame;
-	bool state_Race;
+	
+
 
 	Manager *manager;
 	GUIManager *gui;
@@ -64,15 +58,7 @@ private:
 	SoLoud::Soloud Engine;
 	SoLoud::Wav Music[6];
 
-	enum Sounds
-	{
-		BGM_MAIN,
-		BGM_INGAME,
-		BGM_RACE,
-		SFX_ACCELERATE,
-		SFX_STEERING,
-		SFX_VICTORY
-	};
+
 
 };
 

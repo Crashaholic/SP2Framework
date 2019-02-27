@@ -1,0 +1,9 @@
+money=350
+car=Blitz
+nitro=1
+engine=1
+tyre=1
+car=Smite
+nitro=1
+engine=2
+tyre=1

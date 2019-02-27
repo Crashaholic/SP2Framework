@@ -28,16 +28,26 @@ enum RACE_TYPE {
 	RACE_MULTIPLAYER,
 };
 
+enum Sounds
+{
+	BGM_MAIN,
+	BGM_INGAME,
+	BGM_RACE,
+	SFX_ACCELERATE,
+	SFX_STEERING,
+	SFX_VICTORY
+};
+
 class Manager
 {
 public:
 	~Manager();
 	static Manager* getInstance();
 
-
+	void Init();
 	// Load & Save
 	void loadPlayerProgress();
-	void savePlayerProgress();
+	void savePlayerProgress(std::string path);
 	void loadCars();
 
 	// Racing
@@ -49,7 +59,6 @@ public:
 
 	double getRaceStartCountdown();
 	void updateStartCountdown(double dt);
-	std::vector<Waypoint*>* getWaypoints();
 	int getPlacement(std::string name);
 
 	Level* getLevel();
@@ -62,12 +71,25 @@ public:
 	std::map<std::string, ShaderProgram*>* getShaders();
 
 
+	void setPlayMusic(Sounds sound, bool flag);
+	bool isPlayingMusic(Sounds sound);
+
+	void createNewGame();
+	void reloadLevel(std::string name);
+	void loadSaveFile(std::string name);
+	std::string getSaveFilePath();
 	Shop* getShop();
+
 
 private:
 
 	Manager();
 	static Manager* instance;
+
+	bool isNewGame;
+	std::string currentSaveFile;
+
+	bool soundPlaying[5];
 
 	double raceStartCountdown;
 	Camera* mainmenu;
@@ -78,7 +100,6 @@ private:
 	std::string currentLevel;
 	std::map<std::string, Level*> levels;
 	std::map<std::string, ShaderProgram*> shaders;
-	std::vector<Waypoint*> waypoints;
 };
 
 #endif

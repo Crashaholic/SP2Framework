@@ -25,7 +25,9 @@ void Shop::spawnDisplayCar() {
 	if (displayCar == nullptr) {
 		Level* level = Manager::getInstance()->getLevel();
 
-		for (int i = 0; i < 4; i++) {
+
+		for (int i = 0; i < 4; i++)
+		{
 			std::string modelPath = "Models//" + carNames[i] + ".obj";
 			std::string texPath = "Models//" + carNames[i] + ".tga";
 			cars.push_back(new Mesh(carNames[i].c_str(), Primitives::loadModel(modelPath.c_str(), false), LoadTGA(texPath.c_str()), false, false));
@@ -33,9 +35,11 @@ void Shop::spawnDisplayCar() {
 			level->spawnObject(cars[i]);
 			cars[i]->setVisible(false);
 		}
-
 		displayCar = cars[0];
 		cars[0]->setVisible(true);
+	
+
+	
 
 	}
 }
@@ -55,7 +59,7 @@ void Shop::BuyCar(Player* player) {
 		purchases.push_back(new CarUpgrade(car));
 	}
 	
-	Manager::getInstance()->savePlayerProgress();
+	Manager::getInstance()->savePlayerProgress(Manager::getInstance()->getSaveFilePath());
 }
 
 void Shop::Buy(Player *player, std::string category)
@@ -94,7 +98,7 @@ void Shop::Buy(Player *player, std::string category)
 	
 	}
 
-	Manager::getInstance()->savePlayerProgress();
+	Manager::getInstance()->savePlayerProgress(Manager::getInstance()->getSaveFilePath());
 	//std::vector<CarUpgrade*>* upgrades = player->getUpgrades();
 	//for (int i = 0; i < upgrades->size(); i++) {
 	//	std::cout << upgrades->at(i)->getName() << ": N" << upgrades->at(i)->getTier("nitro")
@@ -114,9 +118,6 @@ void Shop::Undo(Player *player)
 		bool refundCar = (lastItem->getTier("nitro") == 1 && lastItem->getTier("engine") == 1 && lastItem->getTier("tyre") == 1);
 		CarUpgrade* upgrade = player->getUpgrade(lastItem->getName());
 
-		std::cout << cat << std::endl;
-		std::cout << tier << std::endl;
-		std::cout << upgrade << std::endl;
 
 		// Undo the car purchase
 		if (refundCar)
@@ -142,7 +143,7 @@ void Shop::Undo(Player *player)
 		purchases.pop_back();
 	}
 
-	Manager::getInstance()->savePlayerProgress();
+	Manager::getInstance()->savePlayerProgress(Manager::getInstance()->getSaveFilePath());
 }
 
 

@@ -91,7 +91,7 @@ Mesh::~Mesh()
 void Mesh::Update(double dt)
 {
 	if (Manager::getInstance()->getLevelName() == "game" || Manager::getInstance()->getLevelName() == "singleplayer"
-		|| Manager::getInstance()->getLevelName() == "tutorial")
+		|| Manager::getInstance()->getLevelName() == "tutorial" || Manager::getInstance()->getLevelName() == "game2")
 	{
 		if (collisionEnabled)
 		{
@@ -182,7 +182,7 @@ void Mesh::onGroundCheck(double dt)
 	std::vector<Mesh*> collided = Collision::checkCollisionT(this, grav, {});
 
 	// Check whether player is above a LevitationPad
-	std::vector<Mesh*> collidePad = Collision::checkCollisionAbove(this, -35.0f, {});
+	std::vector<Mesh*> collidePad = Collision::checkCollisionAbove(this, -80.0f, {});
 
 	bool hasPad = std::find(collidePad.begin(), collidePad.end(), Manager::getInstance()->getLevel()->getObject("pad1")) != collidePad.end();
 
